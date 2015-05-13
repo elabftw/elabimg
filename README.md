@@ -1,9 +1,7 @@
-# elabftw docker nosql
+# eLabFTW in a docker container
 
-Build an elabftw container with nginx + php-fpm but without sql.
-You need to link this container to an SQL container.
-And you also need to import the [sql structure](https://raw.githubusercontent.com/NicolasCARPi/elabftw/master/install/elabftw.sql) into your sql database.
+Build an elabftw container with nginx + php-fpm + mysql.
 
-It expects the certs to be server.key and server.crt.
+Edit `docker-compose.yml-EXAMPLE` and rename it to `docker-compose.yml`.
 
-Look at the fig.yml-EXAMPLE file and adapt it to your use case.
+Then start with `docker-compose up`.
