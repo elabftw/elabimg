@@ -1,0 +1,1 @@
+Acquire::http::proxy "http://www-cache.curie.fr:3128";

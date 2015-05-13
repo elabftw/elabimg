@@ -1,0 +1,24 @@
+web:
+    image: nicolascarpi/elabftw-docker
+    environment:
+        - DB_NAME=elabftw
+        - DB_USER=elabftw
+        - DB_PASSWORD=secr3t
+    ports:
+        - "9000:443"
+        - "8000:80"
+    volumes:
+        - /dok/uploads:/elabftw/uploads
+        - /dok/mysql:/var/lib/mysql
+        - /dok/log:/var/log/nginx
+    links:
+        - mysql
+mysql:
+    image: mysql:latest
+    environment:
+        - MYSQL_ROOT_PASSWORD=secr3t
+        - MYSQL_DATABASE=elabftw
+        - MYSQL_USER=elabftw
+        - MYSQL_PASSWORD=secr3t
+    volumes:
+        - /dok/mysql:/var/lib/mysql
