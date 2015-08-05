@@ -1,5 +1,5 @@
 web:
-    image: nicolascarpi/elabftw-docker
+    image: elabftw/elabftw-docker
     environment:
         - DB_NAME=elabftw
         - DB_USER=elabftw
