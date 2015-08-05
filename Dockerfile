@@ -7,6 +7,7 @@ MAINTAINER Nicolas CARPi <nicolas.carpi@curie.fr>
 #ENV http_proxy http://www-cache.curie.fr:3128
 #ENV https_proxy https://www-cache.curie.fr:3128
 
+
 # install nginx and php-fpm
 RUN apt-get update
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
@@ -33,9 +34,7 @@ ADD ./supervisord.conf /etc/supervisord.conf
 ADD ./start.sh /start.sh
 
 # elabftw
-RUN git clone --depth 1 -b next https://github.com/elabftw/elabftw.git /elabftw
-#ADD ./elabftw-next.zip /elabftw.zip
-#RUN unzip /elabftw.zip && mv /elabftw-next /elabftw
+RUN git clone --depth 1 -b master https://github.com/elabftw/elabftw.git /elabftw
 
 # start
 CMD ["/start.sh"]
