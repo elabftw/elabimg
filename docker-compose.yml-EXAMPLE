@@ -1,5 +1,5 @@
 web:
-    image: elabftw/elabftw-docker
+    image: elabftw/docker-elabftw
     environment:
         - DB_NAME=elabftw
         - DB_USER=elabftw
@@ -11,6 +11,7 @@ web:
         - /dok/uploads:/elabftw/uploads
         - /dok/mysql:/var/lib/mysql
         - /dok/log:/var/log/nginx
+        - /dok/nginx/certs:/etc/nginx/certs
     links:
         - mysql
 mysql:
