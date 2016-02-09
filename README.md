@@ -8,15 +8,15 @@ Then start with `docker-compose up`.
 
 At the first startup, a private key will be generated. You need to get it from the running container to store it in your docker-compose.yml file.
 
+Grab the CONTAINER ID of the elabftw container
+
 ~~~sh
 
 $ docker ps
 
 ~~~
 
-Grab the CONTAINER ID of the elabftw container.
-
-Go into it
+Grab the secret key
 
 ~~~sh
 
