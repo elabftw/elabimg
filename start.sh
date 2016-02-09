@@ -30,6 +30,8 @@ db_password=${DB_PASSWORD}
 elab_root='/elabftw/'
 server_name=${SERVER_NAME:-localhost}
 disable_https=${DISABLE_HTTPS:-false}
+new_secret_key=$(php /elabftw/install/generateSecretKey.php)
+secret_key=${SECRET_KEY:-$new_secret_key}
 
 cat << EOF > /elabftw/config.php
 <?php
@@ -38,6 +40,7 @@ define('DB_NAME', '${db_name}');
 define('DB_USER', '${db_user}');
 define('DB_PASSWORD', '${db_password}');
 define('ELAB_ROOT', '${elab_root}');
+define('SECRET_KEY', '${secret_key}');
 EOF
 
 # nginx config
