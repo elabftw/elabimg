@@ -35,8 +35,8 @@ ADD ./supervisord.conf /etc/supervisord.conf
 ADD ./start.sh /start.sh
 
 # elabftw
-#RUN git clone --depth 1 -b master https://github.com/elabftw/elabftw.git /elabftw
-RUN git clone --depth 1 -b hypernext https://github.com/elabftw/elabftw.git /elabftw
+RUN git clone --depth 1 -b master https://github.com/elabftw/elabftw.git /elabftw
+#RUN git clone --depth 1 -b hypernext https://github.com/elabftw/elabftw.git /elabftw
 
 # start
 CMD ["/start.sh"]
