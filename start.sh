@@ -70,7 +70,7 @@ sed -i -e "s/;daemonize\s*=\s*yes/daemonize = no/g" /etc/php5/fpm/php-fpm.conf
 sed -i -e "s/;catch_workers_output\s*=\s*yes/catch_workers_output = yes/g" /etc/php5/fpm/pool.d/www.conf
 
 # elabftw
-mkdir -p /elabftw/uploads/{tmp,export}
+mkdir -p /elabftw/uploads/tmp
 chmod -R 777 /elabftw/uploads
 chown -R www-data:www-data /elabftw
 chmod -R u+x /elabftw/*
