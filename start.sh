@@ -22,10 +22,10 @@ if [ ! -f /etc/nginx/certs/dhparam.pem ]; then
 fi
 
 # write config file from env var
-db_host=$(grep mysql /etc/hosts | awk '{print $1}')
-if [ -z "$db_host" ]; then
+#db_host=$(grep mysql /etc/hosts | awk '{print $1}')
+#if [ -z "$db_host" ]; then
     db_host=${DB_HOST}
-fi
+#fi
 db_name=${DB_NAME:-elabftw}
 db_user=${DB_USER:-elabftw}
 db_password=${DB_PASSWORD}
