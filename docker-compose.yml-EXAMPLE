@@ -4,6 +4,8 @@ web:
         - DB_NAME=elabftw
         - DB_USER=elabftw
         - DB_PASSWORD=secr3t
+        # get the secret key from https://demo.elabftw.net/install/generateSecretKey.php
+        - SECRET_KEY=
     ports:
         - "9000:443"
         - "8000:80"
