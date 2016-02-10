@@ -1,14 +1,18 @@
 web:
     image: elabftw/docker-elabftw
     environment:
+        - DB_HOST=mysql
         - DB_NAME=elabftw
         - DB_USER=elabftw
         - DB_PASSWORD=secr3t
         # get the secret key from https://demo.elabftw.net/install/generateSecretKey.php
         - SECRET_KEY=
+        # optionnal: change to your server name in nginx config
+        - SERVER_NAME=localhost
+        # optionnal: disable https
+        - DISABLE_HTTPS=false
     ports:
         - "9000:443"
-        - "8000:80"
     volumes:
         - /dok/uploads:/elabftw/uploads
     links:
