@@ -1,6 +1,8 @@
 #!/bin/bash
 # elabftw-docker start script
 
+mkdir /etc/nginx/certs
+
 # generate self-signed certificates for nginx server
 if [ ! -f /etc/nginx/certs/server.crt ]; then
     openssl req \
