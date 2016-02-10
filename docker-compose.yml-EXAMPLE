@@ -1,28 +1,45 @@
+# docker-elabftw configuration file
+# use : "docker-compose up" to start containers
+# https://hub.docker.com/r/elabftw/docker-elabftw/
+# http://www.elabftw.net
+
+# our first container is nginx + php-fpm + elabftw
 web:
     image: elabftw/docker-elabftw
     environment:
+        # no need to change
         - DB_HOST=mysql
+        # no need to change
         - DB_NAME=elabftw
+        # no need to change
         - DB_USER=elabftw
+        # need to change
         - DB_PASSWORD=secr3t
         # get the secret key from https://demo.elabftw.net/install/generateSecretKey.php
         - SECRET_KEY=
-        # optionnal: change to your server name in nginx config
+        # optional: change to your server name in nginx config
         - SERVER_NAME=localhost
-        # optionnal: disable https
+        # optional: disable https
         - DISABLE_HTTPS=false
     ports:
-        - "9000:443"
+        # if you want elabftw to run on a different port, change the first number
+        - "443:443"
     volumes:
+        # this is where you will keep the uploaded files persistently
         - /dok/uploads:/elabftw/uploads
     links:
         - mysql
 mysql:
     image: mysql:latest
     environment:
+        # need to change
         - MYSQL_ROOT_PASSWORD=secr3t
+        # no need to change
         - MYSQL_DATABASE=elabftw
+        # no need to change
         - MYSQL_USER=elabftw
+        # need to change
         - MYSQL_PASSWORD=secr3t
     volumes:
+        # this is where you will keep the database persistently
         - /dok/mysql:/var/lib/mysql
