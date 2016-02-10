@@ -9,9 +9,6 @@ web:
         - "8000:80"
     volumes:
         - /dok/uploads:/elabftw/uploads
-        - /dok/mysql:/var/lib/mysql
-        - /dok/log:/var/log/nginx
-        - /dok/nginx/certs:/etc/nginx/certs
     links:
         - mysql
 mysql:

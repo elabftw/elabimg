@@ -42,4 +42,4 @@ RUN git clone --depth 1 -b master https://github.com/elabftw/elabftw.git /elabft
 CMD ["/start.sh"]
 
 # define mountable directories.
-VOLUME ["/var/log/nginx", "/elabftw/uploads"]
+VOLUME ["/elabftw/uploads"]
