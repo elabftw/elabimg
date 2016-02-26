@@ -7,9 +7,12 @@ MAINTAINER Nicolas CARPi <nicolas.carpi@curie.fr>
 #ENV http_proxy http://www-cache.curie.fr:3128
 #ENV https_proxy https://www-cache.curie.fr:3128
 
+ENV DEBIAN_FRONTEND noninteractive
+
+RUN apt-get update
+RUN apt-get upgrade -y
 
 # install nginx and php-fpm
-RUN apt-get update
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
     nginx \
     openssl \
