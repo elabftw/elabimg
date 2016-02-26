@@ -21,6 +21,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
     php-apc \
     php5-gd \
     php5-curl \
+    php5-cli \
     curl \
     git \
     unzip \
@@ -34,13 +35,14 @@ EXPOSE 443
 ADD ./nginx443.conf /etc/nginx/sites-available/elabftw-ssl
 ADD ./nginx80.conf /etc/nginx/sites-available/default
 ADD ./supervisord.conf /etc/supervisord.conf
-ADD ./start.sh /start.sh
+ADD ./run.sh /run.sh
 
 # elabftw
 RUN git clone --depth 1 -b master https://github.com/elabftw/elabftw.git /elabftw
+#RUN git clone --depth 1 -b hypernext https://github.com/elabftw/elabftw.git /elabftw
 
 # start
-CMD ["/start.sh"]
+CMD ["/run.sh"]
 
 # define mountable directories.
-VOLUME ["/var/log/nginx", "/elabftw/uploads"]
+VOLUME ["/elabftw/uploads"]
