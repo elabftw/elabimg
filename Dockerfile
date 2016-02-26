@@ -9,11 +9,8 @@ MAINTAINER Nicolas CARPi <nicolas.carpi@curie.fr>
 
 ENV DEBIAN_FRONTEND noninteractive
 
-RUN apt-get update
-RUN apt-get upgrade -y
-
 # install nginx and php-fpm
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
+RUN apt-get update -qq && apt-get upgrade -y && apt-get install -y \
     nginx \
     openssl \
     php5-fpm \
@@ -26,7 +23,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
     git \
     unzip \
     supervisor && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get clean autoclean && \
+    apt-get autoremove -y && \
+    rm -rf /var/lib/apt /var/lib/dpkg /var/lib/cache /var/lib/log
 
 # only HTTPS
 EXPOSE 443
