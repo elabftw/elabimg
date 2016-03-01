@@ -84,6 +84,3 @@ mkdir -p /elabftw/uploads/tmp
 chmod -R 755 /elabftw/uploads
 chown -R nginx:nginx /elabftw
 chmod -R u+x /elabftw/*
-
-# start all the services
-/usr/bin/supervisord -c /etc/supervisord.conf -n
