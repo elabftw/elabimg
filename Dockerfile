@@ -12,14 +12,16 @@ EXPOSE 443
 ADD ./nginx443.conf /etc/nginx/sites-available/elabftw-ssl
 ADD ./nginx80.conf /etc/nginx/sites-available/default
 ADD ./supervisord.conf /etc/supervisord.conf
-ADD ./start.sh /start.sh
+ADD ./run.sh /run.sh
+
+RUN chmod +x /run.sh
 
 # elabftw
 #RUN git clone --depth 1 -b master https://github.com/elabftw/elabftw.git /elabftw
 RUN git clone --depth 1 -b hypernext https://github.com/elabftw/elabftw.git /elabftw
 
 # start
-CMD ["/bin/sh /start.sh"]
+CMD /run.sh && exec /usr/bin/supervisord -c /etc/supervisord.conf -n
 
 # define mountable directories.
-VOLUME ["/var/log/nginx", "/elabftw/uploads"]
+VOLUME ["/elabftw/uploads"]
