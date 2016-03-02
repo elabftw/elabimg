@@ -1,32 +1,11 @@
 #!/bin/sh
 # elabftw-docker start script
 
-mkdir /etc/nginx/certs
-
-# generate self-signed certificates for nginx server
-if [ ! -f /etc/nginx/certs/server.crt ]; then
-    openssl req \
-        -new \
-        -newkey rsa:4096 \
-        -days 9999 \
-        -nodes \
-        -x509 \
-        -subj "/C=FR/ST=France/L=Paris/O=elabftw/CN=www.example.com" \
-        -keyout /etc/nginx/certs/server.key \
-        -out /etc/nginx/certs/server.crt
-fi
-
-# generate Diffie-Hellman parameter for DHE ciphersuites
-if [ ! -f /etc/nginx/certs/dhparam.pem ]; then
-    openssl dhparam -outform PEM -out /etc/nginx/certs/dhparam.pem 2048
-fi
-
 # write config file from env var
 db_host=${DB_HOST}
 db_name=${DB_NAME:-elabftw}
 db_user=${DB_USER:-elabftw}
 db_password=${DB_PASSWORD}
-elab_root='/elabftw/'
 server_name=${SERVER_NAME:-localhost}
 disable_https=${DISABLE_HTTPS:-false}
 new_secret_key=$(php /elabftw/install/generateSecretKey.php)
@@ -38,7 +17,7 @@ define('DB_HOST', '${db_host}');
 define('DB_NAME', '${db_name}');
 define('DB_USER', '${db_user}');
 define('DB_PASSWORD', '${db_password}');
-define('ELAB_ROOT', '${elab_root}');
+define('ELAB_ROOT', '/elabftw/');
 define('SECRET_KEY', '${secret_key}');
 EOF
 
@@ -48,12 +27,37 @@ rm /etc/nginx/nginx.conf
 # put the right server_name
 sed -i -e "s/localhost/$server_name/" /etc/nginx/nginx.conf
 
+# nginx config
+echo "daemon off;" >> /etc/nginx/nginx.conf
+sed -i -e "s/keepalive_timeout\s*65/keepalive_timeout 2/" /etc/nginx/nginx.conf
+sed -i -e "s/keepalive_timeout 2/keepalive_timeout 2;\n\tclient_max_body_size 100m/" /etc/nginx/nginx.conf
+
 # Switch http or https
 # false by default
 if ($disable_https); then
     # activate an HTTP server listening on port 443
     ln -s /etc/nginx/nginx-http-443.conf /etc/nginx/nginx.conf
 else
+    # generate self-signed certificates for nginx server
+    mkdir -p /etc/nginx/certs
+
+    if [ ! -f /etc/nginx/certs/server.crt ]; then
+        openssl req \
+            -new \
+            -newkey rsa:4096 \
+            -days 9999 \
+            -nodes \
+            -x509 \
+            -subj "/C=FR/ST=France/L=Paris/O=elabftw/CN=www.example.com" \
+            -keyout /etc/nginx/certs/server.key \
+            -out /etc/nginx/certs/server.crt
+    fi
+
+    # generate Diffie-Hellman parameter for DHE ciphersuites
+    if [ ! -f /etc/nginx/certs/dhparam.pem ]; then
+        openssl dhparam -outform PEM -out /etc/nginx/certs/dhparam.pem 2048
+    fi
+
     # activate an HTTPS server listening on port 443
     ln -s /etc/nginx/nginx-https-443.conf /etc/nginx/nginx.conf
 fi
