@@ -24,14 +24,6 @@ EOF
 # remove the default config file
 rm /etc/nginx/nginx.conf
 
-# put the right server_name
-sed -i -e "s/localhost/$server_name/" /etc/nginx/nginx.conf
-
-# nginx config
-echo "daemon off;" >> /etc/nginx/nginx.conf
-sed -i -e "s/keepalive_timeout\s*65/keepalive_timeout 2/" /etc/nginx/nginx.conf
-sed -i -e "s/keepalive_timeout 2/keepalive_timeout 2;\n\tclient_max_body_size 100m/" /etc/nginx/nginx.conf
-
 # Switch http or https
 # false by default
 if ($disable_https); then
@@ -62,12 +54,15 @@ else
     ln -s /etc/nginx/nginx-https-443.conf /etc/nginx/nginx.conf
 fi
 
+# nginx config
+sed -i -e "s/localhost/$server_name/" /etc/nginx/nginx.conf
+
 # php-fpm config
 sed -i -e "s/;daemonize\s*=\s*yes/daemonize = no/g" /etc/php/php-fpm.conf
 sed -i -e "s/;catch_workers_output\s*=\s*yes/catch_workers_output = yes/g" /etc/php/php-fpm.conf
 sed -i -e "s;listen = 127.0.0.1:9000;listen = /var/run/php-fpm.sock;g" /etc/php/php-fpm.conf
-sed -i -e "s/listen.user = nobody;listen.user = nginx/g" /etc/php/php-fpm.conf
-sed -i -e "s/listen.group = nobody;listen.group = nginx/g" /etc/php/php-fpm.conf
+sed -i -e "s/;listen.owner = nobody/listen.owner = nginx/g" /etc/php/php-fpm.conf
+sed -i -e "s/;listen.group = nobody/listen.group = nginx/g" /etc/php/php-fpm.conf
 
 # php config
 sed -i -e "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" /etc/php/php.ini
