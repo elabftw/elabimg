@@ -11,8 +11,6 @@ RUN git clone --depth 1 -b hypernext https://github.com/elabftw/elabftw.git /ela
 
 # only HTTPS
 EXPOSE 443
-# for debug
-EXPOSE 9001
 
 # add files
 COPY ./nginx.conf /etc/nginx/
