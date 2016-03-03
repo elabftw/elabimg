@@ -67,7 +67,7 @@ phpConf() {
 	sed -i -e "s/post_max_size\s*=\s*8M/post_max_size = 100M/g" /etc/php/php.ini
 	# the sessions are stored in a separate dir
 	sed -i -e "s;session.save_path = \"/tmp\";session.save_path = \"/sessions\";g" /etc/php/php.ini
-	mkdir /sessions
+	mkdir -p /sessions
 	chown nginx:nginx /sessions
 }
 
