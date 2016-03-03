@@ -19,7 +19,8 @@ web:
         - SECRET_KEY=
         # optional: change to your server name in nginx config
         - SERVER_NAME=localhost
-        # optional: disable https
+        # optional: disable https, use this to have an http server listening on port 443
+	# useful if the SSL stack is handled by haproxy or something alike
         - DISABLE_HTTPS=false
     ports:
         # if you want elabftw to run on a different port, change the first number
@@ -30,7 +31,7 @@ web:
     links:
         - mysql
 mysql:
-    image: mysql:latest
+    image: mysql:5.7
     environment:
         # need to change
         - MYSQL_ROOT_PASSWORD=secr3t
