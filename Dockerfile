@@ -5,9 +5,8 @@ MAINTAINER Nicolas CARPi <nicolas.carpi@curie.fr>
 # install nginx and php-fpm
 RUN apk add --update nginx openssl php php-pdo php-pdo_mysql php-fpm php-mysql php-gd php-curl php-zip php-zlib php-json php-gettext git supervisor && rm -rf /var/cache/apk/*
 
-# elabftw
-#RUN git clone --depth 1 -b master https://github.com/elabftw/elabftw.git /elabftw
-RUN git clone --depth 1 -b hypernext https://github.com/elabftw/elabftw.git /elabftw
+# get latest stable version of elabftw
+RUN git clone --depth 1 -b master https://github.com/elabftw/elabftw.git /elabftw
 
 # only HTTPS
 EXPOSE 443
