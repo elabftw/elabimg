@@ -20,7 +20,7 @@ COPY ./supervisord.conf /etc/supervisord.conf
 COPY ./run.sh /run.sh
 
 # start
-ENTRYPOINT /run.sh
+ENTRYPOINT exec /run.sh
 
 # define mountable directories.
 VOLUME ["/elabftw/uploads"]
