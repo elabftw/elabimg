@@ -2,8 +2,11 @@
 FROM alpine:3.3
 MAINTAINER Nicolas CARPi <nicolas.carpi@curie.fr>
 
+# enable testing repo to get php7
+RUN echo http://dl-4.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories
+
 # install nginx and php-fpm
-RUN apk add --update nginx openssl php php-pdo php-pdo_mysql php-fpm php-mysql php-gd php-curl php-zip php-zlib php-json php-gettext git supervisor && rm -rf /var/cache/apk/*
+RUN apk add --update nginx openssl php7 php7-pdo_mysql php7-fpm php7-gd php7-curl php7-zip php7-zlib php7-json php7-gettext php7-session php7-mbstring git supervisor && rm -rf /var/cache/apk/*
 
 # get latest stable version of elabftw
 RUN git clone --depth 1 -b master https://github.com/elabftw/elabftw.git /elabftw
@@ -12,11 +15,11 @@ RUN git clone --depth 1 -b master https://github.com/elabftw/elabftw.git /elabft
 EXPOSE 443
 
 # add files
-COPY ./nginx.conf /etc/nginx/
-COPY ./https.conf /etc/nginx/
-COPY ./http.conf /etc/nginx/
-COPY ./supervisord.conf /etc/supervisord.conf
-COPY ./run.sh /run.sh
+COPY ./src/nginx.conf /etc/nginx/
+COPY ./src/https.conf /etc/nginx/
+COPY ./src/http.conf /etc/nginx/
+COPY ./src/supervisord.conf /etc/supervisord.conf
+COPY ./src/run.sh /run.sh
 
 # start
 ENTRYPOINT exec /run.sh
