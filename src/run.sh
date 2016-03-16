@@ -30,7 +30,7 @@ generateCerts() {
 
     # generate Diffie-Hellman parameter for DHE ciphersuites
     if [ ! -f /etc/nginx/certs/dhparam.pem ]; then
-        openssl dhparam -outform PEM -out /etc/nginx/certs/dhparam.pem 2048
+        openssl dhparam -out /etc/nginx/certs/dhparam.pem 2048
     fi
 }
 
@@ -48,6 +48,8 @@ nginxConf() {
 
 	# fix the server name in nginx config
 	sed -i -e "s/localhost/$server_name/" /etc/nginx/conf.d/elabftw.conf
+    # fix upload permissions
+    chown -R nginx:nginx /var/lib/nginx
 }
 
 phpfpmConf() {
