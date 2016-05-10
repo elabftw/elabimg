@@ -34,8 +34,9 @@ nginxConf() {
 		ln -s /etc/nginx/https.conf /etc/nginx/conf.d/elabftw.conf
 	fi
 
-	# fix the server name in nginx config
-	sed -i -e "s/localhost/$server_name/" /etc/nginx/conf.d/elabftw.conf
+	# set the server name in nginx config
+    # works also for the ssl config if ssl is enabled
+	sed -i -e "s/localhost/$server_name/g" /etc/nginx/conf.d/elabftw.conf
     # fix upload permissions
     chown -R nginx:nginx /var/lib/nginx
 }
