@@ -15,6 +15,7 @@ getEnv() {
 # fullchain.pem and privkey.pem should be in a volume linked to /ssl
 generateCerts() {
     mkdir /ssl
+    mkdir -p /etc/nginx/certs
 
     # generate Diffie-Hellman parameter for DHE ciphersuites
     if [ ! -f /etc/nginx/certs/dhparam.pem ]; then
