@@ -48,6 +48,7 @@ phpfpmConf() {
 	sed -i -e "s;listen = 127.0.0.1:9000;listen = /var/run/php-fpm.sock;g" /etc/php7/php-fpm.d/www.conf
 	sed -i -e "s/;listen.owner = nobody/listen.owner = nginx/g" /etc/php7/php-fpm.d/www.conf
 	sed -i -e "s/;listen.group = nobody/listen.group = nginx/g" /etc/php7/php-fpm.d/www.conf
+    sed -i -e "s/nobody/nginx/g" /etc/php7/php-fpm.d/www.conf
 }
 
 phpConf() {
@@ -78,6 +79,8 @@ writeConfigFile() {
 	define('ELAB_ROOT', '/elabftw/');
 	define('SECRET_KEY', '${secret_key}');"
 	echo $config > /elabftw/config.php
+    chown nginx:nginx /elabftw/config.php
+    chmod 700 /elabftw/config.php
 }
 
 # script start
