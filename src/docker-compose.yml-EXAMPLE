@@ -28,6 +28,8 @@ web:
     volumes:
         # this is where you will keep the uploaded files persistently
         - /dok/uploads:/elabftw/uploads
+        # path to the folder with SSL certificates (must contain fullchain.pem and privkey.pem)
+        - /etc/letsencrypt/live/YOUR_DOMAIN:/ssl
     links:
         - mysql
 mysql:

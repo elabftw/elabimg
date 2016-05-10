@@ -12,21 +12,9 @@ getEnv() {
 	secret_key=${SECRET_KEY}
 }
 
-# generate self-signed certificates for nginx server
+# fullchain.pem and privkey.pem should be in a volume linked to /ssl
 generateCerts() {
-    mkdir -p /etc/nginx/certs
-
-    if [ ! -f /etc/nginx/certs/server.crt ]; then
-        openssl req \
-            -new \
-            -newkey rsa:4096 \
-            -days 9999 \
-            -nodes \
-            -x509 \
-            -subj "/C=FR/ST=France/L=Paris/O=elabftw/CN=www.example.com" \
-            -keyout /etc/nginx/certs/server.key \
-            -out /etc/nginx/certs/server.crt
-    fi
+    mkdir /ssl
 
     # generate Diffie-Hellman parameter for DHE ciphersuites
     if [ ! -f /etc/nginx/certs/dhparam.pem ]; then
