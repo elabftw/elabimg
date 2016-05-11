@@ -9,15 +9,27 @@ getEnv() {
 	db_password=${DB_PASSWORD}
 	server_name=${SERVER_NAME:-localhost}
 	disable_https=${DISABLE_HTTPS:-false}
+    enable_letsencrypt=${ENABLE_LETSENCRYPT:-false}
 	secret_key=${SECRET_KEY}
 }
 
 # fullchain.pem and privkey.pem should be in a volume linked to /ssl
-generateCerts() {
-    mkdir /ssl
-    mkdir -p /etc/nginx/certs
+generateCert() {
+    if [ ! -f /etc/nginx/certs/server.crt ]; then
+        openssl req \
+            -new \
+            -newkey rsa:4096 \
+            -days 9999 \
+            -nodes \
+            -x509 \
+            -subj "/C=FR/ST=France/L=Paris/O=elabftw/CN=www.example.com" \
+            -keyout /etc/nginx/certs/server.key \
+            -out /etc/nginx/certs/server.crt
+    fi
+}
 
-    # generate Diffie-Hellman parameter for DHE ciphersuites
+# generate Diffie-Hellman parameter for DHE ciphersuites
+generateDh() {
     if [ ! -f /etc/nginx/certs/dhparam.pem ]; then
         openssl dhparam -out /etc/nginx/certs/dhparam.pem 2048
     fi
@@ -30,11 +42,23 @@ nginxConf() {
 		# activate an HTTP server listening on port 443
 		ln -s /etc/nginx/http.conf /etc/nginx/conf.d/elabftw.conf
 	else
-		generateCerts
+        mkdir -p /etc/nginx/certs
+        # generate a selfsigned certificate if we don't use Let's Encrypt
+        if (! $enable_letsencrypt); then
+            generateCert
+        fi
+        generateDh
 		# activate an HTTPS server listening on port 443
 		ln -s /etc/nginx/https.conf /etc/nginx/conf.d/elabftw.conf
+        if ($enable_letsencrypt); then
+            mkdir /ssl
+            sed -i -e "s:CERT_PATH:/ssl/live/localhost/fullchain.pem:" /etc/nginx/conf.d/elabftw.conf
+            sed -i -e "s:KEY_PATH:/ssl/live/localhost/privkey.pem:" /etc/nginx/conf.d/elabftw.conf
+        else
+            sed -i -e "s:CERT_PATH:/etc/nginx/certs/server.crt:" /etc/nginx/conf.d/elabftw.conf
+            sed -i -e "s:KEY_PATH:/etc/nginx/certs/server.key:" /etc/nginx/conf.d/elabftw.conf
+        fi
 	fi
-
 	# set the server name in nginx config
     # works also for the ssl config if ssl is enabled
 	sed -i -e "s/localhost/$server_name/g" /etc/nginx/conf.d/elabftw.conf
