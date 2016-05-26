@@ -6,7 +6,7 @@ MAINTAINER Nicolas CARPi <nicolas.carpi@curie.fr>
 RUN echo http://dl-4.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories
 
 # install nginx and php-fpm
-RUN apk add --update openjdk8-jre nginx openssl php7 php7-pdo_mysql php7-fpm php7-gd php7-curl php7-zip php7-zlib php7-json php7-gettext php7-session php7-mbstring git supervisor && rm -rf /var/cache/apk/*
+RUN apk add --update openjdk8-jre nginx openssl php7 php7-openssl php7-pdo_mysql php7-fpm php7-gd php7-curl php7-zip php7-zlib php7-json php7-gettext php7-session php7-mbstring git supervisor && rm -rf /var/cache/apk/*
 
 # get latest stable version of elabftw
 RUN git clone --depth 1 -b master https://github.com/elabftw/elabftw.git /elabftw
