@@ -51,7 +51,7 @@ nginxConf() {
 		# activate an HTTPS server listening on port 443
 		ln -s /etc/nginx/https.conf /etc/nginx/conf.d/elabftw.conf
         if ($enable_letsencrypt); then
-            mkdir /ssl
+            mkdir -p /ssl
             sed -i -e "s:CERT_PATH:/ssl/live/localhost/fullchain.pem:" /etc/nginx/conf.d/elabftw.conf
             sed -i -e "s:KEY_PATH:/ssl/live/localhost/privkey.pem:" /etc/nginx/conf.d/elabftw.conf
         else
