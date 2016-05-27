@@ -70,6 +70,8 @@ phpfpmConf() {
 	# php-fpm config
 	sed -i -e "s/;daemonize\s*=\s*yes/daemonize = no/g" /etc/php7/php-fpm.conf
 	sed -i -e "s/;catch_workers_output\s*=\s*yes/catch_workers_output = yes/g" /etc/php7/php-fpm.d/www.conf
+    # hide php version
+	sed -i -e "s/expose_php = On/expose_php = Off/g" /etc/php7/php.ini
 	# use a unix socket
 	sed -i -e "s;listen = 127.0.0.1:9000;listen = /var/run/php-fpm.sock;g" /etc/php7/php-fpm.d/www.conf
 	sed -i -e "s/;listen.owner = nobody/listen.owner = nginx/g" /etc/php7/php-fpm.d/www.conf
