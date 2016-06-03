@@ -1,5 +1,5 @@
 # elabftw in docker, without sql
-FROM alpine:edge
+FROM alpine:3.4
 MAINTAINER Nicolas CARPi <nicolas.carpi@curie.fr>
 
 # enable testing repo to get php7
