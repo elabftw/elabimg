@@ -6,6 +6,8 @@
 # our first container is nginx + php-fpm + elabftw
 web:
     image: elabftw/docker-elabftw
+    restart: always
+    container_name: elabftw
     environment:
         # no need to change
         - DB_HOST=mysql
@@ -37,6 +39,8 @@ web:
         - mysql
 mysql:
     image: mysql:5.7
+    restart: always
+    container_name: mysql
     environment:
         # need to change
         - MYSQL_ROOT_PASSWORD=secr3t
