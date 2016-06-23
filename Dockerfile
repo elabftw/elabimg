@@ -25,4 +25,5 @@ COPY ./src/run.sh /run.sh
 ENTRYPOINT exec /run.sh
 
 # define mountable directories
-VOLUME ["/elabftw/uploads" "/ssl"]
+VOLUME /elabftw/uploads
+VOLUME /ssl
