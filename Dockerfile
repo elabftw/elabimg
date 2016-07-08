@@ -9,15 +9,13 @@ RUN echo http://dl-4.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositorie
 RUN apk add --update openjdk8-jre nginx openssl php7 php7-openssl php7-pdo_mysql php7-fpm php7-gd php7-curl php7-zip php7-zlib php7-json php7-gettext php7-session php7-mbstring git supervisor && rm -rf /var/cache/apk/*
 
 # get latest stable version of elabftw
-RUN git clone --depth 1 -b hypernext https://github.com/elabftw/elabftw.git /elabftw
+RUN git clone --depth 1 -b hypernext https://github.com/elabftw/elabftw.git /elabftw && chown -R nginx:nginx /elabftw && chmod -R u+x /elabftw
 
 # only HTTPS
 EXPOSE 443
 
 # add files
-COPY ./src/nginx.conf /etc/nginx/
-COPY ./src/https.conf /etc/nginx/
-COPY ./src/http.conf /etc/nginx/
+COPY ./src/nginx/ /etc/nginx/
 COPY ./src/supervisord.conf /etc/supervisord.conf
 COPY ./src/run.sh /run.sh
 
