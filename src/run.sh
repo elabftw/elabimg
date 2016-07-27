@@ -92,7 +92,8 @@ phpConf() {
 
 elabftwConf() {
 	mkdir -p /elabftw/uploads/tmp
-	chmod -R 777 /elabftw/uploads
+	chmod 700 /elabftw/uploads
+    chmod 700 /elabftw/uploads/tmp
 	chown -R nginx:nginx /elabftw
 	chmod -R u+x /elabftw/*
 }
