@@ -74,9 +74,12 @@ phpfpmConf() {
 	sed -i -e "s/expose_php = On/expose_php = Off/g" /etc/php7/php.ini
 	# use a unix socket
 	sed -i -e "s;listen = 127.0.0.1:9000;listen = /var/run/php-fpm.sock;g" /etc/php7/php-fpm.d/www.conf
+    # set nginx as user for php-fpm
 	sed -i -e "s/;listen.owner = nobody/listen.owner = nginx/g" /etc/php7/php-fpm.d/www.conf
 	sed -i -e "s/;listen.group = nobody/listen.group = nginx/g" /etc/php7/php-fpm.d/www.conf
     sed -i -e "s/nobody/nginx/g" /etc/php7/php-fpm.d/www.conf
+    # increase max number of simultaneous requests
+    sed -i -e "s/pm.max_children = 5/pm.max_children = 50/g" /etc/php7/php-fpm.d/www.conf
 }
 
 phpConf() {
