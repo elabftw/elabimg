@@ -1,5 +1,5 @@
 # docker-elabftw configuration file
-# use : "docker-compose up" to start containers
+# use : "docker-compose up -d" to start containers
 # https://hub.docker.com/r/elabftw/docker-elabftw/
 # http://www.elabftw.net
 
