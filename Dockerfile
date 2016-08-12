@@ -2,7 +2,7 @@
 FROM alpine:3.4
 MAINTAINER Nicolas CARPi <nicolas.carpi@curie.fr>
 
-ENV ELABFTW_VERSION 1.2.5
+ENV ELABFTW_VERSION 1.2.6
 
 # enable testing repo to get php7
 RUN echo http://dl-4.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories
