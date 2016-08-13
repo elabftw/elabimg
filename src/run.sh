@@ -95,8 +95,8 @@ phpConf() {
 
 elabftwConf() {
 	mkdir -p /elabftw/uploads/tmp
-	#chmod 777 /elabftw/uploads
-    #chmod 777 /elabftw/uploads/tmp
+	chmod 777 /elabftw/uploads
+    chmod 777 /elabftw/uploads/tmp
 }
 
 writeConfigFile() {
