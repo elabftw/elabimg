@@ -31,7 +31,7 @@ web:
         - "443:443"
     volumes:
         # this is where you will keep the uploaded files persistently
-        - /dok/uploads:/elabftw/uploads
+        - /var/elabftw/web:/elabftw/uploads
         # if you've enabled letsencrypt, uncomment the line below
         # path to the folder with SSL certificates (must contain fullchain.pem and privkey.pem)
         #- /etc/letsencrypt:/ssl
@@ -52,4 +52,4 @@ mysql:
         - MYSQL_PASSWORD=secr3t
     volumes:
         # this is where you will keep the database persistently
-        - /dok/mysql:/var/lib/mysql
+        - /var/elabftw/mysql:/var/lib/mysql
