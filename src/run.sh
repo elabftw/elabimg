@@ -87,6 +87,10 @@ phpConf() {
 	sed -i -e "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" /etc/php7/php.ini
 	sed -i -e "s/upload_max_filesize\s*=\s*2M/upload_max_filesize = 100M/g" /etc/php7/php.ini
 	sed -i -e "s/post_max_size\s*=\s*8M/post_max_size = 100M/g" /etc/php7/php.ini
+    # we want a safe cookie/session
+    sed -i -e "s/session.cookie_httponly\s*=/session.cookie_httponly = true/" /etc/php7/php.ini
+    sed -i -e "s/;session.cookie_secure\s*=/session.cookie_secure = true/" /etc/php7/php.ini
+    sed -i -e "s/session.use_strict_mode\s*=\s*0/session.use_strict_mode = 1/" /etc/php7/php.ini
 	# the sessions are stored in a separate dir
 	sed -i -e "s;session.save_path = \"/tmp\";session.save_path = \"/sessions\";g" /etc/php7/php.ini
 	mkdir -p /sessions

@@ -1,5 +1,5 @@
 # elabftw in docker, without sql
-FROM alpine:3.4
+FROM alpine:edge
 MAINTAINER Nicolas CARPi <nicolas.carpi@curie.fr>
 
 ENV ELABFTW_VERSION hypernext
