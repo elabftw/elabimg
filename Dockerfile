@@ -2,10 +2,8 @@
 FROM alpine:edge
 MAINTAINER Nicolas CARPi <nicolas.carpi@curie.fr>
 
+# select version or branch here
 ENV ELABFTW_VERSION hypernext
-
-# enable testing repo to get php7
-RUN echo http://dl-4.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories
 
 # install nginx and php-fpm
 RUN apk add --update openjdk8-jre nginx openssl php7 php7-openssl php7-pdo_mysql php7-fpm php7-gd php7-curl php7-zip php7-zlib php7-json php7-gettext php7-session php7-mbstring git supervisor && rm -rf /var/cache/apk/*
