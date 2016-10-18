@@ -35,3 +35,10 @@ ENTRYPOINT exec /run.sh
 # define mountable directories
 VOLUME /elabftw/uploads
 VOLUME /ssl
+
+LABEL org.label-schema.name="elabftw" \
+    org.label-schema.description="Run nginx and php-fpm to serve elabftw" \
+    org.label-schema.url="http://www.elabftw.net" \
+    org.label-schema.vcs-url="https://github.com/elabftw/elabimg" \
+    org.label-schema.version=$ELABFTW_VERSION \
+    org.label-schema.schema-version="1.0"
