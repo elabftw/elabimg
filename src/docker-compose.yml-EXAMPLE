@@ -1,11 +1,11 @@
 # docker-elabftw configuration file
 # use : "docker-compose up -d" to start containers
-# https://hub.docker.com/r/elabftw/docker-elabftw/
+# https://hub.docker.com/r/elabftw/elabimg/
 # http://www.elabftw.net
 
 # our first container is nginx + php-fpm + elabftw
 web:
-    image: elabftw/docker-elabftw
+    image: elabftw/elabimg
     restart: always
     container_name: elabftw
     # drop some capabilities
