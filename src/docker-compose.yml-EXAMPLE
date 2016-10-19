@@ -1,7 +1,7 @@
 # docker-elabftw configuration file
 # use : "docker-compose up -d" to start containers
 # https://hub.docker.com/r/elabftw/elabimg/
-# http://www.elabftw.net
+# https://www.elabftw.net
 
 # our first container is nginx + php-fpm + elabftw
 web:
