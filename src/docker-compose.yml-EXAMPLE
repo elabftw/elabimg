@@ -1,13 +1,20 @@
 # docker-elabftw configuration file
 # use : "docker-compose up -d" to start containers
-# https://hub.docker.com/r/elabftw/docker-elabftw/
-# http://www.elabftw.net
+# https://hub.docker.com/r/elabftw/elabimg/
+# https://www.elabftw.net
 
 # our first container is nginx + php-fpm + elabftw
 web:
-    image: elabftw/docker-elabftw
+    image: elabftw/elabimg
     restart: always
     container_name: elabftw
+    # drop some capabilities
+    cap_drop:
+        - AUDIT_WRITE
+        - MKNOD
+        - SYS_CHROOT
+        - SETFCAP
+        - NET_RAW
     environment:
         # no need to change
         - DB_HOST=mysql
@@ -17,7 +24,7 @@ web:
         - DB_USER=elabftw
         # need to change
         - DB_PASSWORD=secr3t
-        # get the secret key from https://demo.elabftw.net/install/generateSecretKey.php
+        # get your secret key from https://demo.elabftw.net/install/generateSecretKey.php
         - SECRET_KEY=
         # optional: change to your server name in nginx config
         - SERVER_NAME=localhost
@@ -44,6 +51,13 @@ mysql:
     image: mysql:5.7
     restart: always
     container_name: mysql
+    # drop some capabilities
+    cap_drop:
+        - AUDIT_WRITE
+        - MKNOD
+        - SYS_CHROOT
+        - SETFCAP
+        - NET_RAW
     environment:
         # need to change
         - MYSQL_ROOT_PASSWORD=secr3t
