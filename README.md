@@ -1,4 +1,4 @@
- [![Layers badge](https://images.microbadger.com/badges/image/elabftw/docker-elabftw.svg)](https://microbadger.com/images/elabftw/docker-elabftw)
+ [![Layers badge](https://images.microbadger.com/badges/image/elabftw/elabimg.svg)](https://microbadger.com/images/elabftw/elabimg)
 
 # eLabFTW in a docker container
 
