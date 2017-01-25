@@ -117,6 +117,18 @@ writeConfigFile() {
     chmod 700 /elabftw/config.php
 }
 
+# because a global variable is not the best place for a secret value...
+unsetEnv() {
+	unset DB_HOST
+	unset DB_NAME
+	unset DB_USER
+	unset DB_PASSWORD
+	unset SERVER_NAME
+	unset DISABLE_HTTPS
+    unset ENABLE_LETSENCRYPT
+	unset SECRET_KEY
+}
+
 # script start
 getEnv
 nginxConf
@@ -124,6 +136,7 @@ phpfpmConf
 phpConf
 elabftwConf
 writeConfigFile
+unsetEnv
 
 # start all the services
 /usr/bin/supervisord -c /etc/supervisord.conf -n
