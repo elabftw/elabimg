@@ -23,6 +23,7 @@ RUN apk add --update \
     php7-session \
     php7-mbstring \
     php7-phar \
+    php7-ctype \
     git \
     supervisor && rm -rf /var/cache/apk/* && ln -s /usr/bin/php7 /usr/bin/php
 
