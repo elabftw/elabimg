@@ -15,6 +15,7 @@ web:
         - SYS_CHROOT
         - SETFCAP
         - NET_RAW
+        - SYS_PTRACE
     environment:
         # no need to change
         - DB_HOST=mysql

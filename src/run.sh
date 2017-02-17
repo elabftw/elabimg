@@ -80,6 +80,8 @@ phpfpmConf() {
     sed -i -e "s/nobody/nginx/g" /etc/php7/php-fpm.d/www.conf
     # increase max number of simultaneous requests
     sed -i -e "s/pm.max_children = 5/pm.max_children = 50/g" /etc/php7/php-fpm.d/www.conf
+    # allow using more memory
+    sed -i -e "s/;php_admin_value[memory_limit] = 32M/php_admin_value[memory_limit] = 256M/" /etc/php7/php-fpm.d/www.conf
 }
 
 phpConf() {
@@ -117,6 +119,18 @@ writeConfigFile() {
     chmod 700 /elabftw/config.php
 }
 
+# because a global variable is not the best place for a secret value...
+unsetEnv() {
+	unset DB_HOST
+	unset DB_NAME
+	unset DB_USER
+	unset DB_PASSWORD
+	unset SERVER_NAME
+	unset DISABLE_HTTPS
+    unset ENABLE_LETSENCRYPT
+	unset SECRET_KEY
+}
+
 # script start
 getEnv
 nginxConf
@@ -124,6 +138,7 @@ phpfpmConf
 phpConf
 elabftwConf
 writeConfigFile
+unsetEnv
 
 # start all the services
 /usr/bin/supervisord -c /etc/supervisord.conf -n
