@@ -3,7 +3,7 @@ FROM alpine:3.5
 MAINTAINER Nicolas CARPi <nicolas.carpi@curie.fr>
 
 # select version or branch here
-ENV ELABFTW_VERSION 1.5.2
+ENV ELABFTW_VERSION 1.5.3
 
 # install nginx and php-fpm
 RUN apk add --update \
