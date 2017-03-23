@@ -1,12 +1,12 @@
 # elabftw in docker, without MySQL
-FROM alpine:3.5
+FROM alpine:edge
 MAINTAINER Nicolas CARPi <nicolas.carpi@curie.fr>
 
 # select version or branch here
 ENV ELABFTW_VERSION hypernext
 
 # install nginx and php-fpm
-RUN apk add --update \
+RUN apk upgrade -U -a && apk add --update \
     openjdk8-jre \
     nginx \
     libressl \
