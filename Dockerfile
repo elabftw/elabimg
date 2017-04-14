@@ -3,7 +3,7 @@ FROM alpine:edge
 MAINTAINER Nicolas CARPi <nicolas.carpi@curie.fr>
 
 # select version or branch here
-ENV ELABFTW_VERSION 1.5.7
+ENV ELABFTW_VERSION hypernext
 
 # install nginx and php-fpm
 RUN apk upgrade -U -a && apk add --update \
