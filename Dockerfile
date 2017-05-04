@@ -7,27 +7,39 @@ ENV ELABFTW_VERSION hypernext
 
 # install nginx and php-fpm
 RUN apk upgrade -U -a && apk add --update \
-    openjdk8-jre \
-    nginx \
+    autoconf \
+    build-base \
+    coreutils \
+    curl \
+    ghostscript \
+    git \
+    graphicsmagick-dev \
     libressl \
+    libtool \
+    nginx \
+    openjdk8-jre \
     php7 \
+    php7-curl \
+    php7-ctype \
+    php7-dev \
+    php7-dom \
+    php7-gettext \
+    php7-fileinfo \
+    php7-fpm \
+    php7-json \
+    php7-mbstring \
+    php7-mcrypt \
     php7-openssl \
     php7-pdo_mysql \
-    php7-fpm \
-    php7-gd \
-    php7-curl \
+    php7-pear \
+    php7-phar \
+    php7-session \
     php7-zip \
     php7-zlib \
-    php7-json \
-    php7-gettext \
-    php7-session \
-    php7-mbstring \
-    php7-phar \
-    php7-ctype \
-    git \
-    curl \
-    coreutils \
-    supervisor && rm -rf /var/cache/apk/* && ln -s /usr/bin/php7 /usr/bin/php
+    supervisor && rm -rf /var/cache/apk/*
+
+# install gmagick
+RUN pecl install gmagick-2.0.4RC1 && echo "extension=gmagick.so" >> /etc/php7/php.ini
 
 # clone elabftw repository in /elabftw
 RUN git clone --depth 1 -b $ELABFTW_VERSION https://github.com/elabftw/elabftw.git /elabftw && chown -R nginx:nginx /elabftw
