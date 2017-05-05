@@ -14,7 +14,8 @@ RUN apk upgrade -U -a && apk add --update \
     ghostscript \
     git \
     graphicsmagick-dev \
-    libressl \
+    openssl \
+    #libressl \
     libtool \
     nginx \
     openjdk8-jre \
