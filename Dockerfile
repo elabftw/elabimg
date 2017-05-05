@@ -29,6 +29,7 @@ RUN apk upgrade -U -a && apk add --update \
     php7-json \
     php7-mbstring \
     php7-mcrypt \
+    php7-opcache \
     php7-openssl \
     php7-pdo_mysql \
     php7-pear \
