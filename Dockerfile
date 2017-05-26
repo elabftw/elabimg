@@ -1,5 +1,5 @@
 # elabftw in docker, without MySQL
-FROM alpine:edge
+FROM alpine:3.6
 MAINTAINER Nicolas CARPi <nicolas.carpi@curie.fr>
 
 # select version or branch here
@@ -38,10 +38,11 @@ RUN apk upgrade -U -a && apk add --update \
     php7-session \
     php7-zip \
     php7-zlib \
-    supervisor && rm -rf /var/cache/apk/*
-
-# install gmagick
-RUN pecl install gmagick-2.0.4RC1 && echo "extension=gmagick.so" >> /etc/php7/php.ini
+    supervisor && \
+    # install gmagick
+    pecl install gmagick-2.0.4RC1 && echo "extension=gmagick.so" >> /etc/php7/php.ini && \
+    # remove stuff needed by previous command
+    apk del autoconf build-base libtool php7-dev && rm -rf /var/cache/apk/*
 
 # clone elabftw repository in /elabftw
 RUN git clone --depth 1 -b $ELABFTW_VERSION https://github.com/elabftw/elabftw.git /elabftw && chown -R nginx:nginx /elabftw
