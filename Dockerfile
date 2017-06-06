@@ -66,7 +66,7 @@ COPY ./src/supervisord.conf /etc/supervisord.conf
 COPY ./src/run.sh /run.sh
 
 # start
-ENTRYPOINT exec /run.sh
+CMD ["/run.sh"]
 
 # define mountable directories
 VOLUME /elabftw
