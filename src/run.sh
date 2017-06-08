@@ -22,7 +22,7 @@ generateCert() {
             -days 9999 \
             -nodes \
             -x509 \
-            -subj "/C=FR/ST=France/L=Paris/O=elabftw/CN=www.example.com" \
+            -subj "/C=FR/ST=France/L=Paris/O=elabftw/CN=localhost" \
             -keyout /etc/nginx/certs/server.key \
             -out /etc/nginx/certs/server.crt
     fi
