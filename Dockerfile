@@ -11,6 +11,7 @@ RUN apk upgrade -U -a && apk add --update \
     build-base \
     coreutils \
     curl \
+    freetype \
     ghostscript \
     git \
     graphicsmagick-dev \
@@ -66,7 +67,7 @@ COPY ./src/supervisord.conf /etc/supervisord.conf
 COPY ./src/run.sh /run.sh
 
 # start
-ENTRYPOINT exec /run.sh
+CMD ["/run.sh"]
 
 # define mountable directories
 VOLUME /elabftw
