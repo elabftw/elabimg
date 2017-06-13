@@ -11,6 +11,7 @@ RUN apk upgrade -U -a && apk add --update \
     build-base \
     coreutils \
     curl \
+    freetype \
     ghostscript \
     git \
     graphicsmagick-dev \
