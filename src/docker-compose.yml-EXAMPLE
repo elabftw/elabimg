@@ -26,6 +26,8 @@ web:
         # need to change
         - DB_PASSWORD=secr3t
         # get your secret key from https://demo.elabftw.net/install/generateSecretKey.php
+        # if you don't want to get it from an external source you can also do that:
+        # docker run -t --entrypoint '/bin/sh' elabftw/elabimg -c "php /elabftw/install/generateSecretKey.php"
         - SECRET_KEY=
         # optional: change to your server name in nginx config
         - SERVER_NAME=localhost
