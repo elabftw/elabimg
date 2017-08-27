@@ -26,6 +26,8 @@ web:
         # need to change
         - DB_PASSWORD=secr3t
         # get your secret key from https://demo.elabftw.net/install/generateSecretKey.php
+        # if you don't want to get it from an external source you can also do that:
+        # docker run -t --entrypoint '/bin/sh' elabftw/elabimg -c "php /elabftw/install/generateSecretKey.php"
         - SECRET_KEY=
         # optional: change to your server name in nginx config
         - SERVER_NAME=localhost
@@ -33,6 +35,7 @@ web:
         # useful if the SSL stack is handled by haproxy or something alike
         - DISABLE_HTTPS=false
         # set to true to use letsencrypt certificates
+        # note: does nothing if DISABLE_HTTPS is set to true
         - ENABLE_LETSENCRYPT=false
     ports:
         # if you want elabftw to run on a different port, change the first number
@@ -42,10 +45,22 @@ web:
         # this is where you will keep the uploaded files persistently
         # host:container
         - /var/elabftw/web:/elabftw/uploads
-        # if you've enabled letsencrypt, uncomment the line below
-        # path to the folder with SSL certificates (must contain fullchain.pem and privkey.pem)
+        #
+        # TLS configuration
+        #
+        # Note: if your certificate is not from letsencrypt, make sure to have those two files:
+        #
+        #       /etc/letsencrypt/live/SERVER_NAME/fullchain.pem
+        #       /etc/letsencrypt/live/SERVER_NAME/privkey.pem
+        #
+        # in the folder /etc/letsencrypt (or any folder you like as long as you adapt the line below
+        # replace SERVER_NAME with the value of SERVER_NAME of course.
+        #
+        # if you have enabled letsencrypt, uncomment the line below
+        # path to the folder with TLS certificate + private key
         # host:container
         #- /etc/letsencrypt:/ssl
+
     links:
         - mysql
 mysql:

@@ -58,7 +58,7 @@ RUN echo "$(curl -sS https://composer.github.io/installer.sig) -" > composer-set
     && php composer-setup.php && rm composer-setup.php*
 
 # install composer dependencies
-RUN /elabftw/composer.phar install --no-dev
+RUN /elabftw/composer.phar install --no-dev -a
 
 # nginx will run on port 443
 EXPOSE 443
