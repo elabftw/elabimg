@@ -70,6 +70,8 @@ nginxConf() {
 	sed -i -e "s/localhost/$server_name/g" /etc/nginx/conf.d/elabftw.conf
     # fix upload permissions
     chown -R nginx:nginx /var/lib/nginx
+    # remove the listen on IPv6 found in the default server conf file
+    sed -i -e "s/listen \[::\]:80/#listen \[::\]:80/" /etc/nginx/conf.d/default.conf
 }
 
 phpfpmConf() {
