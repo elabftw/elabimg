@@ -1,11 +1,20 @@
-# elabftw in docker, without MySQL
+# elabftw + nginx + php-fpm in a container
 FROM alpine:3.6
-MAINTAINER Nicolas CARPi <nicolas.carpi@curie.fr>
 
 # select version or branch here
 ENV ELABFTW_VERSION hypernext
 
+LABEL org.label-schema.name="elabftw" \
+    org.label-schema.description="Run nginx and php-fpm to serve elabftw" \
+    org.label-schema.url="https://www.elabftw.net" \
+    org.label-schema.vcs-url="https://github.com/elabftw/elabimg" \
+    org.label-schema.version=$ELABFTW_VERSION \
+    org.label-schema.maintainer="nicolas.carpi@curie.fr" \
+    org.label-schema.schema-version="1.0"
+
 # install nginx and php-fpm
+# php7-gd is required by mpdf for transparent png
+# don't put line comments inside this instruction
 RUN apk upgrade -U -a && apk add --update \
     autoconf \
     build-base \
@@ -16,7 +25,6 @@ RUN apk upgrade -U -a && apk add --update \
     git \
     graphicsmagick-dev \
     openssl \
-    #libressl \
     libtool \
     nginx \
     openjdk8-jre \
@@ -25,7 +33,6 @@ RUN apk upgrade -U -a && apk add --update \
     php7-ctype \
     php7-dev \
     php7-dom \
-    # required by mpdf for transparent png
     php7-gd \
     php7-gettext \
     php7-fileinfo \
@@ -42,9 +49,7 @@ RUN apk upgrade -U -a && apk add --update \
     php7-zip \
     php7-zlib \
     supervisor && \
-    # install gmagick
     pecl install gmagick-2.0.4RC1 && echo "extension=gmagick.so" >> /etc/php7/php.ini && \
-    # remove stuff needed by previous command
     apk del autoconf build-base libtool php7-dev && rm -rf /var/cache/apk/*
 
 # clone elabftw repository in /elabftw
@@ -74,10 +79,3 @@ CMD ["/run.sh"]
 # define mountable directories
 VOLUME /elabftw
 VOLUME /ssl
-
-LABEL org.label-schema.name="elabftw" \
-    org.label-schema.description="Run nginx and php-fpm to serve elabftw" \
-    org.label-schema.url="https://www.elabftw.net" \
-    org.label-schema.vcs-url="https://github.com/elabftw/elabimg" \
-    org.label-schema.version=$ELABFTW_VERSION \
-    org.label-schema.schema-version="1.0"
