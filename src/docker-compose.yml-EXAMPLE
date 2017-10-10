@@ -10,6 +10,7 @@ web:
     container_name: elabftw
     # drop some capabilities
     cap_drop:
+        - SYS_ADMIN
         - AUDIT_WRITE
         - MKNOD
         - SYS_CHROOT
