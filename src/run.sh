@@ -11,6 +11,7 @@ getEnv() {
 	disable_https=${DISABLE_HTTPS:-false}
     enable_letsencrypt=${ENABLE_LETSENCRYPT:-false}
 	secret_key=${SECRET_KEY}
+    max_php_memory=${MAX_PHP_MEMORY:-256M}
 }
 
 # fullchain.pem and privkey.pem should be in a volume linked to /ssl
@@ -89,7 +90,7 @@ phpfpmConf() {
     # increase max number of simultaneous requests
     sed -i -e "s/pm.max_children = 5/pm.max_children = 50/g" /etc/php7/php-fpm.d/www.conf
     # allow using more memory
-    sed -i -e "s/;php_admin_value\[memory_limit\] = 32M/php_admin_value\[memory_limit\] = 256M/" /etc/php7/php-fpm.d/www.conf
+    sed -i -e "s/;php_admin_value\[memory_limit\] = 32M/php_admin_value\[memory_limit\] = ${MAX_PHP_MEMORY}/" /etc/php7/php-fpm.d/www.conf
 }
 
 phpConf() {
