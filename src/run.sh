@@ -90,7 +90,7 @@ phpfpmConf() {
     # increase max number of simultaneous requests
     sed -i -e "s/pm.max_children = 5/pm.max_children = 50/g" /etc/php7/php-fpm.d/www.conf
     # allow using more memory
-    sed -i -e "s/;php_admin_value\[memory_limit\] = 32M/php_admin_value\[memory_limit\] = ${MAX_PHP_MEMORY}/" /etc/php7/php-fpm.d/www.conf
+    sed -i -e "s/;php_admin_value\[memory_limit\] = 32M/php_admin_value\[memory_limit\] = ${max_php_memory}/" /etc/php7/php-fpm.d/www.conf
 }
 
 phpConf() {
