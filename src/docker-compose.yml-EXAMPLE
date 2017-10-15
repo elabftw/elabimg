@@ -40,6 +40,8 @@ web:
         - ENABLE_LETSENCRYPT=false
         # no need to change
         - MAX_PHP_MEMORY=256M
+        # no need to change
+        - MAX_UPLOAD_SIZE=100M
     ports:
         # if you want elabftw to run on a different port, change the first number
         # host:container

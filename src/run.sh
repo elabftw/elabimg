@@ -12,6 +12,7 @@ getEnv() {
     enable_letsencrypt=${ENABLE_LETSENCRYPT:-false}
 	secret_key=${SECRET_KEY}
     max_php_memory=${MAX_PHP_MEMORY:-256M}
+    max_upload_size=${MAX_UPLOAD_SIZE:-100M}
 }
 
 # fullchain.pem and privkey.pem should be in a volume linked to /ssl
@@ -96,7 +97,7 @@ phpfpmConf() {
 phpConf() {
 	# php config
 	sed -i -e "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" /etc/php7/php.ini
-	sed -i -e "s/upload_max_filesize\s*=\s*2M/upload_max_filesize = 100M/g" /etc/php7/php.ini
+	sed -i -e "s/upload_max_filesize\s*=\s*2M/upload_max_filesize = ${max_upload_size}/g" /etc/php7/php.ini
 	sed -i -e "s/post_max_size\s*=\s*8M/post_max_size = 100M/g" /etc/php7/php.ini
     # we want a safe cookie/session
     sed -i -e "s/session.cookie_httponly\s*=/session.cookie_httponly = true/" /etc/php7/php.ini
