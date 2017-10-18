@@ -13,6 +13,7 @@ getEnv() {
 	secret_key=${SECRET_KEY}
     max_php_memory=${MAX_PHP_MEMORY:-256M}
     max_upload_size=${MAX_UPLOAD_SIZE:-100M}
+    php_timezone=${PHP_TIMEZONE:-Europe/Paris}
 }
 
 # fullchain.pem and privkey.pem should be in a volume linked to /ssl
@@ -106,9 +107,11 @@ phpConf() {
 	# the sessions are stored in a separate dir
 	sed -i -e "s;session.save_path = \"/tmp\";session.save_path = \"/sessions\";g" /etc/php7/php.ini
 	mkdir -p /sessions
+	chown nginx:nginx /sessions
     # enable opcache
     sed -i -e "s/;opcache.enable=1/opcache.enable=1/" /etc/php7/php.ini
-	chown nginx:nginx /sessions
+    # config for timezone, use : because timezone will contain /
+    sed -i -e "s:;date.timezone =:date.timezone = $php_timezone:" /etc/php7/php.ini
 }
 
 elabftwConf() {

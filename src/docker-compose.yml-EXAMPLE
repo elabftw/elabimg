@@ -42,6 +42,8 @@ web:
         - MAX_PHP_MEMORY=256M
         # no need to change
         - MAX_UPLOAD_SIZE=100M
+        # better if changed (see list of available values: http://php.net/manual/en/timezones.php
+        - PHP_TIMEZONE=Europe/Paris
     ports:
         # if you want elabftw to run on a different port, change the first number
         # host:container
