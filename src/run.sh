@@ -118,6 +118,8 @@ phpConf() {
     # enable open_basedir to restrict PHP's ability to read files
     # use # for separator because we cannot use : ; / or _
     sed -i -e "s#;open_basedir =#open_basedir = /elabftw/:/tmp/#" /etc/php7/php.ini
+    # use longer session id length
+    sed -i -e "s/session.sid_length = 26/session.sid_length = 42/" /etc/php7/php.ini
 }
 
 elabftwConf() {
