@@ -115,6 +115,9 @@ phpConf() {
     sed -i -e "s/;opcache.enable=1/opcache.enable=1/" /etc/php7/php.ini
     # config for timezone, use : because timezone will contain /
     sed -i -e "s:;date.timezone =:date.timezone = $php_timezone:" /etc/php7/php.ini
+    # enable open_basedir to restrict PHP's ability to read files
+    # use # for separator because we cannot use : ; / or _
+    sed -i -e "s#;open_basedir =#open_basedir = /elabftw/:/tmp/#" /etc/php7/php.ini
 }
 
 elabftwConf() {
