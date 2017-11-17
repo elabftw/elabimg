@@ -109,6 +109,8 @@ phpConf() {
 	mkdir -p /sessions
 	chown nginx:nginx /sessions
     chmod 700 /sessions
+    # disable url_fopen http://php.net/allow-url-fopen
+    sed -i -e "s/allow_url_fopen = On/allow_url_fopen = Off/" /etc/php7/php.ini
     # enable opcache
     sed -i -e "s/;opcache.enable=1/opcache.enable=1/" /etc/php7/php.ini
     # config for timezone, use : because timezone will contain /
