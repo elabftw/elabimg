@@ -105,9 +105,10 @@ phpConf() {
     sed -i -e "s/;session.cookie_secure\s*=/session.cookie_secure = true/" /etc/php7/php.ini
     sed -i -e "s/session.use_strict_mode\s*=\s*0/session.use_strict_mode = 1/" /etc/php7/php.ini
 	# the sessions are stored in a separate dir
-	sed -i -e "s;session.save_path = \"/tmp\";session.save_path = \"/sessions\";g" /etc/php7/php.ini
+	sed -i -e "s:;session.save_path = \"/tmp\":session.save_path = \"/sessions\":" /etc/php7/php.ini
 	mkdir -p /sessions
 	chown nginx:nginx /sessions
+    chmod 700 /sessions
     # enable opcache
     sed -i -e "s/;opcache.enable=1/opcache.enable=1/" /etc/php7/php.ini
     # config for timezone, use : because timezone will contain /
