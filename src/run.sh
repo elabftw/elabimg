@@ -38,11 +38,11 @@ generateCert() {
 }
 
 # generate Diffie-Hellman parameter for DHE ciphersuites
-generateDh() {
-    if [ ! -f /etc/nginx/certs/dhparam.pem ]; then
-        openssl dhparam -out /etc/nginx/certs/dhparam.pem 2048
-    fi
-}
+#generateDh() {
+#if [ ! -f /etc/nginx/certs/dhparam.pem ]; then
+#        openssl dhparam -out /etc/nginx/certs/dhparam.pem 2048
+#    fi
+#}
 
 nginxConf() {
 	# Switch http or https
@@ -56,7 +56,7 @@ nginxConf() {
         if (! $enable_letsencrypt); then
             generateCert
         fi
-        generateDh
+        sh /etc/nginx/generate-dhparam.sh
 		# activate an HTTPS server listening on port 443
 		ln -s /etc/nginx/https.conf /etc/nginx/conf.d/elabftw.conf
         if ($enable_letsencrypt); then
