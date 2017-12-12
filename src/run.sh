@@ -1,9 +1,9 @@
-#!/bin/sh
+#!/bin/bash
 # elabftw-docker start script for alpine-linux base image
 
 # get env values
 getEnv() {
-	db_host=${DB_HOST}
+	db_host=${DB_HOST:-localhost}
 	db_name=${DB_NAME:-elabftw}
 	db_user=${DB_USER:-elabftw}
 	db_password=${DB_PASSWORD}
@@ -14,6 +14,8 @@ getEnv() {
     max_php_memory=${MAX_PHP_MEMORY:-256M}
     max_upload_size=${MAX_UPLOAD_SIZE:-100M}
     php_timezone=${PHP_TIMEZONE:-Europe/Paris}
+    set_real_ip=${SET_REAL_IP:-false}
+    set_real_ip_from=${SET_REAL_IP_FROM:-192.168.31.48}
 }
 
 # fullchain.pem and privkey.pem should be in a volume linked to /ssl
@@ -36,13 +38,6 @@ generateCert() {
             -out /etc/nginx/certs/server.crt
     fi
 }
-
-# generate Diffie-Hellman parameter for DHE ciphersuites
-#generateDh() {
-#if [ ! -f /etc/nginx/certs/dhparam.pem ]; then
-#        openssl dhparam -out /etc/nginx/certs/dhparam.pem 2048
-#    fi
-#}
 
 nginxConf() {
 	# Switch http or https
@@ -75,6 +70,20 @@ nginxConf() {
     chown -R nginx:nginx /var/lib/nginx
     # remove the listen on IPv6 found in the default server conf file
     sed -i -e "s/listen \[::\]:80/#listen \[::\]:80/" /etc/nginx/conf.d/default.conf
+
+    # SET REAL IP CONFIG
+    if ($set_real_ip); then
+        # read the IP addresses from env
+        IFS=', ' read -r -a ip_arr <<< "${set_real_ip_from}"
+        conf_string=""
+        for element in "${ip_arr[@]}"
+        do
+            conf_string+="set_real_ip_from ${element};"
+        done
+        sed -i -e "s/#REAL_IP_CONF/${conf_string}/" /etc/nginx/common.conf
+        # enable real_ip_header config
+        sed -i -e "s/#real_ip_header X-Forwarded-For;/real_ip_header X-Forwarded-For;/" /etc/nginx/common.conf
+    fi
 }
 
 phpfpmConf() {
@@ -140,7 +149,7 @@ writeConfigFile() {
 	define('DB_PASSWORD', '${db_password}');
 	define('ELAB_ROOT', '/elabftw/');
 	define('SECRET_KEY', '${secret_key}');"
-	echo $config > /elabftw/config.php
+	echo "$config" > /elabftw/config.php
     chown nginx:nginx /elabftw/config.php
     chmod 700 /elabftw/config.php
 }
