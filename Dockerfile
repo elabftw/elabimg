@@ -17,6 +17,7 @@ LABEL org.label-schema.name="elabftw" \
 # don't put line comments inside this instruction
 RUN apk upgrade -U -a && apk add --update \
     autoconf \
+    bash \
     build-base \
     coreutils \
     curl \
