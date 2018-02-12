@@ -49,6 +49,10 @@ web:
         # the IP address/addresses. Separate them with a , AND A SPACE. Several set_real_ip_from lines will be added to the nginx config. One for each.
         # this does nothing if SET_REAL_IP is set to false
         - SET_REAL_IP_FROM=192.168.31.48, 192.168.0.42, 10.10.13.37
+        # optional: set the limit of simultaneous request that will be server
+        # see http://php.net/manual/en/install.fpm.configuration.php
+        # default is 50
+        - PHP_MAX_CHILDREN=50
     ports:
         # if you want elabftw to run on a different port, change the first number
         # host:container
