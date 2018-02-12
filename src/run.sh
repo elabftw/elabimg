@@ -16,6 +16,7 @@ getEnv() {
     php_timezone=${PHP_TIMEZONE:-Europe/Paris}
     set_real_ip=${SET_REAL_IP:-false}
     set_real_ip_from=${SET_REAL_IP_FROM:-192.168.31.48}
+    php_max_children=${PHP_MAX_CHILDREN:-10}
 }
 
 # fullchain.pem and privkey.pem should be in a volume linked to /ssl
@@ -99,7 +100,7 @@ phpfpmConf() {
 	sed -i -e "s/;listen.group = nobody/listen.group = nginx/g" /etc/php7/php-fpm.d/www.conf
     sed -i -e "s/nobody/nginx/g" /etc/php7/php-fpm.d/www.conf
     # increase max number of simultaneous requests
-    sed -i -e "s/pm.max_children = 5/pm.max_children = 50/g" /etc/php7/php-fpm.d/www.conf
+    sed -i -e "s/pm.max_children = 5/pm.max_children = ${php_max_children}/g" /etc/php7/php-fpm.d/www.conf
     # allow using more memory
     sed -i -e "s/;php_admin_value\[memory_limit\] = 32M/php_admin_value\[memory_limit\] = ${max_php_memory}/" /etc/php7/php-fpm.d/www.conf
 }
