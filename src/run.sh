@@ -16,7 +16,7 @@ getEnv() {
     php_timezone=${PHP_TIMEZONE:-Europe/Paris}
     set_real_ip=${SET_REAL_IP:-false}
     set_real_ip_from=${SET_REAL_IP_FROM:-192.168.31.48}
-    php_max_children=${PHP_MAX_CHILDREN:-10}
+    php_max_children=${PHP_MAX_CHILDREN:-50}
 }
 
 # fullchain.pem and privkey.pem should be in a volume linked to /ssl
