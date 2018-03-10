@@ -143,6 +143,7 @@ elabftwConf() {
 
 writeConfigFile() {
 	# write config file from env var
+    config_path="/elabftw/web/config.php"
 	config="<?php
 	define('DB_HOST', '${db_host}');
 	define('DB_NAME', '${db_name}');
@@ -150,9 +151,9 @@ writeConfigFile() {
 	define('DB_PASSWORD', '${db_password}');
 	define('ELAB_ROOT', '/elabftw/');
 	define('SECRET_KEY', '${secret_key}');"
-	echo "$config" > /elabftw/config.php
-    chown nginx:nginx /elabftw/config.php
-    chmod 700 /elabftw/config.php
+	echo "$config" > "$config_path"
+    chown nginx:nginx "$config_path"
+    chmod 600 "$config_path"
 }
 
 # because a global variable is not the best place for a secret value...
