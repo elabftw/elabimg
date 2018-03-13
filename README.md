@@ -2,4 +2,4 @@
 
 # eLabFTW in a docker container
 
-## [Documentation](https://elabftw.readthedocs.io)
+## [Documentation](https://doc.elabftw.net)
