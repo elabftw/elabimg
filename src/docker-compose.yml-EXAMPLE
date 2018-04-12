@@ -99,6 +99,9 @@ mysql:
         - MYSQL_USER=elabftw
         # need to change
         - MYSQL_PASSWORD=secr3t
+        # need to change, this is your timezone, see PHP_TIMEZONE from the elabftw container
+        - TZ=Europe/Paris
+
     volumes:
         # this is where you will keep the database persistently
         # host:container
