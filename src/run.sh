@@ -136,9 +136,9 @@ phpConf() {
 }
 
 elabftwConf() {
-	mkdir -p /elabftw/uploads/tmp
-	chmod 777 /elabftw/uploads
-    chmod 777 /elabftw/uploads/tmp
+	mkdir -p /elabftw/uploads /elabftw/cache
+    chown 100:101 /elabftw/uploads /elabftw/cache
+	chmod 700 /elabftw/uploads /elabftw/cache
 }
 
 writeConfigFile() {
