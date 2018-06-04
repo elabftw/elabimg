@@ -97,7 +97,7 @@ mysql:
         - MYSQL_DATABASE=elabftw
         # no need to change
         - MYSQL_USER=elabftw
-        # need to change
+        # need to change IMPORTANT: this should be the same password as DB_PASSWORD from the elabftw container
         - MYSQL_PASSWORD=secr3t
         # need to change, this is your timezone, see PHP_TIMEZONE from the elabftw container
         - TZ=Europe/Paris
