@@ -1,5 +1,5 @@
 # elabftw + nginx + php-fpm in a container
-FROM alpine:3.6
+FROM alpine:3.7
 
 # select version or branch here
 ENV ELABFTW_VERSION hypernext
