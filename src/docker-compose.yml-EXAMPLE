@@ -59,6 +59,8 @@ web:
         - "443:443"
     volumes:
         # this is where you will keep the uploaded files persistently
+        # for Windows users it might look like this
+        # - D:\Users\Nico\elab-data\web:/elabftw/uploads
         # host:container
         - /var/elabftw/web:/elabftw/uploads
         #
@@ -104,5 +106,7 @@ mysql:
 
     volumes:
         # this is where you will keep the database persistently
+        # for Windows users it might look like this
+        # - D:\Users\Nico\elab-data\mysql:/elabftw/uploads
         # host:container
         - /var/elabftw/mysql:/var/lib/mysql
