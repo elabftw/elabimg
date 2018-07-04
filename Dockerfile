@@ -49,6 +49,7 @@ RUN apk upgrade -U -a && apk add --update \
     php7-session \
     php7-zip \
     php7-zlib \
+    yarn \
     supervisor && \
     pecl install gmagick-2.0.4RC1 && echo "extension=gmagick.so" >> /etc/php7/php.ini && \
     apk del autoconf build-base libtool php7-dev && rm -rf /var/cache/apk/*
@@ -63,8 +64,8 @@ RUN echo "$(curl -sS https://composer.github.io/installer.sig) -" > composer-set
     && curl -sS https://getcomposer.org/installer | tee composer-setup.php | sha384sum -c composer-setup.php.sig \
     && php composer-setup.php && rm composer-setup.php*
 
-# install composer dependencies
-RUN /elabftw/composer.phar install --no-dev -a
+# install dependencies
+RUN /elabftw/composer.phar install --no-dev -a && yarn install && yarn run buildall
 
 # nginx will run on port 443
 EXPOSE 443
