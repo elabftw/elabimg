@@ -2,7 +2,7 @@
 FROM alpine:3.7
 
 # select version or branch here
-ENV ELABFTW_VERSION hypernext
+ENV ELABFTW_VERSION next
 
 LABEL org.label-schema.name="elabftw" \
     org.label-schema.description="Run nginx and php-fpm to serve elabftw" \
