@@ -131,18 +131,19 @@ phpConf() {
     # use longer session id length
     sed -i -e "s/session.sid_length = 26/session.sid_length = 42/" /etc/php7/php.ini
     # disable some dangerous functions that we don't use
-    sed -i -e "s/disable_functions =/disable_functions = php_uname, getmyuid, getmypid, passthru, leak, listen, diskfreespace, tmpfile, link, ignore_user_abord, shell_exec, dl, set_time_limit, system, highlight_file, source, show_source, fpaththru, virtual, posix_ctermid, posix_getcwd, posix_getegid, posix_geteuid, posix_getgid, posix_getgrgid, posix_getgrnam, posix_getgroups, posix_getlogin, posix_getpgid, posix_getpgrp, posix_getpid, posix_getppid, posix_getpwnam, posix_getpwuid, posix_getrlimit, posix_getsid, posix_getuid, posix_isatty, posix_kill, posix_mkfifo, posix_setegid, posix_seteuid, posix_setgid, posix_setpgid, posix_setsid, posix_setuid, posix_times, posix_ttyname, posix_uname, proc_open, proc_close, proc_get_status, proc_nice, proc_terminate, phpinfo/" /etc/php7/php.ini
+    sed -i -e "s/disable_functions =/disable_functions = php_uname, getmyuid, getmypid, passthru, leak, listen, diskfreespace, tmpfile, link, ignore_user_abord, shell_exec, dl, system, highlight_file, source, show_source, fpaththru, virtual, posix_ctermid, posix_getcwd, posix_getegid, posix_geteuid, posix_getgid, posix_getgrgid, posix_getgrnam, posix_getgroups, posix_getlogin, posix_getpgid, posix_getpgrp, posix_getpid, posix_getppid, posix_getpwnam, posix_getpwuid, posix_getrlimit, posix_getsid, posix_getuid, posix_isatty, posix_kill, posix_mkfifo, posix_setegid, posix_seteuid, posix_setgid, posix_setpgid, posix_setsid, posix_setuid, posix_times, posix_ttyname, posix_uname, proc_open, proc_close, proc_get_status, proc_nice, proc_terminate, phpinfo/" /etc/php7/php.ini
 
 }
 
 elabftwConf() {
-	mkdir -p /elabftw/uploads/tmp
-	chmod 777 /elabftw/uploads
-    chmod 777 /elabftw/uploads/tmp
+	mkdir -p /elabftw/uploads /elabftw/cache
+    chown 100:101 /elabftw/uploads /elabftw/cache
+	chmod 700 /elabftw/uploads /elabftw/cache
 }
 
 writeConfigFile() {
 	# write config file from env var
+    config_path="/elabftw/config.php"
 	config="<?php
 	define('DB_HOST', '${db_host}');
 	define('DB_NAME', '${db_name}');
@@ -150,9 +151,9 @@ writeConfigFile() {
 	define('DB_PASSWORD', '${db_password}');
 	define('ELAB_ROOT', '/elabftw/');
 	define('SECRET_KEY', '${secret_key}');"
-	echo "$config" > /elabftw/config.php
-    chown nginx:nginx /elabftw/config.php
-    chmod 700 /elabftw/config.php
+	echo "$config" > "$config_path"
+    chown nginx:nginx "$config_path"
+    chmod 600 "$config_path"
 }
 
 # because a global variable is not the best place for a secret value...

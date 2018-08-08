@@ -59,6 +59,8 @@ web:
         - "443:443"
     volumes:
         # this is where you will keep the uploaded files persistently
+        # for Windows users it might look like this
+        # - D:\Users\Nico\elab-data\web:/elabftw/uploads
         # host:container
         - /var/elabftw/web:/elabftw/uploads
         #
@@ -97,9 +99,14 @@ mysql:
         - MYSQL_DATABASE=elabftw
         # no need to change
         - MYSQL_USER=elabftw
-        # need to change
+        # need to change IMPORTANT: this should be the same password as DB_PASSWORD from the elabftw container
         - MYSQL_PASSWORD=secr3t
+        # need to change, this is your timezone, see PHP_TIMEZONE from the elabftw container
+        - TZ=Europe/Paris
+
     volumes:
         # this is where you will keep the database persistently
+        # for Windows users it might look like this
+        # - D:\Users\Nico\elab-data\mysql:/elabftw/uploads
         # host:container
         - /var/elabftw/mysql:/var/lib/mysql
