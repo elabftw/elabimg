@@ -2,7 +2,7 @@
 FROM alpine:3.7
 
 # select version or branch here
-ENV ELABFTW_VERSION 2.0.1
+ENV ELABFTW_VERSION 2.0.2
 
 LABEL org.label-schema.name="elabftw" \
     org.label-schema.description="Run nginx and php-fpm to serve elabftw" \
