@@ -107,6 +107,6 @@ mysql:
     volumes:
         # this is where you will keep the database persistently
         # for Windows users it might look like this
-        # - D:\Users\Nico\elab-data\mysql:/elabftw/uploads
+        # - D:\Users\Nico\elab-data\mysql:/var/lib/mysql
         # host:container
         - /var/elabftw/mysql:/var/lib/mysql
