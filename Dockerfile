@@ -4,6 +4,9 @@ FROM alpine:3.7
 # select version or branch here
 ENV ELABFTW_VERSION hypernext
 
+# this is versioning for the container image
+ENV ELABIMG_VERSION 1.0.0
+
 LABEL org.label-schema.name="elabftw" \
     org.label-schema.description="Run nginx and php-fpm to serve elabftw" \
     org.label-schema.url="https://www.elabftw.net" \
