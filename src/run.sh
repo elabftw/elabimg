@@ -17,6 +17,7 @@ getEnv() {
     set_real_ip=${SET_REAL_IP:-false}
     set_real_ip_from=${SET_REAL_IP_FROM:-192.168.31.48}
     php_max_children=${PHP_MAX_CHILDREN:-50}
+    elabimg_version=${ELABIMG_VERSION}
 }
 
 # fullchain.pem and privkey.pem should be in a volume linked to /ssl
@@ -103,6 +104,8 @@ phpfpmConf() {
     sed -i -e "s/pm.max_children = (0-9)+/pm.max_children = ${php_max_children}/g" /etc/php7/php-fpm.d/www.conf
     # allow using more memory
     sed -i -e "s/;php_admin_value\[memory_limit\] = 32M/php_admin_value\[memory_limit\] = ${max_php_memory}/" /etc/php7/php-fpm.d/www.conf
+    # add container version in env
+    echo "env[ELABIMG_VERSION] = ${elabimg_version}" >> /etc/php7/php-fpm.d/www.conf
 }
 
 phpConf() {
