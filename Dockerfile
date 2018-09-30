@@ -5,7 +5,7 @@ FROM alpine:3.7
 ENV ELABFTW_VERSION next
 
 # this is versioning for the container image
-ENV ELABIMG_VERSION 1.0.0
+ENV ELABIMG_VERSION 1.0.1
 
 LABEL org.label-schema.name="elabftw" \
     org.label-schema.description="Run nginx and php-fpm to serve elabftw" \
@@ -52,6 +52,7 @@ RUN apk upgrade -U -a && apk add --update \
     php7-session \
     php7-zip \
     php7-zlib \
+    tzdata \
     yarn \
     supervisor && \
     pecl install gmagick-2.0.4RC1 && echo "extension=gmagick.so" >> /etc/php7/php.ini && \
