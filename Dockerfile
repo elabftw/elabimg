@@ -52,6 +52,7 @@ RUN apk upgrade -U -a && apk add --update \
     php7-zip \
     php7-zlib \
     tzdata \
+    unzip \
     yarn \
     supervisor && \
     pecl install gmagick-2.0.4RC1 && echo "extension=gmagick.so" >> /etc/php7/php.ini && \
