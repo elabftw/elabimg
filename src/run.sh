@@ -3,14 +3,14 @@
 
 # get env values
 getEnv() {
-	db_host=${DB_HOST:-localhost}
-	db_name=${DB_NAME:-elabftw}
-	db_user=${DB_USER:-elabftw}
-	db_password=${DB_PASSWORD}
-	server_name=${SERVER_NAME:-localhost}
-	disable_https=${DISABLE_HTTPS:-false}
+    db_host=${DB_HOST:-localhost}
+    db_name=${DB_NAME:-elabftw}
+    db_user=${DB_USER:-elabftw}
+    db_password=${DB_PASSWORD}
+    server_name=${SERVER_NAME:-localhost}
+    disable_https=${DISABLE_HTTPS:-false}
     enable_letsencrypt=${ENABLE_LETSENCRYPT:-false}
-	secret_key=${SECRET_KEY}
+    secret_key=${SECRET_KEY}
     max_php_memory=${MAX_PHP_MEMORY:-256M}
     max_upload_size=${MAX_UPLOAD_SIZE:-100M}
     php_timezone=${PHP_TIMEZONE:-Europe/Paris}
@@ -43,20 +43,20 @@ generateCert() {
 }
 
 nginxConf() {
-	# Switch http or https
-	# false by default
-	if ($disable_https); then
-		# activate an HTTP server listening on port 443
-		ln -s /etc/nginx/http.conf /etc/nginx/conf.d/elabftw.conf
-	else
+    # Switch http or https
+    # false by default
+    if ($disable_https); then
+        # activate an HTTP server listening on port 443
+        ln -s /etc/nginx/http.conf /etc/nginx/conf.d/elabftw.conf
+    else
         mkdir -p /etc/nginx/certs
         # generate a selfsigned certificate if we don't use Let's Encrypt
         if (! $enable_letsencrypt); then
             generateCert
         fi
         sh /etc/nginx/generate-dhparam.sh
-		# activate an HTTPS server listening on port 443
-		ln -s /etc/nginx/https.conf /etc/nginx/conf.d/elabftw.conf
+        # activate an HTTPS server listening on port 443
+        ln -s /etc/nginx/https.conf /etc/nginx/conf.d/elabftw.conf
         if ($enable_letsencrypt); then
             mkdir -p /ssl
             sed -i -e "s:CERT_PATH:/ssl/live/localhost/fullchain.pem:" /etc/nginx/conf.d/elabftw.conf
@@ -65,10 +65,10 @@ nginxConf() {
             sed -i -e "s:CERT_PATH:/etc/nginx/certs/server.crt:" /etc/nginx/conf.d/elabftw.conf
             sed -i -e "s:KEY_PATH:/etc/nginx/certs/server.key:" /etc/nginx/conf.d/elabftw.conf
         fi
-	fi
-	# set the server name in nginx config
+    fi
+    # set the server name in nginx config
     # works also for the ssl config if ssl is enabled
-	sed -i -e "s/localhost/$server_name/g" /etc/nginx/conf.d/elabftw.conf
+    sed -i -e "s/localhost/$server_name/g" /etc/nginx/conf.d/elabftw.conf
     # fix upload permissions
     chown -R nginx:nginx /var/lib/nginx
     # remove the listen on IPv6 found in the default server conf file
@@ -90,16 +90,16 @@ nginxConf() {
 }
 
 phpfpmConf() {
-	# php-fpm config
-	sed -i -e "s/;daemonize\s*=\s*yes/daemonize = no/g" /etc/php7/php-fpm.conf
-	sed -i -e "s/;catch_workers_output\s*=\s*yes/catch_workers_output = yes/g" /etc/php7/php-fpm.d/www.conf
+    # php-fpm config
+    sed -i -e "s/;daemonize\s*=\s*yes/daemonize = no/g" /etc/php7/php-fpm.conf
+    sed -i -e "s/;catch_workers_output\s*=\s*yes/catch_workers_output = yes/g" /etc/php7/php-fpm.d/www.conf
     # hide php version
-	sed -i -e "s/expose_php = On/expose_php = Off/g" /etc/php7/php.ini
-	# use a unix socket
-	sed -i -e "s;listen = 127.0.0.1:9000;listen = /var/run/php-fpm.sock;g" /etc/php7/php-fpm.d/www.conf
+    sed -i -e "s/expose_php = On/expose_php = Off/g" /etc/php7/php.ini
+    # use a unix socket
+    sed -i -e "s;listen = 127.0.0.1:9000;listen = /var/run/php-fpm.sock;g" /etc/php7/php-fpm.d/www.conf
     # set nginx as user for php-fpm
-	sed -i -e "s/;listen.owner = nobody/listen.owner = nginx/g" /etc/php7/php-fpm.d/www.conf
-	sed -i -e "s/;listen.group = nobody/listen.group = nginx/g" /etc/php7/php-fpm.d/www.conf
+    sed -i -e "s/;listen.owner = nobody/listen.owner = nginx/g" /etc/php7/php-fpm.d/www.conf
+    sed -i -e "s/;listen.group = nobody/listen.group = nginx/g" /etc/php7/php-fpm.d/www.conf
     sed -i -e "s/nobody/nginx/g" /etc/php7/php-fpm.d/www.conf
     # increase max number of simultaneous requests
     sed -i -e "s/pm.max_children = (0-9)+/pm.max_children = ${php_max_children}/g" /etc/php7/php-fpm.d/www.conf
@@ -110,18 +110,18 @@ phpfpmConf() {
 }
 
 phpConf() {
-	# php config
-	sed -i -e "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" /etc/php7/php.ini
-	sed -i -e "s/upload_max_filesize\s*=\s*2M/upload_max_filesize = ${max_upload_size}/g" /etc/php7/php.ini
-	sed -i -e "s/post_max_size\s*=\s*8M/post_max_size = 100M/g" /etc/php7/php.ini
+    # php config
+    sed -i -e "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" /etc/php7/php.ini
+    sed -i -e "s/upload_max_filesize\s*=\s*2M/upload_max_filesize = ${max_upload_size}/g" /etc/php7/php.ini
+    sed -i -e "s/post_max_size\s*=\s*8M/post_max_size = 100M/g" /etc/php7/php.ini
     # we want a safe cookie/session
     sed -i -e "s/session.cookie_httponly.*/session.cookie_httponly = true/" /etc/php7/php.ini
     sed -i -e "s/;session.cookie_secure.*/session.cookie_secure = true/" /etc/php7/php.ini
     sed -i -e "s/session.use_strict_mode.*/session.use_strict_mode = 1/" /etc/php7/php.ini
-	# the sessions are stored in a separate dir
-	sed -i -e "s:;session.save_path = \"/tmp\":session.save_path = \"/sessions\":" /etc/php7/php.ini
-	mkdir -p /sessions
-	chown nginx:nginx /sessions
+    # the sessions are stored in a separate dir
+    sed -i -e "s:;session.save_path = \"/tmp\":session.save_path = \"/sessions\":" /etc/php7/php.ini
+    mkdir -p /sessions
+    chown nginx:nginx /sessions
     chmod 700 /sessions
     # disable url_fopen http://php.net/allow-url-fopen
     sed -i -e "s/allow_url_fopen = On/allow_url_fopen = Off/" /etc/php7/php.ini
@@ -142,36 +142,36 @@ phpConf() {
 }
 
 elabftwConf() {
-	mkdir -p /elabftw/uploads /elabftw/cache
+    mkdir -p /elabftw/uploads /elabftw/cache
     chown 100:101 /elabftw/uploads /elabftw/cache
-	chmod 700 /elabftw/uploads /elabftw/cache
+    chmod 700 /elabftw/uploads /elabftw/cache
 }
 
 writeConfigFile() {
-	# write config file from env var
+    # write config file from env var
     config_path="/elabftw/config.php"
-	config="<?php
-	define('DB_HOST', '${db_host}');
-	define('DB_NAME', '${db_name}');
-	define('DB_USER', '${db_user}');
-	define('DB_PASSWORD', '${db_password}');
-	define('ELAB_ROOT', '/elabftw/');
-	define('SECRET_KEY', '${secret_key}');"
-	echo "$config" > "$config_path"
+    config="<?php
+    define('DB_HOST', '${db_host}');
+    define('DB_NAME', '${db_name}');
+    define('DB_USER', '${db_user}');
+    define('DB_PASSWORD', '${db_password}');
+    define('ELAB_ROOT', '/elabftw/');
+    define('SECRET_KEY', '${secret_key}');"
+    echo "$config" > "$config_path"
     chown nginx:nginx "$config_path"
     chmod 600 "$config_path"
 }
 
 # because a global variable is not the best place for a secret value...
 unsetEnv() {
-	unset DB_HOST
-	unset DB_NAME
-	unset DB_USER
-	unset DB_PASSWORD
-	unset SERVER_NAME
-	unset DISABLE_HTTPS
+    unset DB_HOST
+    unset DB_NAME
+    unset DB_USER
+    unset DB_PASSWORD
+    unset SERVER_NAME
+    unset DISABLE_HTTPS
     unset ENABLE_LETSENCRYPT
-	unset SECRET_KEY
+    unset SECRET_KEY
 }
 
 # script start
