@@ -114,6 +114,8 @@ phpConf() {
     sed -i -e "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" /etc/php7/php.ini
     sed -i -e "s/upload_max_filesize\s*=\s*2M/upload_max_filesize = ${max_upload_size}/g" /etc/php7/php.ini
     sed -i -e "s/post_max_size\s*=\s*8M/post_max_size = 100M/g" /etc/php7/php.ini
+    # increase this value to allow pdf generation with big body (with base64 encoded images for instance)
+    sed -i -e "s/;pcre.backtrack_limit=100000/pcre.backtrack_limit=10000000/" /etc/php7/php.ini
     # we want a safe cookie/session
     sed -i -e "s/session.cookie_httponly.*/session.cookie_httponly = true/" /etc/php7/php.ini
     sed -i -e "s/;session.cookie_secure.*/session.cookie_secure = true/" /etc/php7/php.ini
