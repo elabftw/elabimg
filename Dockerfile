@@ -18,7 +18,7 @@ LABEL org.label-schema.name="elabftw" \
 # install nginx and php-fpm
 # php7-gd is required by mpdf for transparent png
 # don't put line comments inside this instruction
-RUN apk upgrade -U -a && apk add --update \
+RUN apk upgrade -U -a && apk add --no-cache \
     autoconf \
     bash \
     build-base \
@@ -56,7 +56,7 @@ RUN apk upgrade -U -a && apk add --update \
     yarn \
     supervisor && \
     pecl install gmagick-2.0.4RC1 && echo "extension=gmagick.so" >> /etc/php7/php.ini && \
-    apk del autoconf build-base libtool php7-dev && rm -rf /var/cache/apk/*
+    apk del autoconf build-base libtool php7-dev
 
 # clone elabftw repository in /elabftw
 RUN git clone --depth 1 -b $ELABFTW_VERSION https://github.com/elabftw/elabftw.git /elabftw && chown -R nginx:nginx /elabftw
