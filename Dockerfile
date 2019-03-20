@@ -59,7 +59,7 @@ RUN apk upgrade -U -a && apk add --no-cache \
     apk del autoconf build-base libtool php7-dev
 
 # clone elabftw repository in /elabftw
-RUN git clone --depth 1 -b $ELABFTW_VERSION https://github.com/elabftw/elabftw.git /elabftw && chown -R nginx:nginx /elabftw
+RUN git clone --depth 1 -b $ELABFTW_VERSION https://github.com/elabftw/elabftw.git /elabftw && chown -R nginx:nginx /elabftw && rm -rf /elabftw/.git
 
 WORKDIR /elabftw
 
