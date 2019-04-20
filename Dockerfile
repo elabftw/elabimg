@@ -1,11 +1,11 @@
 # elabftw + nginx + php-fpm in a container
-FROM alpine:3.7
+FROM alpine:3.8
 
 # select version or branch here
 ENV ELABFTW_VERSION 2.0.7
 
 # this is versioning for the container image
-ENV ELABIMG_VERSION 1.0.1
+ENV ELABIMG_VERSION 1.0.3
 
 LABEL org.label-schema.name="elabftw" \
     org.label-schema.description="Run nginx and php-fpm to serve elabftw" \
@@ -18,7 +18,7 @@ LABEL org.label-schema.name="elabftw" \
 # install nginx and php-fpm
 # php7-gd is required by mpdf for transparent png
 # don't put line comments inside this instruction
-RUN apk upgrade -U -a && apk add --update \
+RUN apk upgrade -U -a && apk add --no-cache \
     autoconf \
     bash \
     build-base \
@@ -43,7 +43,6 @@ RUN apk upgrade -U -a && apk add --update \
     php7-fpm \
     php7-json \
     php7-mbstring \
-    php7-mcrypt \
     php7-opcache \
     php7-openssl \
     php7-pdo_mysql \
@@ -53,13 +52,14 @@ RUN apk upgrade -U -a && apk add --update \
     php7-zip \
     php7-zlib \
     tzdata \
+    unzip \
     yarn \
     supervisor && \
     pecl install gmagick-2.0.4RC1 && echo "extension=gmagick.so" >> /etc/php7/php.ini && \
-    apk del autoconf build-base libtool php7-dev && rm -rf /var/cache/apk/*
+    apk del autoconf build-base libtool php7-dev
 
 # clone elabftw repository in /elabftw
-RUN git clone --depth 1 -b $ELABFTW_VERSION https://github.com/elabftw/elabftw.git /elabftw && chown -R nginx:nginx /elabftw
+RUN git clone --depth 1 -b $ELABFTW_VERSION https://github.com/elabftw/elabftw.git /elabftw && chown -R nginx:nginx /elabftw && rm -rf /elabftw/.git
 
 WORKDIR /elabftw
 
