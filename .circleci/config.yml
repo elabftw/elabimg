@@ -1,0 +1,26 @@
+version: 2.1
+jobs:
+  build_scan_image:
+    docker:
+    - image: docker:stable
+    environment:
+      IMAGE_NAME: elabftw/elabimg
+      IMAGE_TAG: circleci
+    steps:
+    - checkout
+    - setup_remote_docker
+    - run:
+        name: Build image
+        command: docker build -t "${IMAGE_NAME}:ci" .
+    - run:
+        name: Scan image
+        command: |
+          apk add curl bash
+          curl -s https://ci-tools.anchore.io/inline_scan-v0.3.3 | bash -s -- -r "${IMAGE_NAME}:ci"
+    - store_artifacts:
+        path: anchore-reports/
+
+workflows:
+  scan_image:
+    jobs:
+    - build_scan_image
