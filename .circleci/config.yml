@@ -23,5 +23,4 @@ jobs:
 workflows:
   scan_image:
     jobs:
-    - build_scan_image:
-        context: dockerhub
+    - build_scan_image
