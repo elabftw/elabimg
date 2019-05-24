@@ -5,7 +5,7 @@ FROM alpine:3.8
 ENV ELABFTW_VERSION next
 
 # this is versioning for the container image
-ENV ELABIMG_VERSION 1.0.4
+ENV ELABIMG_VERSION 1.0.5
 
 LABEL org.label-schema.name="elabftw" \
     org.label-schema.description="Run nginx and php-fpm to serve elabftw" \
