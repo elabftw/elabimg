@@ -1,5 +1,9 @@
 # Container image version
 
+## 1.0.6
+
+* Remove form-action in CSP
+
 ## 1.0.5
 
 * Add more restrictions in CSP
