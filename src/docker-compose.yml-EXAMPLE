@@ -2,9 +2,11 @@
 # use : "docker-compose up -d" to start containers
 # https://hub.docker.com/r/elabftw/elabimg/
 # https://www.elabftw.net
+version: '3'
 
 # our first container is nginx + php-fpm + elabftw
-web:
+services:
+  web:
     image: elabftw/elabimg
     restart: always
     container_name: elabftw
@@ -60,7 +62,7 @@ web:
     ports:
         # if you want elabftw to run on a different port, change the first number
         # host:container
-        - "443:443"
+        - '443:443'
     volumes:
         # this is where you will keep the uploaded files persistently
         # for Windows users it might look like this
@@ -83,9 +85,11 @@ web:
         # host:container
         #- /etc/letsencrypt:/ssl
 
-    links:
-        - mysql
-mysql:
+    networks:
+      - elabftw-net
+
+  # the mysql database image
+  mysql:
     image: mysql:5.7
     restart: always
     container_name: mysql
@@ -114,3 +118,11 @@ mysql:
         # - D:\Users\Nico\elab-data\mysql:/var/lib/mysql
         # host:container
         - /var/elabftw/mysql:/var/lib/mysql
+    expose:
+      - 3306
+    networks:
+      - elabftw-net
+
+# the internal elabftw network
+networks:
+  elabftw-net:
