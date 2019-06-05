@@ -3,6 +3,7 @@
 ## 1.0.6
 
 * Remove form-action in CSP
+* Update the example docker-compose file to version 3
 
 ## 1.0.5
 
