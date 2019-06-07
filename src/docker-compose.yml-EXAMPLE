@@ -118,8 +118,11 @@ services:
         # - D:\Users\Nico\elab-data\mysql:/var/lib/mysql
         # host:container
         - /var/elabftw/mysql:/var/lib/mysql
-    expose:
-      - 3306
+    # expose should work, but sometimes it doesn't so use full port mapping
+    ports:
+      - '3306:3306'
+    #expose:
+    #  - 3306
     networks:
       - elabftw-net
 
