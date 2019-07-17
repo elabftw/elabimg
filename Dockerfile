@@ -5,7 +5,7 @@ FROM alpine:3.10
 ENV ELABFTW_VERSION hypernext
 
 # this is versioning for the container image
-ENV ELABIMG_VERSION 1.1.0
+ENV ELABIMG_VERSION 1.1.1
 
 LABEL org.label-schema.name="elabftw" \
     org.label-schema.description="Run nginx and php-fpm to serve elabftw" \
@@ -48,6 +48,7 @@ RUN apk upgrade -U -a && apk add --no-cache \
     php7-pdo_mysql \
     php7-pear \
     php7-phar \
+    php7-redis \
     php7-session \
     php7-zip \
     php7-zlib \
