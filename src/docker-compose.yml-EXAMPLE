@@ -59,10 +59,19 @@ services:
         - PHP_MAX_CHILDREN=50
         # optional: adjust the max execution time of PHP scripts. Allows for bigger ZIP exports.
         - PHP_MAX_EXECUTION_TIME=30
+        # optional: use a redis server to store the PHP sessions
+        - USE_REDIS=false
+        # optional: set an IP or hostname for the redis server
+        - REDIS_HOST=redis
+        # optional: set a custom port for redis
+        - REDIS_PORT=6379
     ports:
         # if you want elabftw to run on a different port, change the first number
         # host:container
         - '443:443'
+        # if you are aiming for running multiple instances of this container you can put a range like so:
+        # - "3100-3200:443"
+        # use redis for session storage if that is the case, or configure your load balancer with sticky sessions
     volumes:
         # this is where you will keep the uploaded files persistently
         # for Windows users it might look like this

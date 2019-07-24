@@ -19,6 +19,9 @@ getEnv() {
     php_max_children=${PHP_MAX_CHILDREN:-50}
     elabimg_version=${ELABIMG_VERSION}
     php_max_execution_time=${PHP_MAX_EXECUTION_TIME:-30}
+    use_redis=${USE_REDIS:-false}
+    redis_host=${REDIS_HOST:-redis}
+    redis_port=${REDIS_PORT:-6379}
 }
 
 # fullchain.pem and privkey.pem should be in a volume linked to /ssl
@@ -120,6 +123,15 @@ phpConf() {
     sed -i -e "s/session.cookie_httponly.*/session.cookie_httponly = true/" /etc/php7/php.ini
     sed -i -e "s/;session.cookie_secure.*/session.cookie_secure = true/" /etc/php7/php.ini
     sed -i -e "s/session.use_strict_mode.*/session.use_strict_mode = 1/" /etc/php7/php.ini
+    # set redis as session handler if requested
+    if ($use_redis); then
+        sed -i -e "s:session.save_handler = files:session.save_handler = redis:" /etc/php7/php.ini
+        sed -i -e "s|;session.save_path = \"/tmp\"|session.save_path = \"tcp://${redis_host}:${redis_port}\"|" /etc/php7/php.ini
+    else
+        # the sessions are stored in a separate dir
+        sed -i -e "s:;session.save_path = \"/tmp\":session.save_path = \"/sessions\":" /etc/php7/php.ini
+    fi
+
     # the sessions are stored in a separate dir
     sed -i -e "s:;session.save_path = \"/tmp\":session.save_path = \"/sessions\":" /etc/php7/php.ini
     mkdir -p /sessions
