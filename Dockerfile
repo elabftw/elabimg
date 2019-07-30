@@ -56,7 +56,7 @@ RUN apk upgrade -U -a && apk add --no-cache \
     unzip \
     yarn \
     supervisor && \
-    pecl install gmagick-2.0.4RC1 && echo "extension=gmagick.so" >> /etc/php7/php.ini && \
+    pecl install gmagick-2.0.5RC1 && echo "extension=gmagick.so" >> /etc/php7/php.ini && \
     apk del autoconf build-base libtool php7-dev
 
 # clone elabftw repository in /elabftw
