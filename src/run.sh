@@ -77,6 +77,9 @@ nginxConf() {
     # remove the listen on IPv6 found in the default server conf file
     sed -i -e "s/listen \[::\]:80/#listen \[::\]:80/" /etc/nginx/conf.d/default.conf
 
+    # adjust client_max_body_size
+    sed -i -e "s/client_max_body_size 100M;/client_max_body_size ${max_upload_size};/" /etc/nginx/common.conf
+
     # SET REAL IP CONFIG
     if ($set_real_ip); then
         # read the IP addresses from env
@@ -116,7 +119,7 @@ phpConf() {
     # php config
     sed -i -e "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" /etc/php7/php.ini
     sed -i -e "s/upload_max_filesize\s*=\s*2M/upload_max_filesize = ${max_upload_size}/g" /etc/php7/php.ini
-    sed -i -e "s/post_max_size\s*=\s*8M/post_max_size = 100M/g" /etc/php7/php.ini
+    sed -i -e "s/post_max_size\s*=\s*8M/post_max_size = ${max_upload_size}/g" /etc/php7/php.ini
     # increase this value to allow pdf generation with big body (with base64 encoded images for instance)
     sed -i -e "s/;pcre.backtrack_limit=100000/pcre.backtrack_limit=10000000/" /etc/php7/php.ini
     # we want a safe cookie/session
