@@ -22,6 +22,7 @@ getEnv() {
     use_redis=${USE_REDIS:-false}
     redis_host=${REDIS_HOST:-redis}
     redis_port=${REDIS_PORT:-6379}
+    ipv6=${ENABLE_IPV6:-false}
 }
 
 # fullchain.pem and privkey.pem should be in a volume linked to /ssl
@@ -92,6 +93,12 @@ nginxConf() {
         sed -i -e "s/#REAL_IP_CONF/${conf_string}/" /etc/nginx/common.conf
         # enable real_ip_header config
         sed -i -e "s/#real_ip_header X-Forwarded-For;/real_ip_header X-Forwarded-For;/" /etc/nginx/common.conf
+    fi
+
+    # IPV6 CONFIG
+    if ($ipv6); then
+        sed -i -e "/#listen [::]:443;/listen [::]:443;/" /etc/nginx/http.conf
+        sed -i -e "/#listen [::]:443 ssl http2;/listen [::]:443 ssl http2;/" /etc/nginx/https.conf
     fi
 }
 

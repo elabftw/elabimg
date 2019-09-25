@@ -65,6 +65,8 @@ services:
         - REDIS_HOST=redis
         # optional: set a custom port for redis
         - REDIS_PORT=6379
+        # optional: enable ipv6 (make sure you have AAAA dns record!)
+        - ENABLE_IPV6=false
     ports:
         # if you want elabftw to run on a different port, change the first number
         # host:container
