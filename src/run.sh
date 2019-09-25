@@ -97,8 +97,8 @@ nginxConf() {
 
     # IPV6 CONFIG
     if ($ipv6); then
-        sed -i -e "/#listen [::]:443;/listen [::]:443;/" /etc/nginx/http.conf
-        sed -i -e "/#listen [::]:443 ssl http2;/listen [::]:443 ssl http2;/" /etc/nginx/https.conf
+        sed -i -e "s/#listen \[::\]:443;/listen \[::\]:443;/" /etc/nginx/conf.d/elabftw.conf
+        sed -i -e "s/#listen \[::\]:443 ssl http2;/listen \[::\]:443 ssl http2;/" /etc/nginx/conf.d/elabftw.conf
     fi
 }
 
