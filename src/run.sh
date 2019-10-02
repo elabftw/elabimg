@@ -22,6 +22,7 @@ getEnv() {
     use_redis=${USE_REDIS:-false}
     redis_host=${REDIS_HOST:-redis}
     redis_port=${REDIS_PORT:-6379}
+    ipv6=${ENABLE_IPV6:-false}
 }
 
 # fullchain.pem and privkey.pem should be in a volume linked to /ssl
@@ -77,6 +78,9 @@ nginxConf() {
     # remove the listen on IPv6 found in the default server conf file
     sed -i -e "s/listen \[::\]:80/#listen \[::\]:80/" /etc/nginx/conf.d/default.conf
 
+    # adjust client_max_body_size
+    sed -i -e "s/client_max_body_size 100M;/client_max_body_size ${max_upload_size};/" /etc/nginx/common.conf
+
     # SET REAL IP CONFIG
     if ($set_real_ip); then
         # read the IP addresses from env
@@ -89,6 +93,12 @@ nginxConf() {
         sed -i -e "s/#REAL_IP_CONF/${conf_string}/" /etc/nginx/common.conf
         # enable real_ip_header config
         sed -i -e "s/#real_ip_header X-Forwarded-For;/real_ip_header X-Forwarded-For;/" /etc/nginx/common.conf
+    fi
+
+    # IPV6 CONFIG
+    if ($ipv6); then
+        sed -i -e "s/#listen \[::\]:443;/listen \[::\]:443;/" /etc/nginx/conf.d/elabftw.conf
+        sed -i -e "s/#listen \[::\]:443 ssl http2;/listen \[::\]:443 ssl http2;/" /etc/nginx/conf.d/elabftw.conf
     fi
 }
 
@@ -116,7 +126,7 @@ phpConf() {
     # php config
     sed -i -e "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" /etc/php7/php.ini
     sed -i -e "s/upload_max_filesize\s*=\s*2M/upload_max_filesize = ${max_upload_size}/g" /etc/php7/php.ini
-    sed -i -e "s/post_max_size\s*=\s*8M/post_max_size = 100M/g" /etc/php7/php.ini
+    sed -i -e "s/post_max_size\s*=\s*8M/post_max_size = ${max_upload_size}/g" /etc/php7/php.ini
     # increase this value to allow pdf generation with big body (with base64 encoded images for instance)
     sed -i -e "s/;pcre.backtrack_limit=100000/pcre.backtrack_limit=10000000/" /etc/php7/php.ini
     # we want a safe cookie/session
