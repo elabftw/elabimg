@@ -2,7 +2,7 @@
 FROM alpine:3.10
 
 # select version or branch here
-ENV ELABFTW_VERSION 3.3.8
+ENV ELABFTW_VERSION 3.3.9
 
 # this is versioning for the container image
 ENV ELABIMG_VERSION 1.2.0
