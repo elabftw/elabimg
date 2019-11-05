@@ -1,5 +1,9 @@
 # Container image version
 
+## 1.3.0
+
+* Add an option to define the MySQL port
+
 ## 1.2.0
 
 * Fix nginx configuration for max file size allowed for upload

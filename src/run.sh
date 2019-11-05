@@ -4,6 +4,7 @@
 # get env values
 getEnv() {
     db_host=${DB_HOST:-localhost}
+    db_port=${DB_PORT:-3306}
     db_name=${DB_NAME:-elabftw}
     db_user=${DB_USER:-elabftw}
     db_password=${DB_PASSWORD}
@@ -176,6 +177,7 @@ writeConfigFile() {
     config_path="/elabftw/config.php"
     config="<?php
     define('DB_HOST', '${db_host}');
+    define('DB_PORT', '${db_port}');
     define('DB_NAME', '${db_name}');
     define('DB_USER', '${db_user}');
     define('DB_PASSWORD', '${db_password}');
@@ -189,6 +191,7 @@ writeConfigFile() {
 # because a global variable is not the best place for a secret value...
 unsetEnv() {
     unset DB_HOST
+    unset DB_PORT
     unset DB_NAME
     unset DB_USER
     unset DB_PASSWORD
