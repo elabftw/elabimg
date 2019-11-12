@@ -1,5 +1,9 @@
 # Container image version
 
+## 1.3.1
+
+* Fix the client_max_body_size parameter
+
 ## 1.3.0
 
 * Add an option to define the MySQL port

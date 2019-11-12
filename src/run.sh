@@ -80,7 +80,7 @@ nginxConf() {
     sed -i -e "s/listen \[::\]:80/#listen \[::\]:80/" /etc/nginx/conf.d/default.conf
 
     # adjust client_max_body_size
-    sed -i -e "s/client_max_body_size 100M;/client_max_body_size ${max_upload_size};/" /etc/nginx/common.conf
+    sed -i -e "s/client_max_body_size 100m;/client_max_body_size ${max_upload_size};/" /etc/nginx/nginx.conf
 
     # SET REAL IP CONFIG
     if ($set_real_ip); then
