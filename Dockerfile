@@ -5,7 +5,7 @@ FROM alpine:3.10
 ENV ELABFTW_VERSION next
 
 # this is versioning for the container image
-ENV ELABIMG_VERSION 1.2.0
+ENV ELABIMG_VERSION 1.3.1
 
 LABEL org.label-schema.name="elabftw" \
     org.label-schema.description="Run nginx and php-fpm to serve elabftw" \
@@ -79,6 +79,9 @@ EXPOSE 443
 COPY ./src/nginx/ /etc/nginx/
 COPY ./src/supervisord.conf /etc/supervisord.conf
 COPY ./src/run.sh /run.sh
+
+# remove this file because it's useless and causes issues when doing composer upgrade
+RUN rm -f /.dockerenv
 
 # start
 CMD ["/run.sh"]

@@ -4,6 +4,7 @@
 # get env values
 getEnv() {
     db_host=${DB_HOST:-localhost}
+    db_port=${DB_PORT:-3306}
     db_name=${DB_NAME:-elabftw}
     db_user=${DB_USER:-elabftw}
     db_password=${DB_PASSWORD}
@@ -79,7 +80,7 @@ nginxConf() {
     sed -i -e "s/listen \[::\]:80/#listen \[::\]:80/" /etc/nginx/conf.d/default.conf
 
     # adjust client_max_body_size
-    sed -i -e "s/client_max_body_size 100M;/client_max_body_size ${max_upload_size};/" /etc/nginx/common.conf
+    sed -i -e "s/client_max_body_size 100m;/client_max_body_size ${max_upload_size};/" /etc/nginx/nginx.conf
 
     # SET REAL IP CONFIG
     if ($set_real_ip); then
@@ -159,7 +160,7 @@ phpConf() {
     # use longer session id length
     sed -i -e "s/session.sid_length = 26/session.sid_length = 42/" /etc/php7/php.ini
     # disable some dangerous functions that we don't use
-    sed -i -e "s/disable_functions =/disable_functions = php_uname, getmyuid, getmypid, passthru, leak, listen, diskfreespace, tmpfile, link, ignore_user_abord, shell_exec, dl, system, highlight_file, source, show_source, fpaththru, virtual, posix_ctermid, posix_getcwd, posix_getegid, posix_geteuid, posix_getgid, posix_getgrgid, posix_getgrnam, posix_getgroups, posix_getlogin, posix_getpgid, posix_getpgrp, posix_getpid, posix_getppid, posix_getpwnam, posix_getpwuid, posix_getrlimit, posix_getsid, posix_getuid, posix_isatty, posix_kill, posix_mkfifo, posix_setegid, posix_seteuid, posix_setgid, posix_setpgid, posix_setsid, posix_setuid, posix_times, posix_ttyname, posix_uname, phpinfo/" /etc/php7/php.ini
+    sed -i -e "s/disable_functions =/disable_functions = php_uname, getmyuid, getmypid, passthru, leak, listen, diskfreespace, tmpfile, link, ignore_user_abort, shell_exec, dl, system, highlight_file, source, show_source, fpaththru, virtual, posix_ctermid, posix_getcwd, posix_getegid, posix_geteuid, posix_getgid, posix_getgrgid, posix_getgrnam, posix_getgroups, posix_getlogin, posix_getpgid, posix_getpgrp, posix_getpid, posix_getppid, posix_getpwnam, posix_getpwuid, posix_getrlimit, posix_getsid, posix_getuid, posix_isatty, posix_kill, posix_mkfifo, posix_setegid, posix_seteuid, posix_setgid, posix_setpgid, posix_setsid, posix_setuid, posix_times, posix_ttyname, posix_uname, phpinfo/" /etc/php7/php.ini
     # allow longer requests execution time
     sed -i -e "s/max_execution_time\s*=\s*30/max_execution_time = ${php_max_execution_time}/" /etc/php7/php.ini
 
@@ -176,6 +177,7 @@ writeConfigFile() {
     config_path="/elabftw/config.php"
     config="<?php
     define('DB_HOST', '${db_host}');
+    define('DB_PORT', '${db_port}');
     define('DB_NAME', '${db_name}');
     define('DB_USER', '${db_user}');
     define('DB_PASSWORD', '${db_password}');
@@ -189,6 +191,7 @@ writeConfigFile() {
 # because a global variable is not the best place for a secret value...
 unsetEnv() {
     unset DB_HOST
+    unset DB_PORT
     unset DB_NAME
     unset DB_USER
     unset DB_PASSWORD
