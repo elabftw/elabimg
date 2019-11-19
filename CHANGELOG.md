@@ -1,5 +1,14 @@
 # Container image version
 
+## 1.3.1
+
+* Fix the client_max_body_size parameter
+* Remove ./dockerenv file
+
+## 1.3.0
+
+* Add an option to define the MySQL port
+
 ## 1.2.0
 
 * Fix nginx configuration for max file size allowed for upload
