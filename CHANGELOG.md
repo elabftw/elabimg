@@ -1,5 +1,10 @@
 # Container image version
 
+## 1.4.0
+
+* add php7-exif
+* improve disable_function sed
+
 ## 1.3.1
 
 * Fix the client_max_body_size parameter
