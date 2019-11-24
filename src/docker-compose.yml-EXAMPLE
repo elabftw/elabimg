@@ -23,6 +23,8 @@ services:
         # no need to change
         - DB_HOST=mysql
         # no need to change
+        - DB_PORT=3306
+        # no need to change
         - DB_NAME=elabftw
         # no need to change
         - DB_USER=elabftw
