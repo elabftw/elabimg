@@ -1,7 +1,9 @@
 # Container image version
+# Note: the version here is from Dockerfile:ELABIMG_VERSION not the tagged one
 
 ## 1.4.0
 
+* add gzip compression for javascript and css
 * add php7-exif
 * improve disable_function sed
 
