@@ -81,9 +81,6 @@ COPY ./src/nginx/ /etc/nginx/
 COPY ./src/supervisord.conf /etc/supervisord.conf
 COPY ./src/run.sh /run.sh
 
-# remove this file because it's useless and causes issues when doing composer upgrade
-RUN rm -f /.dockerenv
-
 # start
 CMD ["/run.sh"]
 
