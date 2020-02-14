@@ -156,11 +156,11 @@ phpConf() {
     sed -i -e "s:;date.timezone =:date.timezone = $php_timezone:" /etc/php7/php.ini
     # enable open_basedir to restrict PHP's ability to read files
     # use # for separator because we cannot use : ; / or _
-    sed -i -e "s#;open_basedir =#open_basedir = /elabftw/:/tmp/:/usr/bin/unzip#" /etc/php7/php.ini
+    sed -i -e "s#;open_basedir =#open_basedir = /.dockerenv:/elabftw/:/tmp/:/usr/bin/unzip#" /etc/php7/php.ini
     # use longer session id length
     sed -i -e "s/session.sid_length = 26/session.sid_length = 42/" /etc/php7/php.ini
     # disable some dangerous functions that we don't use
-    sed -i -e "s/disable_functions =/disable_functions = php_uname, getmyuid, getmypid, passthru, leak, listen, diskfreespace, tmpfile, link, ignore_user_abort, shell_exec, dl, system, highlight_file, source, show_source, fpaththru, virtual, posix_ctermid, posix_getcwd, posix_getegid, posix_geteuid, posix_getgid, posix_getgrgid, posix_getgrnam, posix_getgroups, posix_getlogin, posix_getpgid, posix_getpgrp, posix_getpid, posix_getppid, posix_getpwnam, posix_getpwuid, posix_getrlimit, posix_getsid, posix_getuid, posix_isatty, posix_kill, posix_mkfifo, posix_setegid, posix_seteuid, posix_setgid, posix_setpgid, posix_setsid, posix_setuid, posix_times, posix_ttyname, posix_uname, phpinfo/" /etc/php7/php.ini
+    sed -i -e "s/disable_functions =$/disable_functions = php_uname, getmyuid, getmypid, passthru, leak, listen, diskfreespace, tmpfile, link, ignore_user_abort, shell_exec, dl, system, highlight_file, source, show_source, fpaththru, virtual, posix_ctermid, posix_getcwd, posix_getegid, posix_geteuid, posix_getgid, posix_getgrgid, posix_getgrnam, posix_getgroups, posix_getlogin, posix_getpgid, posix_getpgrp, posix_getpid, posix_getppid, posix_getpwnam, posix_getpwuid, posix_getrlimit, posix_getsid, posix_getuid, posix_isatty, posix_kill, posix_mkfifo, posix_setegid, posix_seteuid, posix_setgid, posix_setpgid, posix_setsid, posix_setuid, posix_times, posix_ttyname, posix_uname, phpinfo/" /etc/php7/php.ini
     # allow longer requests execution time
     sed -i -e "s/max_execution_time\s*=\s*30/max_execution_time = ${php_max_execution_time}/" /etc/php7/php.ini
 
