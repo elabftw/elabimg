@@ -5,7 +5,7 @@ FROM alpine:3.10
 ENV ELABFTW_VERSION 3.3.12
 
 # this is versioning for the container image
-ENV ELABIMG_VERSION 1.3.1
+ENV ELABIMG_VERSION 1.4.0
 
 LABEL org.label-schema.name="elabftw" \
     org.label-schema.description="Run nginx and php-fpm to serve elabftw" \
@@ -37,6 +37,7 @@ RUN apk upgrade -U -a && apk add --no-cache \
     php7-ctype \
     php7-dev \
     php7-dom \
+    php7-exif \
     php7-gd \
     php7-gettext \
     php7-fileinfo \
@@ -70,7 +71,7 @@ RUN echo "$(curl -sS https://composer.github.io/installer.sig) -" > composer-set
     && php composer-setup.php && rm composer-setup.php*
 
 # install dependencies
-RUN /elabftw/composer.phar install --no-dev -a && yarn install --pure-lockfile && yarn run buildall && rm -rf node_modules && yarn cache clean && /elabftw/composer.phar clear-cache
+RUN /elabftw/composer.phar install --prefer-dist --no-progress --no-suggest --no-dev -a && yarn install --pure-lockfile && yarn run buildall && rm -rf node_modules && yarn cache clean && /elabftw/composer.phar clear-cache
 
 # nginx will run on port 443
 EXPOSE 443
@@ -79,9 +80,6 @@ EXPOSE 443
 COPY ./src/nginx/ /etc/nginx/
 COPY ./src/supervisord.conf /etc/supervisord.conf
 COPY ./src/run.sh /run.sh
-
-# remove this file because it's useless and causes issues when doing composer upgrade
-RUN rm -f /.dockerenv
 
 # start
 CMD ["/run.sh"]
