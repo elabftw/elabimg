@@ -1,6 +1,10 @@
 # Container image version
 # Note: the version here is from Dockerfile:ELABIMG_VERSION not the tagged one
 
+## 1.5.0
+
+* Use Alpine 3.11 as base image
+
 ## 1.4.1
 
 * Disable not found logs for assets and php files
