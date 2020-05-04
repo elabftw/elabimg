@@ -139,6 +139,15 @@ services:
     networks:
       - elabftw-net
 
+  # example of a redis container
+  # uncomment if you want to spawn a redis container to manage sessions
+  #redis:
+  #  image: redis:5.0-alpine
+  #  restart: always
+  #  container_name: redis
+  #  networks:
+  #    - elabftw-net
+
 # the internal elabftw network
 networks:
   elabftw-net:
