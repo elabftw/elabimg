@@ -1,5 +1,5 @@
 [![Layers badge](https://images.microbadger.com/badges/image/elabftw/elabimg.svg)](https://microbadger.com/images/elabftw/elabimg)
-[![CircleCI](https://circleci.com/gh/elabftw/elabimg/tree/master.svg?style=svg)](https://circleci.com/gh/elabftw/elabimg/tree/master)
+![vuln test](https://github.com/elabftw/elabimg/workflows/vuln%20test/badge.svg?branch=master)
 
 # Description
 
