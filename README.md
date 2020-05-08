@@ -1,5 +1,10 @@
- [![Layers badge](https://images.microbadger.com/badges/image/elabftw/elabimg.svg)](https://microbadger.com/images/elabftw/elabimg)
+[![Layers badge](https://images.microbadger.com/badges/image/elabftw/elabimg.svg)](https://microbadger.com/images/elabftw/elabimg)
+[![CircleCI](https://circleci.com/gh/elabftw/elabimg/tree/master.svg?style=svg)](https://circleci.com/gh/elabftw/elabimg/tree/master)
 
-# eLabFTW in a docker container
+# Description
 
-## [Documentation](https://doc.elabftw.net)
+This Docker image is for [eLabFTW](https://www.elabftw.net). It runs nginx + php + elabftw.
+
+# Usage
+
+See [documentation](https://doc.elabftw.net).
