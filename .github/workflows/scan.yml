@@ -1,4 +1,4 @@
-name: elabimg test
+name: vuln test
 
 on: [push]
 
