@@ -16,5 +16,3 @@ jobs:
           fail-build: true
       - name: anchore inline scan JSON results
         run: for j in `ls ./anchore-reports/*.json`; do echo "---- ${j} ----"; cat ${j}; echo; done
-        with:
-          image-reference: "elabftw/elabimg:ci"
