@@ -5,11 +5,11 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: A job to say hello
+    name: Build image and test for vulnerabilities
     steps:
       - uses: actions/checkout@v1
       - name: Build the Docker image
-        run: docker build elabftw/elabimg:ci .
+        run: docker build -t elabftw/elabimg:ci .
       - uses: anchore/scan-action@master
         with:
           image-reference: "elabftw/elabimg:ci"
