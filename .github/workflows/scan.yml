@@ -1,0 +1,18 @@
+name: elabimg test
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build image and test for vulnerabilities
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build the Docker image
+        run: docker build -t elabftw/elabimg:ci .
+      - uses: anchore/scan-action@master
+        with:
+          image-reference: "elabftw/elabimg:ci"
+          fail-build: true
+      - name: anchore inline scan JSON results
+        run: for j in `ls ./anchore-reports/*.json`; do echo "---- ${j} ----"; cat ${j}; echo; done
