@@ -71,7 +71,7 @@ RUN echo "$(curl -sS https://composer.github.io/installer.sig) -" > composer-set
     && php composer-setup.php && rm composer-setup.php*
 
 # install dependencies
-RUN /elabftw/composer.phar install --prefer-dist --no-progress --no-suggest --no-dev -a && yarn install --pure-lockfile && yarn run buildall && rm -rf node_modules && yarn cache clean && /elabftw/composer.phar clear-cache
+RUN /elabftw/composer.phar install --prefer-dist --no-progress --no-suggest --no-dev -a && yarn config set network-timeout 300000 && yarn install --pure-lockfile && yarn run buildall && rm -rf node_modules && yarn cache clean && /elabftw/composer.phar clear-cache
 
 # nginx will run on port 443
 EXPOSE 443
