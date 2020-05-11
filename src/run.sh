@@ -19,7 +19,7 @@ getEnv() {
     set_real_ip_from=${SET_REAL_IP_FROM:-192.168.31.48}
     php_max_children=${PHP_MAX_CHILDREN:-50}
     elabimg_version=${ELABIMG_VERSION}
-    php_max_execution_time=${PHP_MAX_EXECUTION_TIME:-30}
+    php_max_execution_time=${PHP_MAX_EXECUTION_TIME:-120}
     use_redis=${USE_REDIS:-false}
     redis_host=${REDIS_HOST:-redis}
     redis_port=${REDIS_PORT:-6379}

@@ -60,7 +60,7 @@ services:
         # default is 50
         - PHP_MAX_CHILDREN=50
         # optional: adjust the max execution time of PHP scripts. Allows for bigger ZIP exports.
-        - PHP_MAX_EXECUTION_TIME=30
+        - PHP_MAX_EXECUTION_TIME=120
         # optional: use a redis server to store the PHP sessions
         - USE_REDIS=false
         # optional: set an IP or hostname for the redis server
