@@ -20,19 +20,25 @@ services:
         - NET_RAW
         - SYS_PTRACE
     environment:
-        # no need to change
+        # name of the MySQL server (by default "mysql" the name of the mysql container)
+        # you probably don't need to modify this value
         - DB_HOST=mysql
-        # no need to change
+        # port on which the MySQL server is listening
+        # you probably don't need to modify this value
         - DB_PORT=3306
-        # no need to change
+        # name of the MySQL database
+        # you probably don't need to modify this value
         - DB_NAME=elabftw
-        # no need to change
+        # MySQL user with write access to the previously named database
+        # you probably don't need to modify this value
         - DB_USER=elabftw
-        # need to change
+        # MySQL password; a random password has been generated for you but feel free to change it if needed
         - DB_PASSWORD=secr3t
+        # The secret key is used for encrypting the SMTP password
+        # A random one has been generated for you, if you wish to change it you can
         # get your secret key from https://demo.elabftw.net/install/generateSecretKey.php
         # if you don't want to get it from an external source you can also do that:
-        # docker run -t --entrypoint '/bin/sh' elabftw/elabimg -c "php /elabftw/install/generateSecretKey.php"
+        # docker run --rm -t --entrypoint '/bin/sh' elabftw/elabimg -c "php /elabftw/web/install/generateSecretKey.php"
         - SECRET_KEY=
         # optional: change to your server name in nginx config
         - SERVER_NAME=localhost
@@ -60,7 +66,7 @@ services:
         # default is 50
         - PHP_MAX_CHILDREN=50
         # optional: adjust the max execution time of PHP scripts. Allows for bigger ZIP exports.
-        - PHP_MAX_EXECUTION_TIME=30
+        - PHP_MAX_EXECUTION_TIME=120
         # optional: use a redis server to store the PHP sessions
         - USE_REDIS=false
         # optional: set an IP or hostname for the redis server
