@@ -1,6 +1,10 @@
 # Container image version
 # Note: the version here is from Dockerfile:ELABIMG_VERSION not the tagged one
 
+## 2.0.0
+
+* Use stdout and stderr for logging: logs can now be accessed via the docker logs command
+
 ## 1.5.1
 
 * Fix nginx pid path
