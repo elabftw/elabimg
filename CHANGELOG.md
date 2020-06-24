@@ -4,6 +4,7 @@
 ## 2.0.0
 
 * Use stdout and stderr for logging: logs can now be accessed via the docker logs command
+* Allow change of user/group for nginx/php-fpm (#10)
 
 ## 1.5.1
 

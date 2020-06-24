@@ -75,6 +75,14 @@ services:
         - REDIS_PORT=6379
         # optional: enable ipv6 (make sure you have AAAA dns record!)
         - ENABLE_IPV6=false
+        # adjust the user/group that will own the uploaded files
+        # useful in very particular situations, like with NFSv4
+        # you don't really need to change this in most situations
+        # so this is left commented (default values are shown)
+        #- ELABFTW_USER=nginx
+        #- ELABFTW_GROUP=nginx
+        #- ELABFTW_USERID=100
+        #- ELABFTW_GROUPID=101
     ports:
         # if you want elabftw to run on a different port, change the first number
         # host:container
