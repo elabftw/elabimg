@@ -30,11 +30,11 @@ getEnv() {
     elabftw_groupid=${ELABFTW_GROUPID:-101}
 }
 
-# Create user if not exit
+# Create user if not default user
 createUser() {
     if [ "${elabftw_user}" != "nginx" ]; then
         addgroup -g ${elabftw_groupid} ${elabftw_group}
-        adduser -S -u ${elabftw_userid} -G s-elabftw-gp ${elabftw_user}
+        adduser -S -u ${elabftw_userid} -G ${elabftw_group} ${elabftw_user}
     fi
 }
 
