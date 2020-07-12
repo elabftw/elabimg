@@ -33,8 +33,8 @@ getEnv() {
 # Create user if not default user
 createUser() {
     if [ "${elabftw_user}" != "nginx" ]; then
-        addgroup -g ${elabftw_groupid} ${elabftw_group}
-        adduser -S -u ${elabftw_userid} -G ${elabftw_group} ${elabftw_user}
+        addgroup -g "${elabftw_groupid}" "${elabftw_group}"
+        adduser -S -u "${elabftw_userid}" -G "${elabftw_group}" "${elabftw_user}"
     fi
 }
 
@@ -87,7 +87,7 @@ nginxConf() {
     # works also for the ssl config if ssl is enabled
     sed -i -e "s/localhost/$server_name/g" /etc/nginx/conf.d/elabftw.conf
     # fix upload permissions
-    chown -R ${elabftw_user}:${elabftw_group} /var/lib/nginx
+    chown -R "${elabftw_user}":"${elabftw_group}" /var/lib/nginx
     # remove the listen on IPv6 found in the default server conf file
     sed -i -e "s/listen \[::\]:80/#listen \[::\]:80/" /etc/nginx/conf.d/default.conf
 
@@ -162,7 +162,7 @@ phpConf() {
     # the sessions are stored in a separate dir
     sed -i -e "s:;session.save_path = \"/tmp\":session.save_path = \"/sessions\":" /etc/php7/php.ini
     mkdir -p /sessions
-    chown ${elabftw_user}:${elabftw_group} /sessions
+    chown "${elabftw_user}":"${elabftw_group}" /sessions
     chmod 700 /sessions
     # disable url_fopen http://php.net/allow-url-fopen
     sed -i -e "s/allow_url_fopen = On/allow_url_fopen = Off/" /etc/php7/php.ini
@@ -184,7 +184,7 @@ phpConf() {
 
 elabftwConf() {
     mkdir -p /elabftw/uploads /elabftw/cache
-    chown ${elabftw_userid}:${elabftw_groupid} /elabftw/uploads /elabftw/cache
+    chown "${elabftw_userid}":"${elabftw_groupid}" /elabftw/uploads /elabftw/cache
     chmod 700 /elabftw/uploads /elabftw/cache
 }
 
@@ -200,7 +200,7 @@ writeConfigFile() {
     define('ELAB_ROOT', '/elabftw/');
     define('SECRET_KEY', '${secret_key}');"
     echo "$config" > "$config_path"
-    chown ${elabftw_user}:${elabftw_group} "$config_path"
+    chown "${elabftw_user}":"${elabftw_group}" "$config_path"
     chmod 600 "$config_path"
 }
 
