@@ -7,8 +7,13 @@ version: '3'
 # our first container is nginx + php-fpm + elabftw
 services:
   web:
-    image: elabftw/elabimg
+    # the latest tag points to the latest stable version
+    # use the next tag to use alpha/beta version
+    # use a specific version to pin the image
+    # example: elabftw/elabimg:3.5.0
+    image: elabftw/elabimg:latest
     restart: always
+    # comment this out if you use several containers with redis
     container_name: elabftw
     # drop some capabilities
     cap_drop:
