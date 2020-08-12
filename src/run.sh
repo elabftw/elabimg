@@ -115,7 +115,7 @@ nginxConf() {
     fi
 
     # CHANGE NGINX USER
-    echo "user ${elabftw_user} ${elabftw_group};" >> /etc/nginx/nginx.conf
+    sed -i -e "s/#user-placeholder/user ${elabftw_user} ${elabftw_group};/" /etc/nginx/nginx.conf
 }
 
 phpfpmConf() {
