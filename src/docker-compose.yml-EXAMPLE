@@ -7,8 +7,13 @@ version: '3'
 # our first container is nginx + php-fpm + elabftw
 services:
   web:
-    image: elabftw/elabimg
+    # the latest tag points to the latest stable version
+    # use the next tag to use alpha/beta version
+    # use a specific version to pin the image
+    # example: elabftw/elabimg:3.5.0
+    image: elabftw/elabimg:latest
     restart: always
+    # comment this out if you use several containers with redis
     container_name: elabftw
     # drop some capabilities
     cap_drop:
@@ -75,6 +80,14 @@ services:
         - REDIS_PORT=6379
         # optional: enable ipv6 (make sure you have AAAA dns record!)
         - ENABLE_IPV6=false
+        # adjust the user/group that will own the uploaded files
+        # useful in very particular situations, like with NFSv4
+        # you don't really need to change this in most situations
+        # so this is left commented (default values are shown)
+        #- ELABFTW_USER=nginx
+        #- ELABFTW_GROUP=nginx
+        #- ELABFTW_USERID=100
+        #- ELABFTW_GROUPID=101
     ports:
         # if you want elabftw to run on a different port, change the first number
         # host:container

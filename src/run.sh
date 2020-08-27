@@ -24,6 +24,18 @@ getEnv() {
     redis_host=${REDIS_HOST:-redis}
     redis_port=${REDIS_PORT:-6379}
     ipv6=${ENABLE_IPV6:-false}
+    elabftw_user=${ELABFTW_USER:-nginx}
+    elabftw_group=${ELABFTW_GROUP:-nginx}
+    elabftw_userid=${ELABFTW_USERID:-100}
+    elabftw_groupid=${ELABFTW_GROUPID:-101}
+}
+
+# Create user if not default user
+createUser() {
+    if [ "${elabftw_user}" != "nginx" ]; then
+        addgroup -g "${elabftw_groupid}" "${elabftw_group}"
+        adduser -S -u "${elabftw_userid}" -G "${elabftw_group}" "${elabftw_user}"
+    fi
 }
 
 # fullchain.pem and privkey.pem should be in a volume linked to /ssl
@@ -75,7 +87,7 @@ nginxConf() {
     # works also for the ssl config if ssl is enabled
     sed -i -e "s/localhost/$server_name/g" /etc/nginx/conf.d/elabftw.conf
     # fix upload permissions
-    chown -R nginx:nginx /var/lib/nginx
+    chown -R "${elabftw_user}":"${elabftw_group}" /var/lib/nginx
     # remove the listen on IPv6 found in the default server conf file
     sed -i -e "s/listen \[::\]:80/#listen \[::\]:80/" /etc/nginx/conf.d/default.conf
 
@@ -101,6 +113,9 @@ nginxConf() {
         sed -i -e "s/#listen \[::\]:443;/listen \[::\]:443;/" /etc/nginx/conf.d/elabftw.conf
         sed -i -e "s/#listen \[::\]:443 ssl http2;/listen \[::\]:443 ssl http2;/" /etc/nginx/conf.d/elabftw.conf
     fi
+
+    # CHANGE NGINX USER
+    sed -i -e "s/#user-placeholder/user ${elabftw_user} ${elabftw_group};/" /etc/nginx/nginx.conf
 }
 
 phpfpmConf() {
@@ -112,9 +127,10 @@ phpfpmConf() {
     # use a unix socket
     sed -i -e "s;listen = 127.0.0.1:9000;listen = /var/run/php-fpm.sock;g" /etc/php7/php-fpm.d/www.conf
     # set nginx as user for php-fpm
-    sed -i -e "s/;listen.owner = nobody/listen.owner = nginx/g" /etc/php7/php-fpm.d/www.conf
-    sed -i -e "s/;listen.group = nobody/listen.group = nginx/g" /etc/php7/php-fpm.d/www.conf
-    sed -i -e "s/nobody/nginx/g" /etc/php7/php-fpm.d/www.conf
+    sed -i -e "s/;listen.owner = nobody/listen.owner = ${elabftw_user}/g" /etc/php7/php-fpm.d/www.conf
+    sed -i -e "s/;listen.group = nobody/listen.group = ${elabftw_group}/g" /etc/php7/php-fpm.d/www.conf
+    sed -i -e "s/user = nobody/user = ${elabftw_user}/g" /etc/php7/php-fpm.d/www.conf
+    sed -i -e "s/group = nobody/group = ${elabftw_group}/g" /etc/php7/php-fpm.d/www.conf
     # increase max number of simultaneous requests
     sed -i -e "s/pm.max_children = (0-9)+/pm.max_children = ${php_max_children}/g" /etc/php7/php-fpm.d/www.conf
     # allow using more memory
@@ -146,7 +162,7 @@ phpConf() {
     # the sessions are stored in a separate dir
     sed -i -e "s:;session.save_path = \"/tmp\":session.save_path = \"/sessions\":" /etc/php7/php.ini
     mkdir -p /sessions
-    chown nginx:nginx /sessions
+    chown "${elabftw_user}":"${elabftw_group}" /sessions
     chmod 700 /sessions
     # disable url_fopen http://php.net/allow-url-fopen
     sed -i -e "s/allow_url_fopen = On/allow_url_fopen = Off/" /etc/php7/php.ini
@@ -168,7 +184,7 @@ phpConf() {
 
 elabftwConf() {
     mkdir -p /elabftw/uploads /elabftw/cache
-    chown 100:101 /elabftw/uploads /elabftw/cache
+    chown "${elabftw_userid}":"${elabftw_groupid}" /elabftw/uploads /elabftw/cache
     chmod 700 /elabftw/uploads /elabftw/cache
 }
 
@@ -184,7 +200,7 @@ writeConfigFile() {
     define('ELAB_ROOT', '/elabftw/');
     define('SECRET_KEY', '${secret_key}');"
     echo "$config" > "$config_path"
-    chown nginx:nginx "$config_path"
+    chown "${elabftw_user}":"${elabftw_group}" "$config_path"
     chmod 600 "$config_path"
 }
 
@@ -203,6 +219,7 @@ unsetEnv() {
 
 # script start
 getEnv
+createUser
 nginxConf
 phpfpmConf
 phpConf
