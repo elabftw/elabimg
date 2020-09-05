@@ -18,7 +18,7 @@ getEnv() {
     set_real_ip=${SET_REAL_IP:-false}
     set_real_ip_from=${SET_REAL_IP_FROM:-192.168.31.48}
     php_max_children=${PHP_MAX_CHILDREN:-50}
-    elabimg_version=${ELABIMG_VERSION}
+    elabimg_version=${ELABIMG_VERSION:-0.0.0}
     php_max_execution_time=${PHP_MAX_EXECUTION_TIME:-120}
     use_redis=${USE_REDIS:-false}
     redis_host=${REDIS_HOST:-redis}
@@ -64,7 +64,7 @@ nginxConf() {
     # false by default
     if ($disable_https); then
         # activate an HTTP server listening on port 443
-        ln -s /etc/nginx/http.conf /etc/nginx/conf.d/elabftw.conf
+        ln -fs /etc/nginx/http.conf /etc/nginx/conf.d/elabftw.conf
     else
         mkdir -p /etc/nginx/certs
         # generate a selfsigned certificate if we don't use Let's Encrypt
@@ -73,7 +73,7 @@ nginxConf() {
         fi
         sh /etc/nginx/generate-dhparam.sh
         # activate an HTTPS server listening on port 443
-        ln -s /etc/nginx/https.conf /etc/nginx/conf.d/elabftw.conf
+        ln -fs /etc/nginx/https.conf /etc/nginx/conf.d/elabftw.conf
         if ($enable_letsencrypt); then
             mkdir -p /ssl
             sed -i -e "s:CERT_PATH:/ssl/live/localhost/fullchain.pem:" /etc/nginx/conf.d/elabftw.conf
@@ -136,7 +136,9 @@ phpfpmConf() {
     # allow using more memory
     sed -i -e "s/;php_admin_value\[memory_limit\] = 32M/php_admin_value\[memory_limit\] = ${max_php_memory}/" /etc/php7/php-fpm.d/www.conf
     # add container version in env
-    echo "env[ELABIMG_VERSION] = ${elabimg_version}" >> /etc/php7/php-fpm.d/www.conf
+    if ! $(grep -q ELABIMG_VERSION /etc/php7/php-fpm.d/www.conf); then
+        echo "env[ELABIMG_VERSION] = ${elabimg_version}" >> /etc/php7/php-fpm.d/www.conf
+    fi
 }
 
 phpConf() {
