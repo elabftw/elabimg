@@ -1,6 +1,11 @@
 # Container image version
 # Note: the version here is from Dockerfile:ELABIMG_VERSION not the tagged one
 
+## 2.0.1
+* Fix supervisord waring on start about user root
+* Fix ELABIMG_VERSION getting added at each restart
+* Fix ln command producing warning on restart
+
 ## 2.0.0
 
 * Use stdout and stderr for logging: logs can now be accessed via the docker logs command
