@@ -10,7 +10,7 @@ jobs:
       - uses: actions/checkout@v1
       - name: Build the Docker image
         run: docker build -t elabftw/elabimg:ci .
-      - uses: anchore/scan-action@master
+      - uses: anchore/scan-action@v2
         with:
           image-reference: "elabftw/elabimg:ci"
           fail-build: true
