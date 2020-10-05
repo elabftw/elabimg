@@ -12,7 +12,7 @@ jobs:
         run: docker build -t elabftw/elabimg:ci .
       - uses: anchore/scan-action@v2
         with:
-          image-reference: "elabftw/elabimg:ci"
+          image: "elabftw/elabimg:ci"
           fail-build: true
       - name: anchore inline scan JSON results
         run: for j in `ls ./anchore-reports/*.json`; do echo "---- ${j} ----"; cat ${j}; echo; done
