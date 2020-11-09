@@ -152,6 +152,7 @@ phpConf() {
     sed -i -e "s/session.cookie_httponly.*/session.cookie_httponly = true/" /etc/php7/php.ini
     sed -i -e "s/;session.cookie_secure.*/session.cookie_secure = true/" /etc/php7/php.ini
     sed -i -e "s/session.use_strict_mode.*/session.use_strict_mode = 1/" /etc/php7/php.ini
+    sed -i -e "s/session.cookie_samesite.*/session.cookie_samesite = \"Strict\"/" /etc/php7/php.ini
     # set redis as session handler if requested
     if ($use_redis); then
         sed -i -e "s:session.save_handler = files:session.save_handler = redis:" /etc/php7/php.ini

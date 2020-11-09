@@ -43,6 +43,7 @@ RUN apk upgrade -U -a && apk add --no-cache \
     php7-fileinfo \
     php7-fpm \
     php7-json \
+    php7-ldap \
     php7-mbstring \
     php7-opcache \
     php7-openssl \
