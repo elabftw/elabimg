@@ -1,7 +1,13 @@
 # Container image version
 # Note: the version here is from Dockerfile:ELABIMG_VERSION not the tagged one
 
+## 2.1.0
+
+* Add php7-ldap
+* Add Strict SameSite cookie
+
 ## 2.0.1
+
 * Fix supervisord waring on start about user root
 * Fix ELABIMG_VERSION getting added at each restart
 * Fix ln command producing warning on restart
