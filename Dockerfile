@@ -5,7 +5,7 @@ FROM alpine:3.11
 ENV ELABFTW_VERSION 3.5.6
 
 # this is versioning for the container image
-ENV ELABIMG_VERSION 2.0.1
+ENV ELABIMG_VERSION 2.1.0
 
 LABEL org.label-schema.name="elabftw" \
     org.label-schema.description="Run nginx and php-fpm to serve elabftw" \
@@ -43,6 +43,7 @@ RUN apk upgrade -U -a && apk add --no-cache \
     php7-fileinfo \
     php7-fpm \
     php7-json \
+    php7-ldap \
     php7-mbstring \
     php7-opcache \
     php7-openssl \
@@ -71,7 +72,7 @@ RUN echo "$(curl -sS https://composer.github.io/installer.sig) -" > composer-set
     && php composer-setup.php && rm composer-setup.php*
 
 # install dependencies
-RUN /elabftw/composer.phar install --prefer-dist --no-progress --no-suggest --no-dev -a && yarn config set network-timeout 300000 && yarn install --pure-lockfile && yarn run buildall && rm -rf node_modules && yarn cache clean && /elabftw/composer.phar clear-cache
+RUN /elabftw/composer.phar install --prefer-dist --no-progress --no-dev -a && yarn config set network-timeout 300000 && yarn install --pure-lockfile && yarn run buildall && rm -rf node_modules && yarn cache clean && /elabftw/composer.phar clear-cache
 
 # redirect nginx logs to stout and stderr
 RUN ln -sf /dev/stdout /var/log/nginx/access.log && ln -sf /dev/stderr /var/log/nginx/error.log
