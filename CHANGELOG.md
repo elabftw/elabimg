@@ -1,6 +1,10 @@
 # Container image version
 # Note: the version here is from Dockerfile:ELABIMG_VERSION not the tagged one
 
+## 2.2.0
+* Use Alpine 3.12
+* Remove deprecated composer option --no-suggest
+
 ## 2.1.0
 
 * Add php7-ldap

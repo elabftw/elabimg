@@ -1,11 +1,11 @@
 # elabftw + nginx + php-fpm in a container
-FROM alpine:3.11
+FROM alpine:3.12
 
 # select version or branch here
 ENV ELABFTW_VERSION 3.6.1
 
 # this is versioning for the container image
-ENV ELABIMG_VERSION 2.1.0
+ENV ELABIMG_VERSION 2.2.0
 
 LABEL org.label-schema.name="elabftw" \
     org.label-schema.description="Run nginx and php-fpm to serve elabftw" \
