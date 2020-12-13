@@ -8,7 +8,7 @@ getEnv() {
     db_name=${DB_NAME:-elabftw}
     db_user=${DB_USER:-elabftw}
     db_password=${DB_PASSWORD}
-    db_cert_path=${DB_CERT_PATH:-false}
+    db_cert_path=${DB_CERT_PATH:-}
     server_name=${SERVER_NAME:-localhost}
     disable_https=${DISABLE_HTTPS:-false}
     enable_letsencrypt=${ENABLE_LETSENCRYPT:-false}
