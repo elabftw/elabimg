@@ -8,6 +8,7 @@ getEnv() {
     db_name=${DB_NAME:-elabftw}
     db_user=${DB_USER:-elabftw}
     db_password=${DB_PASSWORD}
+    db_cert_path=${DB_CERT_PATH:-}
     server_name=${SERVER_NAME:-localhost}
     disable_https=${DISABLE_HTTPS:-false}
     enable_letsencrypt=${ENABLE_LETSENCRYPT:-false}
@@ -200,7 +201,7 @@ writeConfigFile() {
     define('DB_NAME', '${db_name}');
     define('DB_USER', '${db_user}');
     define('DB_PASSWORD', '${db_password}');
-    define('ELAB_ROOT', '/elabftw/');
+    define('DB_CERT_PATH', '${db_cert_path}');
     define('SECRET_KEY', '${secret_key}');"
     echo "$config" > "$config_path"
     chown "${elabftw_user}":"${elabftw_group}" "$config_path"
@@ -214,6 +215,7 @@ unsetEnv() {
     unset DB_NAME
     unset DB_USER
     unset DB_PASSWORD
+    unset DB_CERT_PATH
     unset SERVER_NAME
     unset DISABLE_HTTPS
     unset ENABLE_LETSENCRYPT

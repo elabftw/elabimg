@@ -39,6 +39,9 @@ services:
         - DB_USER=elabftw
         # MySQL password; a random password has been generated for you but feel free to change it if needed
         - DB_PASSWORD=secr3t
+        # Mysql Cert path: you only need this if you connect to a mysql server with tls
+        # Use a volume that points to /mysql-cert in the container
+        #- DB_CERT_PATH=/mysql-cert/cert.pem
         # The secret key is used for encrypting the SMTP password
         # A random one has been generated for you, if you wish to change it you can
         # get your secret key from https://demo.elabftw.net/install/generateSecretKey.php
@@ -116,6 +119,9 @@ services:
         # path to the folder with TLS certificate + private key
         # host:container
         #- /etc/letsencrypt:/ssl
+        #
+        # MYSQL cert path
+        #- /path/to/cert/folder:/mysql-cert
 
     networks:
       - elabftw-net
