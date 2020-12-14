@@ -233,4 +233,4 @@ writeConfigFile
 unsetEnv
 
 # start all the services
-/usr/bin/supervisord -c /etc/supervisord.conf -n
+/init
