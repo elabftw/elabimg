@@ -1,6 +1,12 @@
 # Container image version
 # Note: the version here is from Dockerfile:ELABIMG_VERSION not the tagged one
 
+# 2.3.0
+* Use s6-overlay instead of supervisor to launch services
+
+## 2.2.1
+* Add DB_CERT env variable to point to MySQL cert file path
+
 ## 2.2.0
 * Use Alpine 3.12
 * Remove deprecated composer option --no-suggest

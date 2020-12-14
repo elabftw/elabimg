@@ -5,7 +5,9 @@ FROM alpine:3.12
 ENV ELABFTW_VERSION 3.6.2
 
 # this is versioning for the container image
-ENV ELABIMG_VERSION 2.2.0
+ENV ELABIMG_VERSION 2.3.0
+
+ENV S6_OVERLAY_VERSION 2.1.0.2
 
 LABEL org.label-schema.name="elabftw" \
     org.label-schema.description="Run nginx and php-fpm to serve elabftw" \
@@ -14,6 +16,10 @@ LABEL org.label-schema.name="elabftw" \
     org.label-schema.version=$ELABFTW_VERSION \
     org.label-schema.maintainer="nicolas.carpi@curie.fr" \
     org.label-schema.schema-version="1.0"
+
+# install s6-overlay, our init system
+ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-amd64.tar.gz /tmp/
+RUN tar xzf /tmp/s6-overlay-amd64.tar.gz -C /
 
 # install nginx and php-fpm
 # php7-gd is required by mpdf for transparent png
@@ -56,8 +62,7 @@ RUN apk upgrade -U -a && apk add --no-cache \
     php7-zlib \
     tzdata \
     unzip \
-    yarn \
-    supervisor && \
+    yarn && \
     pecl install gmagick-2.0.5RC1 && echo "extension=gmagick.so" >> /etc/php7/php.ini && \
     apk del autoconf build-base libtool php7-dev
 
@@ -82,8 +87,8 @@ EXPOSE 443
 
 # copy configuration and run script
 COPY ./src/nginx/ /etc/nginx/
-COPY ./src/supervisord.conf /etc/supervisord.conf
 COPY ./src/run.sh /run.sh
+COPY ./src/services /etc/services.d
 
 # start
 CMD ["/run.sh"]
@@ -91,3 +96,4 @@ CMD ["/run.sh"]
 # define mountable directories
 VOLUME /elabftw
 VOLUME /ssl
+VOLUME /mysql-cert
