@@ -1,6 +1,9 @@
 # Container image version
 # Note: the version here is from Dockerfile:ELABIMG_VERSION not the tagged one
 
+# 2.3.1
+* Add healthcheck for nginx
+
 # 2.3.0
 * Use s6-overlay instead of supervisor to launch services
 

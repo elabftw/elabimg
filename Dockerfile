@@ -5,7 +5,7 @@ FROM alpine:3.12
 ENV ELABFTW_VERSION hypernext
 
 # this is versioning for the container image
-ENV ELABIMG_VERSION 2.3.0
+ENV ELABIMG_VERSION 2.3.1
 
 ENV S6_OVERLAY_VERSION 2.1.0.2
 
@@ -89,6 +89,9 @@ EXPOSE 443
 COPY ./src/nginx/ /etc/nginx/
 COPY ./src/run.sh /run.sh
 COPY ./src/services /etc/services.d
+
+# this script checks if nginx is ok
+HEALTHCHECK --interval=2m --timeout=5s CMD sh /etc/nginx/healthcheck.sh
 
 # start
 CMD ["/run.sh"]
