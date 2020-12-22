@@ -91,7 +91,7 @@ COPY ./src/run.sh /run.sh
 COPY ./src/services /etc/services.d
 
 # this script checks if nginx is ok
-HEALTHCHECK --interval=2m --timeout=5s CMD sh /etc/nginx/healthcheck.sh
+HEALTHCHECK --interval=2m --timeout=5s --retries=1 CMD sh /etc/nginx/healthcheck.sh || exit 1
 
 # start
 CMD ["/run.sh"]
