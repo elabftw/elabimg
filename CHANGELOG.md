@@ -1,6 +1,9 @@
 # Container image version
 # Note: the version here is from Dockerfile:ELABIMG_VERSION not the tagged one
 
+# 2.3.2
+* Add TLSv1.3 support in https mode
+
 # 2.3.1
 * Add healthcheck for nginx
 

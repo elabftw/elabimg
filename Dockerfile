@@ -5,7 +5,7 @@ FROM alpine:3.12
 ENV ELABFTW_VERSION hypernext
 
 # this is versioning for the container image
-ENV ELABIMG_VERSION 2.3.1
+ENV ELABIMG_VERSION 2.3.2
 
 ENV S6_OVERLAY_VERSION 2.1.0.2
 
