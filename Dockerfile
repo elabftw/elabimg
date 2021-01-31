@@ -62,6 +62,9 @@ RUN apk upgrade -U -a && apk add --no-cache \
     unzip \
     yarn
 
+# add a symlink to php8
+RUN ln -s /usr/bin/php8 /usr/bin/php
+
 # clone elabftw repository in /elabftw
 RUN git clone --depth 1 -b $ELABFTW_VERSION https://github.com/elabftw/elabftw.git /elabftw && chown -R nginx:nginx /elabftw && rm -rf /elabftw/.git
 
