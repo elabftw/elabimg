@@ -1,11 +1,16 @@
 # Container image version
 # Note: the version here is from Dockerfile:ELABIMG_VERSION not the tagged one
 
-# 2.3.2
+# 2.4.0
+* Alpine 3.13
+* PHP8
 * Add TLSv1.3 support in https mode
+* Add healthcheck for nginx
 
 # 2.3.1
-* Add healthcheck for nginx
+* Fix configuration option PHP_MAX_CHILDREN not taken into account
+* Increase number of server threads for php-fpm
+* Increase fastcgi_read_timeout in nginx config
 
 # 2.3.0
 * Use s6-overlay instead of supervisor to launch services
