@@ -5,7 +5,7 @@ FROM alpine:3.12
 ENV ELABFTW_VERSION 3.6.5
 
 # this is versioning for the container image
-ENV ELABIMG_VERSION 2.3.0
+ENV ELABIMG_VERSION 2.3.1
 
 ENV S6_OVERLAY_VERSION 2.1.0.2
 

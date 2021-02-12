@@ -1,6 +1,11 @@
 # Container image version
 # Note: the version here is from Dockerfile:ELABIMG_VERSION not the tagged one
 
+# 2.3.1
+* Fix configuration option PHP_MAX_CHILDREN not taken into account
+* Increase number of server threads for php-fpm
+* Increase fastcgi_read_timeout in nginx config
+
 # 2.3.0
 * Use s6-overlay instead of supervisor to launch services
 

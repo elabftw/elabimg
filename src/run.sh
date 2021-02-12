@@ -134,6 +134,10 @@ phpfpmConf() {
     sed -i -e "s/group = nobody/group = ${elabftw_group}/g" /etc/php7/php-fpm.d/www.conf
     # increase max number of simultaneous requests
     sed -i -e "s/pm.max_children = 5/pm.max_children = ${php_max_children}/g" /etc/php7/php-fpm.d/www.conf
+    # allow more idle server processes
+    sed -i -e "s/pm.start_servers = 2/pm.start_servers = 5/g" /etc/php7/php-fpm.d/www.conf
+    sed -i -e "s/pm.min_spare_servers = 1/pm.min_spare_servers = 4/g" /etc/php7/php-fpm.d/www.conf
+    sed -i -e "s/pm.max_spare_servers = 3/pm.max_spare_servers = 6/g" /etc/php7/php-fpm.d/www.conf
     # allow using more memory
     sed -i -e "s/;php_admin_value\[memory_limit\] = 32M/php_admin_value\[memory_limit\] = ${max_php_memory}/" /etc/php7/php-fpm.d/www.conf
     # add container version in env
