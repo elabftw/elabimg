@@ -9,6 +9,9 @@ ENV ELABIMG_VERSION 2.4.0
 
 ENV S6_OVERLAY_VERSION 2.2.0.1
 
+# the architecture to build for, necessary for S6
+ENV ARCHITECTURE=$arch
+
 LABEL org.label-schema.name="elabftw" \
     org.label-schema.description="Run nginx and php-fpm to serve elabftw" \
     org.label-schema.url="https://www.elabftw.net" \
@@ -18,8 +21,8 @@ LABEL org.label-schema.name="elabftw" \
     org.label-schema.schema-version="1.0"
 
 # install s6-overlay, our init system
-ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-amd64.tar.gz /tmp/
-RUN tar xzf /tmp/s6-overlay-amd64.tar.gz -C /
+ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-${ARCHITECTURE}.tar.gz /tmp/
+RUN tar xzf /tmp/s6-overlay-${ARCHITECTURE}.tar.gz -C /
 
 # install nginx and php-fpm
 # php8-gd is required by mpdf for transparent png
