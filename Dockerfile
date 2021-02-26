@@ -9,6 +9,8 @@ ENV ELABIMG_VERSION 2.4.0
 
 ENV S6_OVERLAY_VERSION 2.2.0.1
 
+ENV ARCHITECTURE amd64
+
 LABEL org.label-schema.name="elabftw" \
     org.label-schema.description="Run nginx and php-fpm to serve elabftw" \
     org.label-schema.url="https://www.elabftw.net" \
