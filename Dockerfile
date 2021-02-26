@@ -9,7 +9,9 @@ ENV ELABIMG_VERSION 2.4.0
 
 ENV S6_OVERLAY_VERSION 2.2.0.1
 
-ENV ARCHITECTURE amd64
+# after https://stackoverflow.com/questions/45277186/is-it-possible-to-add-environment-variables-in-automated-builds-in-docker-hub
+ARG ARCHITECTURE
+ENV ARCHITECTURE $ARCHITECTURE
 
 LABEL org.label-schema.name="elabftw" \
     org.label-schema.description="Run nginx and php-fpm to serve elabftw" \

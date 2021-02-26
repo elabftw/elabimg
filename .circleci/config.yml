@@ -11,7 +11,7 @@ jobs:
     - setup_remote_docker
     - run:
         name: Build image
-        command: docker build --build-arg arch="amd64" -t "${IMAGE_NAME}:ci" .
+        command: docker build --build-arg ARCHITECTURE="amd64" -t "${IMAGE_NAME}:ci" .
     - run:
         name: Scan image
         command: |
