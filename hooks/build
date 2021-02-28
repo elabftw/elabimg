@@ -1,8 +1,0 @@
-#!/bin/bash
-if [ $ARCHITECTURE = 'arm' ]; then
-    docker buildx build --platform linux/arm/v7 --build-arg ARCHITECTURE=$ARCHITECTURE -f $DOCKERFILE_PATH -t $IMAGE_NAME .
-elif [ $ARCHITECTURE = 'aarch64' ]; then
-    docker buildx build --platform linux/arm64 --build-arg ARCHITECTURE=$ARCHITECTURE -f $DOCKERFILE_PATH -t $IMAGE_NAME .
-else
-    docker build --build-arg ARCHITECTURE="amd64" -f $DOCKERFILE_PATH -t $IMAGE_NAME .
-fi
