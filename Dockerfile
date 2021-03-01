@@ -2,14 +2,18 @@
 FROM alpine:3.13
 
 # select version or branch here
-ENV ELABFTW_VERSION hypernext
+ARG ELABFTW_VERSION=hypernext
+ENV ELABFTW_VERSION $ELABFTW_VERSION
 
 # this is versioning for the container image
-ENV ELABIMG_VERSION 2.4.0
+ARG ELABIMG_VERSION=2.4.0
+env ELABIMG_VERSION $ELABIMG_VERSION
 
-ENV S6_OVERLAY_VERSION 2.2.0.1
+ARG S6_OVERLAY_VERSION=2.2.0.1
+ENV S6_OVERLAY_VERSION $S6_OVERLAY_VERSION
 
-ENV ARCHITECTURE amd64
+ARG ARCHITECTURE=amd64
+ENV ARCHITECTURE $ARCHITECTURE
 
 LABEL org.label-schema.name="elabftw" \
     org.label-schema.description="Run nginx and php-fpm to serve elabftw" \
