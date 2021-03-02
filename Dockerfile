@@ -68,8 +68,8 @@ RUN echo "I am building for $TARGETPLATFORM"
 ARG TARGETPLATFORM
 RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then ARCHITECTURE=amd64; elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then ARCHITECTURE=arm; elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then ARCHITECTURE=aarch64; else ARCHITECTURE=amd64; fi \
     && echo $ARCHITECTURE \
-    && curl -sS -O --output-dir /tmp/ --create-dirs https://github.com/just-containers/s6-overlay/releases/download/v"${S6_OVERLAY_VERSION}"/s6-overlay-"${ARCHITECTURE}".tar.gz \
-    && tar xzf /tmp/s6-overlay-"${ARCHITECTURE}".tar.gz -C /
+    && curl -sS -O --output-dir /tmp/ --create-dirs "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-${ARCHITECTURE}.tar.gz" \
+    && tar xzf "/tmp/s6-overlay-${ARCHITECTURE}.tar.gz" -C /
 
 # add a symlink to php8
 RUN ln -s /usr/bin/php8 /usr/bin/php
