@@ -2,12 +2,15 @@
 FROM alpine:3.13
 
 # select version or branch here
-ENV ELABFTW_VERSION hypernext
+ARG ELABFTW_VERSION=hypernext
+ENV ELABFTW_VERSION $ELABFTW_VERSION
 
 # this is versioning for the container image
-ENV ELABIMG_VERSION 2.4.0
+ARG ELABIMG_VERSION=2.4.0
+ENV ELABIMG_VERSION $ELABIMG_VERSION
 
-ENV S6_OVERLAY_VERSION 2.2.0.1
+ARG S6_OVERLAY_VERSION=2.2.0.1
+ENV S6_OVERLAY_VERSION $S6_OVERLAY_VERSION
 
 LABEL org.label-schema.name="elabftw" \
     org.label-schema.description="Run nginx and php-fpm to serve elabftw" \
@@ -16,10 +19,6 @@ LABEL org.label-schema.name="elabftw" \
     org.label-schema.version=$ELABFTW_VERSION \
     org.label-schema.maintainer="nicolas.carpi@curie.fr" \
     org.label-schema.schema-version="1.0"
-
-# install s6-overlay, our init system
-ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-amd64.tar.gz /tmp/
-RUN tar xzf /tmp/s6-overlay-amd64.tar.gz -C /
 
 # install nginx and php-fpm
 # php8-gd is required by mpdf for transparent png
@@ -61,6 +60,13 @@ RUN apk upgrade -U -a && apk add --no-cache \
     tzdata \
     unzip \
     yarn
+
+# install s6-overlay, our init system. Workaround for different versions using TARGETPLATFORM
+# platform see https://docs.docker.com/engine/reference/builder/#automatic-platform-args-in-the-global-scope
+ARG TARGETPLATFORM
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then ARCHITECTURE=amd64; elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then ARCHITECTURE=arm; elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then ARCHITECTURE=aarch64; else ARCHITECTURE=amd64; fi \
+    && curl -sS -L -O --output-dir /tmp/ --create-dirs "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-${ARCHITECTURE}.tar.gz" \
+    && tar xzf "/tmp/s6-overlay-${ARCHITECTURE}.tar.gz" -C /
 
 # add a symlink to php8
 RUN ln -s /usr/bin/php8 /usr/bin/php
