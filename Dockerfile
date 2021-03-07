@@ -34,7 +34,7 @@ RUN apk upgrade -U -a && apk add --no-cache \
     git \
     openssl \
     nginx \
-    openjdk8-jre \
+    openjdk11-jre \
     php8 \
     php8-curl \
     php8-ctype \
