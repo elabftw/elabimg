@@ -27,7 +27,7 @@ getEnv() {
     ipv6=${ENABLE_IPV6:-false}
     elabftw_user=${ELABFTW_USER:-nginx}
     elabftw_group=${ELABFTW_GROUP:-nginx}
-    elabftw_userid=${ELABFTW_USERID:-100}
+    elabftw_userid=${ELABFTW_USERID:-101}
     elabftw_groupid=${ELABFTW_GROUPID:-101}
 }
 
