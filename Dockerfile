@@ -52,6 +52,7 @@ RUN apk upgrade -U -a && apk add --no-cache \
     php8-openssl \
     php8-pdo_mysql \
     php8-pear \
+    php8-pecl-imagick \
     php8-phar \
     php8-redis \
     php8-session \
