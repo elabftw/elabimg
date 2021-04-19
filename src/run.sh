@@ -168,7 +168,7 @@ phpConf() {
     fi
 
     # the sessions are stored in a separate dir
-    sed -i -e "s:;session.save_path = \"/tmp\":session.save_path = \"/sessions\":" /etc/php7/php.ini
+    sed -i -e "s:;session.save_path = \"/tmp\":session.save_path = \"/sessions\":" /etc/php8/php.ini
     mkdir -p /sessions
     chown "${elabftw_user}":"${elabftw_group}" /sessions
     chmod 700 /sessions
