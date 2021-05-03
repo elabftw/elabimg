@@ -128,7 +128,7 @@ services:
 
   # the mysql database image
   mysql:
-    image: mysql:5.7
+    image: mysql:8.0
     restart: always
     container_name: mysql
     # drop some capabilities
@@ -156,18 +156,15 @@ services:
         # - D:\Users\Nico\elab-data\mysql:/var/lib/mysql
         # host:container
         - /var/elabftw/mysql:/var/lib/mysql
-    # expose should work, but sometimes it doesn't so use full port mapping
-    ports:
-      - '3306:3306'
-    #expose:
-    #  - 3306
+    expose:
+      - '3306'
     networks:
       - elabftw-net
 
   # example of a redis container
   # uncomment if you want to spawn a redis container to manage sessions
   #redis:
-  #  image: redis:5.0-alpine
+  #  image: redis:6.0-alpine
   #  restart: always
   #  container_name: redis
   #  networks:
