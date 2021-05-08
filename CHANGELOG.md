@@ -3,6 +3,7 @@
 
 # 2.4.1
 * Set X-XSS-Protection to 0 as per OWASP recommendation
+* Remove X-Frame-Options header as it is obsolete with the frame-ancestor CSP directive
 
 # 2.4.0
 * Alpine 3.13
