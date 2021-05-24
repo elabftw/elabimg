@@ -1,6 +1,10 @@
 # Container image version
 # Note: the version here is from Dockerfile:ELABIMG_VERSION not the tagged one
 
+# 2.4.1
+* Set X-XSS-Protection to 0 as per OWASP recommendation
+* Remove X-Frame-Options header as it is obsolete with the frame-ancestor CSP directive
+
 # 2.4.0
 * Alpine 3.13
 * PHP8
