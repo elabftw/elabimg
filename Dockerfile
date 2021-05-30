@@ -6,7 +6,7 @@ ARG ELABFTW_VERSION=hypernext
 ENV ELABFTW_VERSION $ELABFTW_VERSION
 
 # this is versioning for the container image
-ARG ELABIMG_VERSION=2.4.1
+ARG ELABIMG_VERSION=2.5.0
 ENV ELABIMG_VERSION $ELABIMG_VERSION
 
 ARG S6_OVERLAY_VERSION=2.2.0.1
@@ -27,6 +27,7 @@ LABEL org.label-schema.name="elabftw" \
 # don't put line comments inside this instruction
 RUN apk upgrade -U -a && apk add --no-cache \
     bash \
+    brotli \
     coreutils \
     curl \
     freetype \
