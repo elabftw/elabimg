@@ -1,6 +1,9 @@
 # Container image version
 # Note: the version here is from Dockerfile:ELABIMG_VERSION not the tagged one
 
+# 2.5.1
+* Add long caching for assets
+
 # 2.5.0
 * Add brotli compression to nginx for assets
 
