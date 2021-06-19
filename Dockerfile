@@ -94,7 +94,7 @@ RUN ln -sf /dev/stdout /var/log/nginx/access.log && ln -sf /dev/stderr /var/log/
 EXPOSE 443
 
 # Remove the contents of /etc/nginx/ due to copy conflicts for buildx see https://github.com/docker/buildx/issues/150
-RUN rm -r /etc/nginx
+#RUN rm -r /etc/nginx/*
 # copy configuration and run script
 COPY ./src/nginx/ /etc/nginx/
 COPY ./src/run.sh /run.sh
