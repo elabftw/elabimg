@@ -85,7 +85,7 @@ RUN echo "$(curl -sS https://composer.github.io/installer.sig) -" > composer-set
     && php8 composer-setup.php && rm composer-setup.php*
 
 # install dependencies
-RUN /elabftw/composer.phar install --prefer-dist --no-progress --no-dev -a && yarn config set network-timeout 300000 && yarn install --pure-lockfile && yarn run buildall && rm -rf node_modules && yarn cache clean && /elabftw/composer.phar clear-cache
+RUN /elabftw/composer.phar install --prefer-dist --no-progress --no-dev -a && yarn config set network-timeout 300000 && yarn install --pure-lockfile --prod && yarn run buildall && rm -rf node_modules && yarn cache clean && /elabftw/composer.phar clear-cache
 
 # redirect nginx logs to stout and stderr
 RUN ln -sf /dev/stdout /var/log/nginx/access.log && ln -sf /dev/stderr /var/log/nginx/error.log
@@ -93,6 +93,8 @@ RUN ln -sf /dev/stdout /var/log/nginx/access.log && ln -sf /dev/stderr /var/log/
 # nginx will run on port 443
 EXPOSE 443
 
+# Remove the contents of /etc/nginx/ due to copy conflicts for buildx see https://github.com/docker/buildx/issues/150
+#RUN rm -r /etc/nginx/*
 # copy configuration and run script
 COPY ./src/nginx/ /etc/nginx/
 COPY ./src/run.sh /run.sh
