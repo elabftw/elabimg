@@ -36,6 +36,7 @@ RUN apk upgrade -U -a && apk add --no-cache \
     openssl \
     nginx \
     nginx-mod-http-brotli \
+    nginx-mod-http-headers-more \
     openjdk11-jre \
     php8 \
     php8-curl \
