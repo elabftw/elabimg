@@ -63,7 +63,8 @@ RUN apk upgrade -U -a && apk add --no-cache \
     php8-zlib \
     tzdata \
     unzip \
-    yarn
+    yarn \
+    zopfli
 
 # install s6-overlay, our init system. Workaround for different versions using TARGETPLATFORM
 # platform see https://docs.docker.com/engine/reference/builder/#automatic-platform-args-in-the-global-scope
