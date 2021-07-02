@@ -143,7 +143,7 @@ phpfpmConf() {
     # allow using more memory for php
     sed -i -e "s/memory_limit = 128M/memory_limit = ${max_php_memory}/" /etc/php8/php.ini
     # add container version in env
-    if ! $(grep -q ELABIMG_VERSION /etc/php8/php-fpm.d/www.conf); then
+    if ! grep -q ELABIMG_VERSION /etc/php8/php-fpm.d/www.conf; then
         echo "env[ELABIMG_VERSION] = ${elabimg_version}" >> /etc/php8/php-fpm.d/www.conf
     fi
 }
