@@ -138,8 +138,10 @@ phpfpmConf() {
     sed -i -e "s/pm.start_servers = 2/pm.start_servers = 5/g" /etc/php8/php-fpm.d/www.conf
     sed -i -e "s/pm.min_spare_servers = 1/pm.min_spare_servers = 4/g" /etc/php8/php-fpm.d/www.conf
     sed -i -e "s/pm.max_spare_servers = 3/pm.max_spare_servers = 6/g" /etc/php8/php-fpm.d/www.conf
-    # allow using more memory
+    # allow using more memory for php-fpm
     sed -i -e "s/;php_admin_value\[memory_limit\] = 32M/php_admin_value\[memory_limit\] = ${max_php_memory}/" /etc/php8/php-fpm.d/www.conf
+    # allow using more memory for php
+    sed -i -e "s/memory_limit = 128M/memory_limit = ${max_php_memory}/" /etc/php8/php.ini
     # add container version in env
     if ! $(grep -q ELABIMG_VERSION /etc/php8/php-fpm.d/www.conf); then
         echo "env[ELABIMG_VERSION] = ${elabimg_version}" >> /etc/php8/php-fpm.d/www.conf
