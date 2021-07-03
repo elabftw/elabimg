@@ -89,8 +89,6 @@ nginxConf() {
     sed -i -e "s/localhost/$server_name/g" /etc/nginx/conf.d/elabftw.conf
     # fix upload permissions
     chown -R "${elabftw_user}":"${elabftw_group}" /var/lib/nginx
-    # remove the listen on IPv6 found in the default server conf file
-    sed -i -e "s/listen \[::\]:80/#listen \[::\]:80/" /etc/nginx/conf.d/default.conf
 
     # adjust client_max_body_size
     sed -i -e "s/client_max_body_size 100m;/client_max_body_size ${max_upload_size};/" /etc/nginx/nginx.conf
