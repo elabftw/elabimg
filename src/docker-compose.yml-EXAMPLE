@@ -1,5 +1,6 @@
 # docker-elabftw configuration file
 # use : "docker-compose up -d" to start containers
+# this config file contains all the possible configuration options, shown with default values
 # https://hub.docker.com/r/elabftw/elabimg/
 # https://www.elabftw.net
 version: '3'
@@ -10,12 +11,16 @@ services:
     # the latest tag points to the latest stable version
     # use the next tag to use alpha/beta version
     # use a specific version to pin the image
-    # example: elabftw/elabimg:3.5.0
+    # example: elabftw/elabimg:4.0.5
+    # default value: elabftw/elabimg:latest
     image: elabftw/elabimg:latest
+    # this ensures the container will be restarted after a reboot of the server
+    # default value: always
     restart: always
-    # comment this out if you use several containers with redis
+    # comment this out if you use several containers with redis, as you can't have several containers with the same name
+    # default value: elabftw
     container_name: elabftw
-    # drop some capabilities
+    # drop some capabilities not needed by the app
     cap_drop:
         - SYS_ADMIN
         - AUDIT_WRITE
@@ -24,72 +29,116 @@ services:
         - SETFCAP
         - NET_RAW
         - SYS_PTRACE
+    # environment variables passed to the container to configure options at run time (when container is started)
     environment:
-        # name of the MySQL server (by default "mysql" the name of the mysql container)
-        # you probably don't need to modify this value
+        # name of the MySQL server (by default "mysql" the name of the mysql container in default elabftw Docker configuration)
+        # you can put here the IP address of an existing MySQL server if you already have one running
+        # default value: mysql
         - DB_HOST=mysql
+
         # port on which the MySQL server is listening
         # you probably don't need to modify this value
+        # default value: 3306
         - DB_PORT=3306
+
         # name of the MySQL database
         # you probably don't need to modify this value
+        # default value: elabftw
         - DB_NAME=elabftw
+
         # MySQL user with write access to the previously named database
         # you probably don't need to modify this value
+        # default value: elabftw
         - DB_USER=elabftw
+
         # MySQL password; a random password has been generated for you but feel free to change it if needed
+        # default value: generated randomly if you get the config from get.elabftw.net
         - DB_PASSWORD=secr3t
+
         # Mysql Cert path: you only need this if you connect to a mysql server with tls
         # Use a volume that points to /mysql-cert in the container
+        # optional
         #- DB_CERT_PATH=/mysql-cert/cert.pem
+
         # The secret key is used for encrypting the SMTP password
         # A random one has been generated for you, if you wish to change it you can
         # get your secret key from https://demo.elabftw.net/install/generateSecretKey.php
         # if you don't want to get it from an external source you can also do that:
         # docker run --rm -t --entrypoint '/bin/sh' elabftw/elabimg -c "php /elabftw/web/install/generateSecretKey.php"
+        # default value: generated randomly if you get the config from get.elabftw.net
         - SECRET_KEY=
+
         # optional: change to your server name in nginx config
+        # default value: localhost
         - SERVER_NAME=localhost
+
         # optional: disable https, use this to have an http server listening on port 443
         # useful if the SSL stack is handled by haproxy or something alike
+        # default value: false
         - DISABLE_HTTPS=false
+
         # set to true to use letsencrypt certificates
         # note: does nothing if DISABLE_HTTPS is set to true
+        # default value: false
         - ENABLE_LETSENCRYPT=false
-        # no need to change
+
+        # the amount of memory available to PHP, increase it if you run into memory issues due to the size of your database
+        # default value: 256M
         - MAX_PHP_MEMORY=256M
-        # no need to change
+
+        # maximum size of uploaded files
+        # default value: 100M
         - MAX_UPLOAD_SIZE=100M
+
+        # the timezone in which the server is
         # better if changed (see list of available values: http://php.net/manual/en/timezones.php
         - PHP_TIMEZONE=Europe/Paris
         # again
         - TZ=Europe/Paris
+
         # enable if you want nginx to be configured with set_real_ip_from directives
         - SET_REAL_IP=false
         # the IP address/addresses. Separate them with a , AND A SPACE. Several set_real_ip_from lines will be added to the nginx config. One for each.
         # this does nothing if SET_REAL_IP is set to false
         - SET_REAL_IP_FROM=192.168.31.48, 192.168.0.42, 10.10.13.37
+
         # optional: set the limit of simultaneous request that will be server
         # see http://php.net/manual/en/install.fpm.configuration.php
-        # default is 50
+        # default value: 50
         - PHP_MAX_CHILDREN=50
+
         # optional: adjust the max execution time of PHP scripts. Allows for bigger ZIP exports.
+        # default value: 120
         - PHP_MAX_EXECUTION_TIME=120
+
+        #######################
+        # REDIS CONFIGURATION #
+        #######################
         # optional: use a redis server to store the PHP sessions
+        # default value: false
         - USE_REDIS=false
         # optional: set an IP or hostname for the redis server
+        # default value: redis
         - REDIS_HOST=redis
         # optional: set a custom port for redis
+        # default value: 6379
         - REDIS_PORT=6379
+
         # optional: enable ipv6 (make sure you have AAAA dns record!)
+        # default value: false
         - ENABLE_IPV6=false
+
         # adjust the user/group that will own the uploaded files
         # useful in very particular situations, like with NFSv4
         # you don't really need to change this in most situations
         # so this is left commented (default values are shown)
+        # default value: nginx
         #- ELABFTW_USER=nginx
+        # default value: nginx
         #- ELABFTW_GROUP=nginx
-        #- ELABFTW_USERID=100
+        # default value: 101
+        #- ELABFTW_USERID=101
+        # default value: 101
         #- ELABFTW_GROUPID=101
     ports:
         # if you want elabftw to run on a different port, change the first number

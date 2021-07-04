@@ -89,8 +89,6 @@ nginxConf() {
     sed -i -e "s/localhost/$server_name/g" /etc/nginx/conf.d/elabftw.conf
     # fix upload permissions
     chown -R "${elabftw_user}":"${elabftw_group}" /var/lib/nginx
-    # remove the listen on IPv6 found in the default server conf file
-    sed -i -e "s/listen \[::\]:80/#listen \[::\]:80/" /etc/nginx/conf.d/default.conf
 
     # adjust client_max_body_size
     sed -i -e "s/client_max_body_size 100m;/client_max_body_size ${max_upload_size};/" /etc/nginx/nginx.conf
@@ -138,10 +136,12 @@ phpfpmConf() {
     sed -i -e "s/pm.start_servers = 2/pm.start_servers = 5/g" /etc/php8/php-fpm.d/www.conf
     sed -i -e "s/pm.min_spare_servers = 1/pm.min_spare_servers = 4/g" /etc/php8/php-fpm.d/www.conf
     sed -i -e "s/pm.max_spare_servers = 3/pm.max_spare_servers = 6/g" /etc/php8/php-fpm.d/www.conf
-    # allow using more memory
+    # allow using more memory for php-fpm
     sed -i -e "s/;php_admin_value\[memory_limit\] = 32M/php_admin_value\[memory_limit\] = ${max_php_memory}/" /etc/php8/php-fpm.d/www.conf
+    # allow using more memory for php
+    sed -i -e "s/memory_limit = 128M/memory_limit = ${max_php_memory}/" /etc/php8/php.ini
     # add container version in env
-    if ! $(grep -q ELABIMG_VERSION /etc/php8/php-fpm.d/www.conf); then
+    if ! grep -q ELABIMG_VERSION /etc/php8/php-fpm.d/www.conf; then
         echo "env[ELABIMG_VERSION] = ${elabimg_version}" >> /etc/php8/php-fpm.d/www.conf
     fi
 }

@@ -1,6 +1,9 @@
 # Container image version
 # Note: the version here is from Dockerfile:ELABIMG_VERSION not the tagged one
 
+# 2.6.1
+* Modify also the memory_limit value in php.ini
+
 # 2.6.0
 * Add Vary header
 * Add zopfli for gzip asset compression
