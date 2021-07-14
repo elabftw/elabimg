@@ -58,7 +58,6 @@ jobs:
                 push: true
                 build-args: |
                     ELABFTW_VERSION=${{ steps.elabftwrelease.outputs.releasetag }}
-                    ELABIMG_VERSION=${{ steps.elabimgrelease.outputs.releasetag }}
                 tags: |
-                    ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_REPOSITORY }}:latest
-                    ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_REPOSITORY }}:${{ steps.elabftwrelease.outputs.releasetag }}
+                    elabftw/elabimg:latest
+                    elabftw/elabimg:${{ steps.elabftwrelease.outputs.releasetag }}
