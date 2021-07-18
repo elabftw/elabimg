@@ -187,6 +187,8 @@ services:
         - SYS_CHROOT
         - SETFCAP
         - NET_RAW
+    cap_add:
+        - SYS_NICE
     environment:
         # need to change
         - MYSQL_ROOT_PASSWORD=secr3t
