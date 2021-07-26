@@ -1,5 +1,66 @@
+# Note: no need to chain the RUN commands here as it's a builder image and nothing will be kept
+# build nginx with only the bare minimum of features or modules
+FROM alpine:3.13 as builder
+
+ENV NGINX_VERSION=1.21.1
+
+# install dependencies
+RUN apk add --no-cache git libc-dev pcre-dev make gcc zlib-dev openssl-dev brotli-dev binutils
+
+# create a builder user and group
+RUN addgroup -S -g 3148 builder && adduser -D -S -G builder -u 3148 builder
+RUN mkdir /build && chown builder:builder /build
+WORKDIR /build
+
+# clone the nginx modules
+RUN git clone --depth 1 https://github.com/google/ngx_brotli
+RUN git clone --depth 1 https://github.com/openresty/headers-more-nginx-module
+
+# now start the build
+USER builder
+ADD --chown=builder:builder https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz nginx.tgz
+RUN tar xf nginx.tgz \
+    && cd nginx-$NGINX_VERSION \
+    && ./configure \
+        --prefix=/var/lib/nginx \
+        --sbin-path=/usr/sbin/nginx \
+        --modules-path=/usr/lib/nginx/modules \
+        --conf-path=/etc/nginx/nginx.conf \
+        --pid-path=/run/nginx/nginx.pid \
+        --error-log-path=/var/log/nginx/error.log \
+        --http-log-path=/var/log/nginx/access.log \
+        --lock-path=/run/nginx/nginx.lock \
+        --http-client-body-temp-path=/var/lib/nginx/tmp/client_body \
+        --http-proxy-temp-path=/var/lib/nginx/tmp/proxy \
+        --http-fastcgi-temp-path=/var/lib/nginx/tmp/fastcgi \
+        --user=nginx \
+        --group=nginx \
+        --with-threads \
+        --with-http_ssl_module \
+        --with-http_v2_module \
+        --with-http_realip_module \
+        --with-http_gzip_static_module \
+        --add-module=/build/ngx_brotli \
+        --add-module=/build/headers-more-nginx-module \
+    && make -j$(getconf _NPROCESSORS_ONLN) \
+    && strip objs/nginx
+
+USER root
+WORKDIR /build/nginx-$NGINX_VERSION
+RUN make install
+
 # elabftw + nginx + php-fpm in a container
 FROM alpine:3.13
+
+COPY --from=builder /usr/sbin/nginx /usr/sbin/nginx
+COPY --from=builder /etc/nginx/mime.types /etc/nginx/mime.types
+COPY --from=builder /etc/nginx/fastcgi.conf /etc/nginx/fastcgi.conf
+
+RUN addgroup -S nginx \
+    && adduser -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx -u 101 nginx \
+    && mkdir -pv /var/lib/nginx/tmp/{client_body,fastcgi} /var/log/nginx/{access.log,error.log} \
+    && ln -sf /dev/stdout /var/log/nginx/access.log \
+    && ln -sf /dev/stderr /var/log/nginx/error.log
 
 # select version or branch here
 ARG ELABFTW_VERSION=hypernext
@@ -34,9 +95,6 @@ RUN apk upgrade -U -a && apk add --no-cache \
     ghostscript \
     git \
     openssl \
-    nginx \
-    nginx-mod-http-brotli \
-    nginx-mod-http-headers-more \
     openjdk11-jre \
     php8 \
     php8-curl \
@@ -89,14 +147,11 @@ RUN echo "$(curl -sS https://composer.github.io/installer.sig) -" > composer-set
 # install dependencies
 RUN /elabftw/composer.phar install --prefer-dist --no-progress --no-dev -a && yarn config set network-timeout 300000 && yarn install --pure-lockfile --prod && yarn run buildall && rm -rf node_modules && yarn cache clean && /elabftw/composer.phar clear-cache
 
-# redirect nginx logs to stout and stderr
-RUN ln -sf /dev/stdout /var/log/nginx/access.log && ln -sf /dev/stderr /var/log/nginx/error.log
-
 # nginx will run on port 443
 EXPOSE 443
 
 # conf.d is now a symlink to http.d and it fails with buildx, so we need to remove it before it can be copied
-RUN rm /etc/nginx/conf.d
+#RUN rm /etc/nginx/conf.d
 # copy configuration and run script
 COPY ./src/nginx/ /etc/nginx/
 COPY ./src/run.sh /run.sh
