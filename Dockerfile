@@ -1,6 +1,6 @@
 # Note: no need to chain the RUN commands here as it's a builder image and nothing will be kept
 # build nginx with only the bare minimum of features or modules
-FROM alpine:3.13 as builder
+FROM alpine:3.13 as nginx-builder
 
 ENV NGINX_VERSION=1.21.1
 
@@ -51,11 +51,15 @@ RUN make install
 # elabftw + nginx + php-fpm in a container
 FROM alpine:3.13
 
-COPY --from=builder /usr/sbin/nginx /usr/sbin/nginx
-COPY --from=builder /etc/nginx/mime.types /etc/nginx/mime.types
-COPY --from=builder /etc/nginx/fastcgi.conf /etc/nginx/fastcgi.conf
+# copy our nginx from the build image
+COPY --from=nginx-builder /usr/sbin/nginx /usr/sbin/nginx
+COPY --from=nginx-builder /etc/nginx/mime.types /etc/nginx/mime.types
+COPY --from=nginx-builder /etc/nginx/fastcgi.conf /etc/nginx/fastcgi.conf
 
-RUN addgroup -S nginx \
+# create the nginx group and user (101:101),
+# the necessary nginx dirs,
+# and redirect logs to stdout/stderr for docker logs to catch
+RUN addgroup -S -g 101 nginx \
     && adduser -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx -u 101 nginx \
     && mkdir -pv /var/lib/nginx/tmp/{client_body,fastcgi} /var/log/nginx/{access.log,error.log} \
     && ln -sf /dev/stdout /var/log/nginx/access.log \
