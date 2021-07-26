@@ -19,9 +19,9 @@ RUN git clone --depth 1 https://github.com/openresty/headers-more-nginx-module
 # now start the build
 USER builder
 ADD --chown=builder:builder https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz nginx.tgz
-RUN tar xf nginx.tgz \
-    && cd nginx-$NGINX_VERSION \
-    && ./configure \
+RUN tar xf nginx.tgz
+WORKDIR /build/nginx-$NGINX_VERSION
+RUN ./configure \
         --prefix=/var/lib/nginx \
         --sbin-path=/usr/sbin/nginx \
         --modules-path=/usr/lib/nginx/modules \
@@ -46,7 +46,6 @@ RUN tar xf nginx.tgz \
     && strip objs/nginx
 
 USER root
-WORKDIR /build/nginx-$NGINX_VERSION
 RUN make install
 
 # elabftw + nginx + php-fpm in a container
@@ -135,7 +134,8 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then ARCHITECTURE=amd64; elif [ "$
 RUN ln -s /usr/bin/php8 /usr/bin/php
 
 # clone elabftw repository in /elabftw
-RUN git clone --depth 1 -b $ELABFTW_VERSION https://github.com/elabftw/elabftw.git /elabftw && chown -R nginx:nginx /elabftw && rm -rf /elabftw/.git
+RUN git clone --depth 1 -b $ELABFTW_VERSION https://github.com/elabftw/elabftw.git /elabftw && mkdir -p /elabftw/{cache,uploads} \
+    && chown -R nginx:nginx /elabftw/{cache,uploads} && rm -rf /elabftw/.git
 
 WORKDIR /elabftw
 
