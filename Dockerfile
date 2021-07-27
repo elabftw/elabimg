@@ -44,7 +44,7 @@ RUN ./configure \
         --sbin-path=/usr/sbin/nginx \
         --modules-path=/usr/lib/nginx/modules \
         --conf-path=/etc/nginx/nginx.conf \
-        --pid-path=/run/nginx/nginx.pid \
+        --pid-path=/run/nginx.pid \
         --error-log-path=/var/log/nginx/error.log \
         --http-log-path=/var/log/nginx/access.log \
         --lock-path=/run/nginx/nginx.lock \

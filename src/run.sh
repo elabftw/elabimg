@@ -29,6 +29,8 @@ getEnv() {
     elabftw_group=${ELABFTW_GROUP:-nginx}
     elabftw_userid=${ELABFTW_USERID:-101}
     elabftw_groupid=${ELABFTW_GROUPID:-101}
+    # value for nginx's worker_processes setting
+    nginx_work_proc=${NGINX_WORK_PROC:-auto}
 }
 
 # Create user if not default user
@@ -77,21 +79,22 @@ nginxConf() {
         ln -fs /etc/nginx/https.conf /etc/nginx/conf.d/elabftw.conf
         if ($enable_letsencrypt); then
             mkdir -p /ssl
-            sed -i -e "s:CERT_PATH:/ssl/live/localhost/fullchain.pem:" /etc/nginx/conf.d/elabftw.conf
-            sed -i -e "s:KEY_PATH:/ssl/live/localhost/privkey.pem:" /etc/nginx/conf.d/elabftw.conf
+            sed -i -e "s:%CERT_PATH%:/ssl/live/${server_name}/fullchain.pem:" /etc/nginx/conf.d/elabftw.conf
+            sed -i -e "s:%KEY_PATH%:/ssl/live/${server_name}/privkey.pem:" /etc/nginx/conf.d/elabftw.conf
         else
-            sed -i -e "s:CERT_PATH:/etc/nginx/certs/server.crt:" /etc/nginx/conf.d/elabftw.conf
-            sed -i -e "s:KEY_PATH:/etc/nginx/certs/server.key:" /etc/nginx/conf.d/elabftw.conf
+            sed -i -e "s:%CERT_PATH%:/etc/nginx/certs/server.crt:" /etc/nginx/conf.d/elabftw.conf
+            sed -i -e "s:%KEY_PATH%:/etc/nginx/certs/server.key:" /etc/nginx/conf.d/elabftw.conf
         fi
     fi
     # set the server name in nginx config
     # works also for the ssl config if ssl is enabled
-    sed -i -e "s/localhost/$server_name/g" /etc/nginx/conf.d/elabftw.conf
-    # fix upload permissions
-    chown -R "${elabftw_user}":"${elabftw_group}" /var/lib/nginx
+    # here elabftw.conf is a symbolic link to either http.conf or https.conf
+    sed -i -e "s/%SERVER_NAME%/${server_name}/" /etc/nginx/conf.d/elabftw.conf
+    # make sure nginx user can write this directory for file uploads
+    chown -R "${elabftw_user}":"${elabftw_group}" /var/lib/nginx/tmp
 
     # adjust client_max_body_size
-    sed -i -e "s/client_max_body_size 100m;/client_max_body_size ${max_upload_size};/" /etc/nginx/nginx.conf
+    sed -i -e "s/%CLIENT_MAX_BODY_SIZE%/${max_upload_size}/" /etc/nginx/nginx.conf
 
     # SET REAL IP CONFIG
     if ($set_real_ip); then
@@ -102,7 +105,7 @@ nginxConf() {
         do
             conf_string+="set_real_ip_from ${element};"
         done
-        sed -i -e "s/#REAL_IP_CONF/${conf_string}/" /etc/nginx/common.conf
+        sed -i -e "s/#%REAL_IP_CONF%/${conf_string}/" /etc/nginx/common.conf
         # enable real_ip_header config
         sed -i -e "s/#real_ip_header X-Forwarded-For;/real_ip_header X-Forwarded-For;/" /etc/nginx/common.conf
     fi
@@ -114,7 +117,10 @@ nginxConf() {
     fi
 
     # CHANGE NGINX USER
-    sed -i -e "s/#user-placeholder/user ${elabftw_user} ${elabftw_group};/" /etc/nginx/nginx.conf
+    sed -i -e "s/%USER-GROUP%/${elabftw_user} ${elabftw_group}/" /etc/nginx/nginx.conf
+
+    # SET WORKER PROCESSES (default is auto)
+    sed -i -e "s/%WORKER_PROCESSES%/${nginx_work_proc}/" /etc/nginx/nginx.conf
 }
 
 phpfpmConf() {

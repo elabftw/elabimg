@@ -2,7 +2,9 @@
 # Note: the version here is from Dockerfile:ELABIMG_VERSION not the tagged one
 
 # 3.0.0
-* Use custom compiled nginx instead of the packaged version
+* Use custom compiled nginx instead of the packaged version (#20)
+* Rework placeholders syntax in nginx config files
+* Add configurable value for worker_processes setting (default: auto)
 
 # 2.6.1
 * Modify also the memory_limit value in php.ini
