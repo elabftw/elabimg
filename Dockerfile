@@ -58,7 +58,7 @@ RUN ./configure \
         --with-http_v2_module \
         --with-http_realip_module \
         --with-http_gzip_static_module \
-        --with-cc-opt='-g0 -O2 -fstack-protector -flto --param=ssp-buffer-size=4 -Wformat -Werror=format-security'\
+        --with-cc-opt='-g0 -O3 -fstack-protector -flto --param=ssp-buffer-size=4 -Wformat -Werror=format-security'\
         --add-module=/build/ngx_brotli \
         --add-module=/build/headers-more-nginx-module \
     && make -j$(getconf _NPROCESSORS_ONLN) \
