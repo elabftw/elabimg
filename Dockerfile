@@ -5,7 +5,7 @@ FROM alpine:3.13 as nginx-builder
 ENV NGINX_VERSION=1.21.1
 
 # install dependencies
-RUN apk add --no-cache git libc-dev pcre-dev make gcc zlib-dev openssl-dev brotli-dev binutils
+RUN apk add --no-cache git libc-dev pcre-dev make gcc zlib-dev openssl-dev brotli-dev binutils gnupg
 
 # create a builder user and group
 RUN addgroup -S -g 3148 builder && adduser -D -S -G builder -u 3148 builder
@@ -18,7 +18,16 @@ RUN git clone --depth 1 https://github.com/openresty/headers-more-nginx-module
 
 # now start the build
 USER builder
+# get nginx source
 ADD --chown=builder:builder https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz nginx.tgz
+# get nginx signature file
+ADD --chown=builder:builder https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz.asc nginx.tgz.asc
+# get the public key. Note: Maxim's key is used, not the designated "signing key"
+ADD --chown=builder:builder https://nginx.org/keys/mdounin.key nginx-signing.key
+# import it and verify the tarball
+RUN gpg --import nginx-signing.key
+RUN gpg --verify nginx.tgz.asc
+# all good now untar and build!
 RUN tar xf nginx.tgz
 WORKDIR /build/nginx-$NGINX_VERSION
 RUN ./configure \
