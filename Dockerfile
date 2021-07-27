@@ -1,8 +1,17 @@
-# Note: no need to chain the RUN commands here as it's a builder image and nothing will be kept
+# Dockerfile for elabftw web container
+# nginx custom + php-fpm + elabftw complete production files
+# https://github.com/elabftw/elabimg
+
 # build nginx with only the bare minimum of features or modules
+# Note: no need to chain the RUN commands here as it's a builder image and nothing will be kept
 FROM alpine:3.13 as nginx-builder
 
 ENV NGINX_VERSION=1.21.1
+# releases can be signed by any key on this page https://nginx.org/en/pgp_keys.html
+# so this might need to be updated for a new release
+# available keys: mdounin, maxim, sb
+# the "signing key" is used for linux packages, see https://trac.nginx.org/nginx/ticket/205
+ENV PGP_SIGNING_KEY_OWNER=mdounin
 
 # install dependencies
 RUN apk add --no-cache git libc-dev pcre-dev make gcc zlib-dev openssl-dev brotli-dev binutils gnupg
@@ -11,19 +20,19 @@ RUN apk add --no-cache git libc-dev pcre-dev make gcc zlib-dev openssl-dev brotl
 RUN addgroup -S -g 3148 builder && adduser -D -S -G builder -u 3148 builder
 RUN mkdir /build && chown builder:builder /build
 WORKDIR /build
+USER builder
 
 # clone the nginx modules
 RUN git clone --depth 1 https://github.com/google/ngx_brotli
 RUN git clone --depth 1 https://github.com/openresty/headers-more-nginx-module
 
 # now start the build
-USER builder
 # get nginx source
 ADD --chown=builder:builder https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz nginx.tgz
 # get nginx signature file
 ADD --chown=builder:builder https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz.asc nginx.tgz.asc
-# get the public key. Note: Maxim's key is used, not the designated "signing key"
-ADD --chown=builder:builder https://nginx.org/keys/mdounin.key nginx-signing.key
+# get the corresponding public key
+ADD --chown=builder:builder https://nginx.org/keys/$PGP_SIGNING_KEY_OWNER.key nginx-signing.key
 # import it and verify the tarball
 RUN gpg --import nginx-signing.key
 RUN gpg --verify nginx.tgz.asc
