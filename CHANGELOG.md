@@ -1,6 +1,9 @@
 # Container image version
 # Note: the version here is from Dockerfile:ELABIMG_VERSION not the tagged one
 
+# 3.0.0
+* Use custom compiled nginx instead of the packaged version
+
 # 2.6.1
 * Modify also the memory_limit value in php.ini
 
