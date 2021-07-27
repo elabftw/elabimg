@@ -70,6 +70,26 @@ RUN make install
 # elabftw + nginx + php-fpm in a container
 FROM alpine:3.13
 
+# select version or branch here
+ARG ELABFTW_VERSION=hypernext
+ENV ELABFTW_VERSION $ELABFTW_VERSION
+
+# this is versioning for the container image
+ARG ELABIMG_VERSION=3.0.0
+ENV ELABIMG_VERSION $ELABIMG_VERSION
+
+ARG S6_OVERLAY_VERSION=2.2.0.3
+ENV S6_OVERLAY_VERSION $S6_OVERLAY_VERSION
+
+LABEL org.label-schema.name="elabftw" \
+    org.label-schema.description="Run nginx and php-fpm to serve elabftw" \
+    org.label-schema.url="https://www.elabftw.net" \
+    org.label-schema.vcs-url="https://github.com/elabftw/elabimg" \
+    org.label-schema.version=$ELABFTW_VERSION \
+    org.label-schema.maintainer="nicolas.carpi@curie.fr" \
+    org.label-schema.schema-version="1.0"
+
+# NGINX
 # copy our nginx from the build image
 COPY --from=nginx-builder /usr/sbin/nginx /usr/sbin/nginx
 COPY --from=nginx-builder /etc/nginx/mime.types /etc/nginx/mime.types
@@ -83,27 +103,9 @@ RUN addgroup -S -g 101 nginx \
     && mkdir -pv /var/lib/nginx/tmp/{client_body,fastcgi} /var/log/nginx/{access.log,error.log} \
     && ln -sf /dev/stdout /var/log/nginx/access.log \
     && ln -sf /dev/stderr /var/log/nginx/error.log
+# END NGINX
 
-# select version or branch here
-ARG ELABFTW_VERSION=hypernext
-ENV ELABFTW_VERSION $ELABFTW_VERSION
-
-# this is versioning for the container image
-ARG ELABIMG_VERSION=2.6.1
-ENV ELABIMG_VERSION $ELABIMG_VERSION
-
-ARG S6_OVERLAY_VERSION=2.2.0.1
-ENV S6_OVERLAY_VERSION $S6_OVERLAY_VERSION
-
-LABEL org.label-schema.name="elabftw" \
-    org.label-schema.description="Run nginx and php-fpm to serve elabftw" \
-    org.label-schema.url="https://www.elabftw.net" \
-    org.label-schema.vcs-url="https://github.com/elabftw/elabimg" \
-    org.label-schema.version=$ELABFTW_VERSION \
-    org.label-schema.maintainer="nicolas.carpi@curie.fr" \
-    org.label-schema.schema-version="1.0"
-
-# install nginx and php-fpm
+# install required packages
 # php8-gd is required by mpdf for transparent png
 # coreutils has sha384sum
 # php8-tokenizer and php8-xmlwriter are for dev only
