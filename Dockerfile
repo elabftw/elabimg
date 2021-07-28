@@ -176,10 +176,11 @@ WORKDIR /elabftw
 # some ini settings are set on the command line to override the restrictive production ones already set
 RUN echo "$(curl -sS https://composer.github.io/installer.sig) -" > composer-setup.php.sig \
     && curl -sS https://getcomposer.org/installer | tee composer-setup.php | sha384sum -c composer-setup.php.sig \
-    && php -d memory_limit=256M -d disable_functions='' -d allow_url_fopen=On -d open_basedir='' composer-setup.php && rm composer-setup.php*
+    && php -d memory_limit=256M -d disable_functions='' -d allow_url_fopen=On -d open_basedir='' composer-setup.php \
+    && rm composer-setup.php* && mv composer.phar /usr/bin/composer
 
 # install php and js dependencies and build assets
-RUN php -d memory_limit=256M -d allow_url_fopen=On -d open_basedir='' /elabftw/composer.phar install --prefer-dist --no-cache --no-progress --no-dev -a \
+RUN php -d memory_limit=256M -d allow_url_fopen=On -d open_basedir='' /usr/bin/composer install --prefer-dist --no-cache --no-progress --no-dev -a \
     && yarn config set network-timeout 300000 \
     && yarn install --pure-lockfile --prod \
     && yarn run buildall \
