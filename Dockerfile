@@ -158,6 +158,8 @@ COPY ./src/services /etc/services.d
 
 # PHP
 COPY ./src/php/php.ini /etc/php8/php.ini
+COPY ./src/php/php-fpm.conf /etc/php8/php-fpm.conf
+COPY ./src/php/elabpool.conf /etc/php8/php-fpm.d/elabpool.conf
 # END PHP
 
 # ELABFTW

@@ -134,37 +134,27 @@ nginxConf() {
     sed -i -e "s/%WORKER_PROCESSES%/${nginx_work_proc}/" /etc/nginx/nginx.conf
 }
 
+# PHP-FPM CONFIG
 phpfpmConf() {
-    # php-fpm config
-    sed -i -e "s/;daemonize\s*=\s*yes/daemonize = no/g" /etc/php8/php-fpm.conf
-    sed -i -e "s/;catch_workers_output\s*=\s*yes/catch_workers_output = yes/g" /etc/php8/php-fpm.d/www.conf
-    # use a unix socket
-    sed -i -e "s;listen = 127.0.0.1:9000;listen = /var/run/php-fpm.sock;g" /etc/php8/php-fpm.d/www.conf
+    f="/etc/php8/php-fpm.d/elabpool.conf"
     # set nginx as user for php-fpm
-    sed -i -e "s/;listen.owner = nobody/listen.owner = ${elabftw_user}/g" /etc/php8/php-fpm.d/www.conf
-    sed -i -e "s/;listen.group = nobody/listen.group = ${elabftw_group}/g" /etc/php8/php-fpm.d/www.conf
-    sed -i -e "s/user = nobody/user = ${elabftw_user}/g" /etc/php8/php-fpm.d/www.conf
-    sed -i -e "s/group = nobody/group = ${elabftw_group}/g" /etc/php8/php-fpm.d/www.conf
+    sed -i -e "s/%ELABFTW_USER%/${elabftw_user}/" $f
+    sed -i -e "s/%ELABFTW_GROUP%/${elabftw_group}/" $f
     # increase max number of simultaneous requests
-    sed -i -e "s/pm.max_children = 5/pm.max_children = ${php_max_children}/g" /etc/php8/php-fpm.d/www.conf
-    # allow more idle server processes
-    sed -i -e "s/pm.start_servers = 2/pm.start_servers = 5/g" /etc/php8/php-fpm.d/www.conf
-    sed -i -e "s/pm.min_spare_servers = 1/pm.min_spare_servers = 4/g" /etc/php8/php-fpm.d/www.conf
-    sed -i -e "s/pm.max_spare_servers = 3/pm.max_spare_servers = 6/g" /etc/php8/php-fpm.d/www.conf
+    sed -i -e "s/%PHP_MAX_CHILDREN%/${php_max_children}/" $f
     # allow using more memory for php-fpm
-    sed -i -e "s/;php_admin_value\[memory_limit\] = 32M/php_admin_value\[memory_limit\] = ${max_php_memory}/" /etc/php8/php-fpm.d/www.conf
-    # allow using more memory for php
-    sed -i -e "s/%PHP_MEMORY_LIMIT%/${max_php_memory}/" /etc/php8/php.ini
+    sed -i -e "s/%PHP_MAX_MEMORY%/${max_php_memory}/" $f
     # add container version in env
-    if ! grep -q ELABIMG_VERSION /etc/php8/php-fpm.d/www.conf; then
-        echo "env[ELABIMG_VERSION] = ${elabimg_version}" >> /etc/php8/php-fpm.d/www.conf
-    fi
+    sed -i -e "s/%ELABIMG_VERSION%/${elabimg_version}/" $f
 }
 
-# php.ini config
+# PHP CONFIG
 phpConf() {
+    f="/etc/php8/php.ini"
+    # allow using more memory for php
+    sed -i -e "s/%PHP_MEMORY_LIMIT%/${max_php_memory}/" $f
     # change upload_max_filesize and post_max_size
-    sed -i -e "s/%PHP_MAX_UPLOAD_SIZE%/${max_upload_size}/" /etc/php8/php.ini
+    sed -i -e "s/%PHP_MAX_UPLOAD_SIZE%/${max_upload_size}/" $f
 
     # PHP SESSIONS
     # default values for sessions (with files)
@@ -181,13 +171,13 @@ phpConf() {
         chmod 700 /sessions
     fi
     # now set the values
-    sed -i -e "s:%SESSION_SAVE_HANDLER%:${sess_save_handler}:" /etc/php8/php.ini
-    sed -i -e "s|%SESSION_SAVE_PATH%|${sess_save_path}|" /etc/php8/php.ini
+    sed -i -e "s:%SESSION_SAVE_HANDLER%:${sess_save_handler}:" $f
+    sed -i -e "s|%SESSION_SAVE_PATH%|${sess_save_path}|" $f
 
     # config for timezone, use : because timezone will contain /
-    sed -i -e "s:%TIMEZONE%:${php_timezone}:" /etc/php8/php.ini
+    sed -i -e "s:%TIMEZONE%:${php_timezone}:" $f
     # allow longer requests execution time
-    sed -i -e "s/%PHP_MAX_EXECUTION_TIME%/${php_max_execution_time}/" /etc/php8/php.ini
+    sed -i -e "s/%PHP_MAX_EXECUTION_TIME%/${php_max_execution_time}/" $f
 }
 
 elabftwConf() {
