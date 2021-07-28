@@ -214,6 +214,8 @@ services:
   mysql:
     image: mysql:8.0
     restart: always
+     # fix issue with "The server requested authentication method unknown to the client [caching_sha2_password]"
+    command: --default-authentication-plugin=mysql_native_password
     container_name: mysql
     # drop some capabilities
     cap_drop:
