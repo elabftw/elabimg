@@ -70,24 +70,16 @@ RUN make install
 # elabftw + nginx + php-fpm in a container
 FROM alpine:3.13
 
-# select version or branch here
-ARG ELABFTW_VERSION=hypernext
-ENV ELABFTW_VERSION $ELABFTW_VERSION
-
 # this is versioning for the container image
 ARG ELABIMG_VERSION=3.0.0
 ENV ELABIMG_VERSION $ELABIMG_VERSION
 
-ARG S6_OVERLAY_VERSION=2.2.0.3
-ENV S6_OVERLAY_VERSION $S6_OVERLAY_VERSION
-
-LABEL org.label-schema.name="elabftw" \
-    org.label-schema.description="Run nginx and php-fpm to serve elabftw" \
-    org.label-schema.url="https://www.elabftw.net" \
-    org.label-schema.vcs-url="https://github.com/elabftw/elabimg" \
-    org.label-schema.version=$ELABFTW_VERSION \
-    org.label-schema.maintainer="nicolas.carpi@curie.fr" \
-    org.label-schema.schema-version="1.0"
+LABEL net.elabftw.name="elabftw" \
+    net.elabftw.description="Run nginx and php-fpm to serve elabftw" \
+    net.elabftw.url="https://www.elabftw.net" \
+    net.elabftw.vcs-url="https://github.com/elabftw/elabimg" \
+    net.elabftw.version=$ELABFTW_VERSION \
+    net.elabftw.maintainer="nico-git@deltablot.email"
 
 # NGINX
 # copy our nginx from the build image
@@ -103,6 +95,14 @@ RUN addgroup -S -g 101 nginx \
     && mkdir -pv /var/lib/nginx/tmp/{client_body,fastcgi} /var/log/nginx/{access.log,error.log} \
     && ln -sf /dev/stdout /var/log/nginx/access.log \
     && ln -sf /dev/stderr /var/log/nginx/error.log
+
+# copy nginx config files
+COPY ./src/nginx/ /etc/nginx/
+# the healthcheck.sh script checks if nginx replies to requests
+# the HEALTHCHECK instruction allows to show healthy/unhealthy in "docker ps" output next to the container name
+HEALTHCHECK --interval=2m --timeout=5s --retries=3 CMD sh /etc/nginx/healthcheck.sh
+# nginx will run on port 443
+EXPOSE 443
 # END NGINX
 
 # install required packages
@@ -148,15 +148,29 @@ RUN apk upgrade -U -a && apk add --no-cache \
     yarn \
     zopfli
 
+# add a symlink to php8
+RUN ln -s /usr/bin/php8 /usr/bin/php
+
+# S6-OVERLAY
 # install s6-overlay, our init system. Workaround for different versions using TARGETPLATFORM
 # platform see https://docs.docker.com/engine/reference/builder/#automatic-platform-args-in-the-global-scope
+ARG S6_OVERLAY_VERSION=2.2.0.3
+ENV S6_OVERLAY_VERSION $S6_OVERLAY_VERSION
+
 ARG TARGETPLATFORM
 RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then ARCHITECTURE=amd64; elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then ARCHITECTURE=arm; elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then ARCHITECTURE=aarch64; else ARCHITECTURE=amd64; fi \
     && curl -sS -L -O --output-dir /tmp/ --create-dirs "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-${ARCHITECTURE}.tar.gz" \
     && tar xzf "/tmp/s6-overlay-${ARCHITECTURE}.tar.gz" -C /
+COPY ./src/services /etc/services.d
+# END S6-OVERLAY
 
-# add a symlink to php8
-RUN ln -s /usr/bin/php8 /usr/bin/php
+# run.sh is our entrypoint script
+COPY ./src/run.sh /run.sh
+
+# ELABFTW
+# select version or branch here
+ARG ELABFTW_VERSION=hypernext
+ENV ELABFTW_VERSION $ELABFTW_VERSION
 
 # clone elabftw repository in /elabftw
 RUN git clone --depth 1 -b $ELABFTW_VERSION https://github.com/elabftw/elabftw.git /elabftw && mkdir -p /elabftw/{cache,uploads} \
@@ -164,31 +178,18 @@ RUN git clone --depth 1 -b $ELABFTW_VERSION https://github.com/elabftw/elabftw.g
 
 WORKDIR /elabftw
 
-# install composer
+# COMPOSER
 RUN echo "$(curl -sS https://composer.github.io/installer.sig) -" > composer-setup.php.sig \
     && curl -sS https://getcomposer.org/installer | tee composer-setup.php | sha384sum -c composer-setup.php.sig \
     && php8 composer-setup.php && rm composer-setup.php*
 
-# install dependencies
-RUN /elabftw/composer.phar install --prefer-dist --no-progress --no-dev -a && yarn config set network-timeout 300000 && yarn install --pure-lockfile --prod && yarn run buildall && rm -rf node_modules && yarn cache clean && /elabftw/composer.phar clear-cache
+# install php and js dependencies and build assets
+RUN /elabftw/composer.phar install --prefer-dist --no-progress --no-dev -a \
+    && yarn config set network-timeout 300000 \
+    && yarn install --pure-lockfile --prod \
+    && yarn run buildall \
+    && rm -rf node_modules && yarn cache clean && /elabftw/composer.phar clear-cache
+# END ELABFTW
 
-# nginx will run on port 443
-EXPOSE 443
-
-# conf.d is now a symlink to http.d and it fails with buildx, so we need to remove it before it can be copied
-#RUN rm /etc/nginx/conf.d
-# copy configuration and run script
-COPY ./src/nginx/ /etc/nginx/
-COPY ./src/run.sh /run.sh
-COPY ./src/services /etc/services.d
-
-# this script checks if nginx is ok
-HEALTHCHECK --interval=2m --timeout=5s --retries=1 CMD sh /etc/nginx/healthcheck.sh
-
-# start
+# launch run.sh on container start
 CMD ["/run.sh"]
-
-# define mountable directories
-VOLUME /elabftw
-VOLUME /ssl
-VOLUME /mysql-cert

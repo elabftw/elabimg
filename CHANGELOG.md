@@ -5,6 +5,9 @@
 * Use custom compiled nginx instead of the packaged version (#20)
 * Rework placeholders syntax in nginx config files
 * Add configurable value for worker_processes setting (default: auto)
+* Change labels org to net.elabftw
+* Group steps together where it makes sense
+* Remove useless VOLUME instructions
 
 # 2.6.1
 * Modify also the memory_limit value in php.ini
