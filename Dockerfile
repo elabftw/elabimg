@@ -78,8 +78,8 @@ LABEL net.elabftw.name="elabftw" \
     net.elabftw.description="Run nginx and php-fpm to serve elabftw" \
     net.elabftw.url="https://www.elabftw.net" \
     net.elabftw.vcs-url="https://github.com/elabftw/elabimg" \
-    net.elabftw.version=$ELABFTW_VERSION \
-    net.elabftw.maintainer="nico-git@deltablot.email"
+    net.elabftw.elabftw-version=$ELABFTW_VERSION \
+    net.elabftw.image-version=$ELABIMG_VERSION
 
 # NGINX
 # copy our nginx from the build image
@@ -95,14 +95,6 @@ RUN addgroup -S -g 101 nginx \
     && mkdir -pv /var/lib/nginx/tmp/{client_body,fastcgi} /var/log/nginx/{access.log,error.log} \
     && ln -sf /dev/stdout /var/log/nginx/access.log \
     && ln -sf /dev/stderr /var/log/nginx/error.log
-
-# copy nginx config files
-COPY ./src/nginx/ /etc/nginx/
-# the healthcheck.sh script checks if nginx replies to requests
-# the HEALTHCHECK instruction allows to show healthy/unhealthy in "docker ps" output next to the container name
-HEALTHCHECK --interval=2m --timeout=5s --retries=3 CMD sh /etc/nginx/healthcheck.sh
-# nginx will run on port 443
-EXPOSE 443
 # END NGINX
 
 # install required packages
@@ -164,9 +156,6 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then ARCHITECTURE=amd64; elif [ "$
 COPY ./src/services /etc/services.d
 # END S6-OVERLAY
 
-# run.sh is our entrypoint script
-COPY ./src/run.sh /run.sh
-
 # ELABFTW
 # select version or branch here
 ARG ELABFTW_VERSION=hypernext
@@ -190,6 +179,22 @@ RUN /elabftw/composer.phar install --prefer-dist --no-progress --no-dev -a \
     && yarn run buildall \
     && rm -rf node_modules && yarn cache clean && /elabftw/composer.phar clear-cache
 # END ELABFTW
+
+# NGINX PART 2
+# copy nginx config files
+COPY ./src/nginx/ /etc/nginx/
+# the healthcheck.sh script checks if nginx replies to requests
+# the HEALTHCHECK instruction allows to show healthy/unhealthy in "docker ps" output next to the container name
+HEALTHCHECK --interval=2m --timeout=5s --retries=3 CMD sh /etc/nginx/healthcheck.sh
+# nginx will run on port 443
+EXPOSE 443
+# END NGINX PART 2
+
+# run.sh is our entrypoint script
+COPY ./src/run.sh /run.sh
+RUN sed -i -e "s/%ELABIMG_VERSION%/$ELABIMG_VERSION/" /run.sh
+RUN sed -i -e "s/%ELABFTW_VERSION%/$ELABFTW_VERSION/" /run.sh
+RUN sed -i -e "s/%S6_OVERLAY_VERSION%/$S6_OVERLAY_VERSION/" /run.sh
 
 # launch run.sh on container start
 CMD ["/run.sh"]

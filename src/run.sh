@@ -31,6 +31,8 @@ getEnv() {
     elabftw_groupid=${ELABFTW_GROUPID:-101}
     # value for nginx's worker_processes setting
     nginx_work_proc=${NGINX_WORK_PROC:-auto}
+    # allow limiting log pollution on startup
+    silent_init=${SILENT_INIT:-false}
 }
 
 # Create user if not default user
@@ -74,7 +76,7 @@ nginxConf() {
         if (! $enable_letsencrypt); then
             generateCert
         fi
-        sh /etc/nginx/generate-dhparam.sh
+        source /etc/nginx/generate-dhparam.sh
         # activate an HTTPS server listening on port 443
         ln -fs /etc/nginx/https.conf /etc/nginx/conf.d/elabftw.conf
         if ($enable_letsencrypt); then
@@ -218,6 +220,19 @@ writeConfigFile() {
     chmod 600 "$config_path"
 }
 
+startupMessage() {
+    # display a friendly message with running versions
+    nginx_version=$(nginx -v 2>&1)
+    # IMPORTANT: heredoc EOT must not have spaces before or after, hence the incorrect indent
+    cat >&2 <<EOT
+INFO: Runtime configuration done. Now starting...
+eLabFTW version: %ELABFTW_VERSION%
+elabimg container version: %ELABIMG_VERSION%
+${nginx_version}
+s6-overlay version: %S6_OVERLAY_VERSION%
+EOT
+}
+
 # because a global variable is not the best place for a secret value...
 unsetEnv() {
     unset DB_HOST
@@ -241,6 +256,10 @@ phpConf
 elabftwConf
 writeConfigFile
 unsetEnv
+
+if [ "${silent_init}" = false ]; then
+    startupMessage
+fi
 
 # start all the services
 /init

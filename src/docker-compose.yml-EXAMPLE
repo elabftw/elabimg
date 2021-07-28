@@ -161,6 +161,13 @@ services:
         # default value: 6379
         #- REDIS_PORT=6379
 
+        #################
+        # MISCELLANEOUS #
+        #################
+        # optional: be less verbose during init
+        # default value: false
+        #- SILENT_INIT: false
+
     ports:
         # if you want elabftw to run on a different port, change the first number
         # host:container
