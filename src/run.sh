@@ -227,7 +227,7 @@ startupMessage() {
     cat >&2 <<EOT
 INFO: Runtime configuration done. Now starting...
 eLabFTW version: %ELABFTW_VERSION%
-elabimg container version: %ELABIMG_VERSION%
+Docker image version: %ELABIMG_VERSION%
 ${nginx_version}
 s6-overlay version: %S6_OVERLAY_VERSION%
 EOT
