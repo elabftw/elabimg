@@ -134,11 +134,17 @@ nginxConf() {
     # SET WORKER PROCESSES (default is auto)
     sed -i -e "s/%WORKER_PROCESSES%/${nginx_work_proc}/" /etc/nginx/nginx.conf
 
+    # no unsafe-eval in prod
+    unsafe_eval=""
     # DEV MODE
     # we don't want to serve brotli/gzip compressed assets in dev (or we would need to recompress them after every change!)
     if ($dev_mode); then
         rm /etc/nginx/conf.d/brotli.conf /etc/nginx/conf.d/gzip.conf
+        # to allow webpack in watch/dev mode we need to allow unsafe-eval for script-src
+        unsafe_eval="'unsafe-eval'"
     fi
+    # set unsafe-eval in CSP
+    sed -i -e "s/%UNSAFE-EVAL4DEV%/${unsafe_eval}/" /etc/nginx/common.conf
 }
 
 # PHP-FPM CONFIG
@@ -198,7 +204,7 @@ phpConf() {
         open_basedir="${open_basedir}:/proc/version:/usr/bin/composer:/composer"
     fi
     # now set value for open_basedir
-    sed -i -e "s/%OPEN_BASEDIR%/${open_basedir}/" $f
+    sed -i -e "s|%OPEN_BASEDIR%|${open_basedir}|" $f
 }
 
 elabftwConf() {
