@@ -1,18 +1,27 @@
 #!/bin/bash
-# elabftw-docker start script for alpine-linux base image
+# elabftw-docker start script for Alpine Linux base image
 
 # get env values
+# and unset the sensitive ones so they cannot be accessed by a rogue process
 getEnv() {
     db_host=${DB_HOST:-localhost}
+    unset DB_HOST
     db_port=${DB_PORT:-3306}
+    unset DB_PORT
     db_name=${DB_NAME:-elabftw}
+    unset DB_NAME
     db_user=${DB_USER:-elabftw}
+    unset DB_USER
+    # Note: no default value here
     db_password=${DB_PASSWORD}
+    unset DB_PASSWORD
     db_cert_path=${DB_CERT_PATH:-}
+    unset DB_CERT_PATH
     server_name=${SERVER_NAME:-localhost}
     disable_https=${DISABLE_HTTPS:-false}
     enable_letsencrypt=${ENABLE_LETSENCRYPT:-false}
     secret_key=${SECRET_KEY}
+    unset SECRET_KEY
     max_php_memory=${MAX_PHP_MEMORY:-256M}
     max_upload_size=${MAX_UPLOAD_SIZE:-100M}
     php_timezone=${PHP_TIMEZONE:-Europe/Paris}
@@ -24,7 +33,7 @@ getEnv() {
     use_redis=${USE_REDIS:-false}
     redis_host=${REDIS_HOST:-redis}
     redis_port=${REDIS_PORT:-6379}
-    ipv6=${ENABLE_IPV6:-false}
+    enable_ipv6=${ENABLE_IPV6:-false}
     elabftw_user=${ELABFTW_USER:-nginx}
     elabftw_group=${ELABFTW_GROUP:-nginx}
     elabftw_userid=${ELABFTW_USERID:-101}
@@ -113,7 +122,7 @@ nginxConf() {
     fi
 
     # IPV6 CONFIG
-    if ($ipv6); then
+    if ($enable_ipv6); then
         sed -i -e "s/#listen \[::\]:443;/listen \[::\]:443;/" /etc/nginx/conf.d/elabftw.conf
         sed -i -e "s/#listen \[::\]:443 ssl http2;/listen \[::\]:443 ssl http2;/" /etc/nginx/conf.d/elabftw.conf
     fi
@@ -233,20 +242,6 @@ s6-overlay version: %S6_OVERLAY_VERSION%
 EOT
 }
 
-# because a global variable is not the best place for a secret value...
-unsetEnv() {
-    unset DB_HOST
-    unset DB_PORT
-    unset DB_NAME
-    unset DB_USER
-    unset DB_PASSWORD
-    unset DB_CERT_PATH
-    unset SERVER_NAME
-    unset DISABLE_HTTPS
-    unset ENABLE_LETSENCRYPT
-    unset SECRET_KEY
-}
-
 # script start
 getEnv
 createUser
@@ -255,7 +250,6 @@ phpfpmConf
 phpConf
 elabftwConf
 writeConfigFile
-unsetEnv
 
 if [ "${silent_init}" = false ]; then
     startupMessage

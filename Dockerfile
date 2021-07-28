@@ -37,7 +37,7 @@ ADD --chown=builder:builder https://nginx.org/keys/$PGP_SIGNING_KEY_OWNER.key ng
 RUN gpg --import nginx-signing.key
 RUN gpg --verify nginx.tgz.asc
 # all good now untar and build!
-RUN tar xf nginx.tgz
+RUN tar xzf nginx.tgz
 WORKDIR /build/nginx-$NGINX_VERSION
 RUN ./configure \
         --prefix=/var/lib/nginx \
@@ -162,8 +162,7 @@ ARG ELABFTW_VERSION=hypernext
 ENV ELABFTW_VERSION $ELABFTW_VERSION
 
 # clone elabftw repository in /elabftw
-RUN git clone --depth 1 -b $ELABFTW_VERSION https://github.com/elabftw/elabftw.git /elabftw && mkdir -p /elabftw/{cache,uploads} \
-    && chown -R nginx:nginx /elabftw/{cache,uploads} && rm -rf /elabftw/.git
+RUN git clone --depth 1 -b $ELABFTW_VERSION https://github.com/elabftw/elabftw.git /elabftw && rm -rf /elabftw/.git
 
 WORKDIR /elabftw
 
