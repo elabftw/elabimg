@@ -62,7 +62,7 @@ RUN ./configure \
         --add-module=/build/ngx_brotli \
         --add-module=/build/headers-more-nginx-module \
     && make -j$(getconf _NPROCESSORS_ONLN) \
-    && strip objs/nginx
+    && strip -s objs/nginx
 
 USER root
 RUN make install
