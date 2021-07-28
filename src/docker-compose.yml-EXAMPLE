@@ -168,6 +168,13 @@ services:
         # default value: false
         #- SILENT_INIT: false
 
+        #######
+        # DEV #
+        #######
+        # set to true for development
+        # default value: false
+        #- DEV_MODE: false
+
     ports:
         # if you want elabftw to run on a different port, change the first number
         # host:container
@@ -248,6 +255,55 @@ services:
   #  container_name: redis
   #  networks:
   #    - elabftw-net
+
+  ###############################################################
+  # EVERYTHING BELOW THIS LINE IS FOR DEVELOPMENT PURPOSES ONLY #
+  ###############################################################
+
+  # PHPMYADMIN
+  # uncomment this part if you want to have phpmyadmin running too
+  #phpmyadmin:
+  #    image: phpmyadmin/phpmyadmin
+  #    container_name: phpmyadmin
+  #    environment:
+  #        - PMA_PORT=3307
+  #    links:
+  #        - mysql:db
+  #    ports:
+  #        - "8080:80"
+  #    networks:
+  #        - elabftw-net
+
+  # LDAP
+  # example for ldap server + admin interface
+  # uncomment if you want to work on LDAP authentication
+  #ldap:
+  #    image: osixia/openldap:1.4.0
+  #    container_name: ldap
+  #    restart: always
+  #    hostname: example.org
+  #    environment:
+  #      - LDAP_TLS_VERIFY_CLIENT=try
+  #      - LDAP_OPENLDAP_UID=1000
+  #      - LDAP_OPENLDAP_GID=1000
+  #    ports:
+  #      - "389:389"
+  #      - "636:636"
+  #    volumes:
+  #      - /var/elabftw/ldap-data/ldap:/var/lib/ldap
+  #      - /var/elabftw/ldap-data/slapd.d:/etc/ldap/slapd.d
+  #    networks:
+  #        - elabftw-net
+  #ldapadmin:
+  #    image: osixia/phpldapadmin:0.9.0
+  #    container_name: ldapadmin
+  #    environment:
+  #      - PHPLDAPADMIN_LDAP_HOSTS=ldap
+  #    restart: always
+  #    ports:
+  #      - "6443:443"
+  #    networks:
+  #        - elabftw-net
 
 # the internal elabftw network
 networks:
