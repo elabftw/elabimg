@@ -131,6 +131,8 @@ RUN apk upgrade -U -a && apk add --no-cache \
     php8-phar \
     php8-redis \
     php8-session \
+    php8-tokenizer \
+    php8-xmlwriter \
     php8-zip \
     php8-zlib \
     tzdata \
@@ -171,6 +173,7 @@ RUN git clone --depth 1 -b $ELABFTW_VERSION https://github.com/elabftw/elabftw.g
 WORKDIR /elabftw
 
 # COMPOSER
+ENV COMPOSER_HOME=/composer
 COPY --from=composer:2.1.5 /usr/bin/composer /usr/bin/composer
 
 # install php and js dependencies and build assets

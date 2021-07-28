@@ -185,6 +185,20 @@ phpConf() {
     sed -i -e "s:%TIMEZONE%:${php_timezone}:" $f
     # allow longer requests execution time
     sed -i -e "s/%PHP_MAX_EXECUTION_TIME%/${php_max_execution_time}/" $f
+
+    # production open_basedir conf value
+    open_basedir="/.dockerenv:/elabftw/:/tmp/:/usr/bin/unzip"
+    # DEV MODE
+    if ($dev_mode); then
+        # we don't want to use opcache as we want our changes to be immediatly visible
+        sed -i -e "s/opcache\.enable=1/opcache\.enable=0/" $f
+        # also allow url_fopen so composer works
+        sed -i -e "s/allow_url_fopen = Off/allow_url_fopen = On" $f
+        # /proc/version is for symfony, and the rest for composer
+        open_basedir="${open_basedir}:/proc/version:/usr/bin/composer:/composer"
+    fi
+    # now set value for open_basedir
+    sed -i -e "s/%OPEN_BASEDIR%/${open_basedir}/" $f
 }
 
 elabftwConf() {
