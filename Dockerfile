@@ -156,6 +156,10 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then ARCHITECTURE=amd64; elif [ "$
 COPY ./src/services /etc/services.d
 # END S6-OVERLAY
 
+# PHP
+COPY ./src/php/php.ini /etc/php8/php.ini
+# END PHP
+
 # ELABFTW
 # select version or branch here
 ARG ELABFTW_VERSION=hypernext
@@ -167,16 +171,17 @@ RUN git clone --depth 1 -b $ELABFTW_VERSION https://github.com/elabftw/elabftw.g
 WORKDIR /elabftw
 
 # COMPOSER
+# some ini settings are set on the command line to override the restrictive production ones already set
 RUN echo "$(curl -sS https://composer.github.io/installer.sig) -" > composer-setup.php.sig \
     && curl -sS https://getcomposer.org/installer | tee composer-setup.php | sha384sum -c composer-setup.php.sig \
-    && php8 composer-setup.php && rm composer-setup.php*
+    && php -d memory_limit=256M -d disable_functions='' -d allow_url_fopen=On -d open_basedir='' composer-setup.php && rm composer-setup.php*
 
 # install php and js dependencies and build assets
-RUN /elabftw/composer.phar install --prefer-dist --no-progress --no-dev -a \
+RUN php -d memory_limit=256M -d allow_url_fopen=On -d open_basedir='' /elabftw/composer.phar install --prefer-dist --no-cache --no-progress --no-dev -a \
     && yarn config set network-timeout 300000 \
     && yarn install --pure-lockfile --prod \
     && yarn run buildall \
-    && rm -rf node_modules && yarn cache clean && /elabftw/composer.phar clear-cache
+    && rm -rf node_modules && yarn cache clean
 # END ELABFTW
 
 # NGINX PART 2

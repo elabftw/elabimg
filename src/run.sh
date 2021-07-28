@@ -138,8 +138,6 @@ phpfpmConf() {
     # php-fpm config
     sed -i -e "s/;daemonize\s*=\s*yes/daemonize = no/g" /etc/php8/php-fpm.conf
     sed -i -e "s/;catch_workers_output\s*=\s*yes/catch_workers_output = yes/g" /etc/php8/php-fpm.d/www.conf
-    # hide php version
-    sed -i -e "s/expose_php = On/expose_php = Off/g" /etc/php8/php.ini
     # use a unix socket
     sed -i -e "s;listen = 127.0.0.1:9000;listen = /var/run/php-fpm.sock;g" /etc/php8/php-fpm.d/www.conf
     # set nginx as user for php-fpm
@@ -156,55 +154,40 @@ phpfpmConf() {
     # allow using more memory for php-fpm
     sed -i -e "s/;php_admin_value\[memory_limit\] = 32M/php_admin_value\[memory_limit\] = ${max_php_memory}/" /etc/php8/php-fpm.d/www.conf
     # allow using more memory for php
-    sed -i -e "s/memory_limit = 128M/memory_limit = ${max_php_memory}/" /etc/php8/php.ini
+    sed -i -e "s/%PHP_MEMORY_LIMIT%/${max_php_memory}/" /etc/php8/php.ini
     # add container version in env
     if ! grep -q ELABIMG_VERSION /etc/php8/php-fpm.d/www.conf; then
         echo "env[ELABIMG_VERSION] = ${elabimg_version}" >> /etc/php8/php-fpm.d/www.conf
     fi
 }
 
+# php.ini config
 phpConf() {
-    # php config
-    sed -i -e "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" /etc/php8/php.ini
-    sed -i -e "s/upload_max_filesize\s*=\s*2M/upload_max_filesize = ${max_upload_size}/g" /etc/php8/php.ini
-    sed -i -e "s/post_max_size\s*=\s*8M/post_max_size = ${max_upload_size}/g" /etc/php8/php.ini
-    # increase this value to allow pdf generation with big body (with base64 encoded images for instance)
-    sed -i -e "s/;pcre.backtrack_limit=100000/pcre.backtrack_limit=10000000/" /etc/php8/php.ini
-    # we want a safe cookie/session
-    sed -i -e "s/session.cookie_httponly.*/session.cookie_httponly = true/" /etc/php8/php.ini
-    sed -i -e "s/;session.cookie_secure.*/session.cookie_secure = true/" /etc/php8/php.ini
-    sed -i -e "s/session.use_strict_mode.*/session.use_strict_mode = 1/" /etc/php8/php.ini
-    sed -i -e "s/session.cookie_samesite.*/session.cookie_samesite = \"Strict\"/" /etc/php8/php.ini
-    # set redis as session handler if requested
+    # change upload_max_filesize and post_max_size
+    sed -i -e "s/%PHP_MAX_UPLOAD_SIZE%/${max_upload_size}/" /etc/php8/php.ini
+
+    # PHP SESSIONS
+    # default values for sessions (with files)
+    sess_save_handler="files"
+    sess_save_path="/sessions"
+    # if we use redis then sessions are handled differently
     if ($use_redis); then
-        sed -i -e "s:session.save_handler = files:session.save_handler = redis:" /etc/php8/php.ini
-        sed -i -e "s|;session.save_path = \"/tmp\"|session.save_path = \"tcp://${redis_host}:${redis_port}\"|" /etc/php8/php.ini
+        sess_save_handler="redis"
+        sess_save_path="tcp://${redis_host}:${redis_port}"
     else
-        # the sessions are stored in a separate dir
-        sed -i -e "s:;session.save_path = \"/tmp\":session.save_path = \"/sessions\":" /etc/php8/php.ini
+        # create the custom session dir
+        mkdir -p /sessions
+        chown "${elabftw_user}":"${elabftw_group}" /sessions
+        chmod 700 /sessions
     fi
+    # now set the values
+    sed -i -e "s:%SESSION_SAVE_HANDLER%:${sess_save_handler}:" /etc/php8/php.ini
+    sed -i -e "s|%SESSION_SAVE_PATH%|${sess_save_path}|" /etc/php8/php.ini
 
-    # the sessions are stored in a separate dir
-    sed -i -e "s:;session.save_path = \"/tmp\":session.save_path = \"/sessions\":" /etc/php8/php.ini
-    mkdir -p /sessions
-    chown "${elabftw_user}":"${elabftw_group}" /sessions
-    chmod 700 /sessions
-    # disable url_fopen http://php.net/allow-url-fopen
-    sed -i -e "s/allow_url_fopen = On/allow_url_fopen = Off/" /etc/php8/php.ini
-    # enable opcache
-    sed -i -e "s/;opcache.enable=1/opcache.enable=1/" /etc/php8/php.ini
     # config for timezone, use : because timezone will contain /
-    sed -i -e "s:;date.timezone =:date.timezone = $php_timezone:" /etc/php8/php.ini
-    # enable open_basedir to restrict PHP's ability to read files
-    # use # for separator because we cannot use : ; / or _
-    sed -i -e "s#;open_basedir =#open_basedir = /.dockerenv:/elabftw/:/tmp/:/usr/bin/unzip#" /etc/php8/php.ini
-    # use longer session id length
-    sed -i -e "s/session.sid_length = 26/session.sid_length = 42/" /etc/php8/php.ini
-    # disable some dangerous functions that we don't use
-    sed -i -e "s/disable_functions =$/disable_functions = php_uname, getmyuid, getmypid, passthru, leak, listen, diskfreespace, tmpfile, link, ignore_user_abort, shell_exec, dl, system, highlight_file, source, show_source, fpaththru, virtual, posix_ctermid, posix_getcwd, posix_getegid, posix_geteuid, posix_getgid, posix_getgrgid, posix_getgrnam, posix_getgroups, posix_getlogin, posix_getpgid, posix_getpgrp, posix_getpid, posix_getppid, posix_getpwnam, posix_getpwuid, posix_getrlimit, posix_getsid, posix_getuid, posix_isatty, posix_kill, posix_mkfifo, posix_setegid, posix_seteuid, posix_setgid, posix_setpgid, posix_setsid, posix_setuid, posix_times, posix_ttyname, posix_uname, phpinfo/" /etc/php8/php.ini
+    sed -i -e "s:%TIMEZONE%:${php_timezone}:" /etc/php8/php.ini
     # allow longer requests execution time
-    sed -i -e "s/max_execution_time\s*=\s*30/max_execution_time = ${php_max_execution_time}/" /etc/php8/php.ini
-
+    sed -i -e "s/%PHP_MAX_EXECUTION_TIME%/${php_max_execution_time}/" /etc/php8/php.ini
 }
 
 elabftwConf() {
