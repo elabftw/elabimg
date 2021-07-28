@@ -42,6 +42,7 @@ getEnv() {
     nginx_work_proc=${NGINX_WORK_PROC:-auto}
     # allow limiting log pollution on startup
     silent_init=${SILENT_INIT:-false}
+    dev_mode=${DEV_MODE:-false}
 }
 
 # Create user if not default user
@@ -132,6 +133,12 @@ nginxConf() {
 
     # SET WORKER PROCESSES (default is auto)
     sed -i -e "s/%WORKER_PROCESSES%/${nginx_work_proc}/" /etc/nginx/nginx.conf
+
+    # DEV MODE
+    # we don't want to serve brotli/gzip compressed assets in dev (or we would need to recompress them after every change!)
+    if ($dev_mode); then
+        rm /etc/nginx/conf.d/brotli.conf /etc/nginx/conf.d/gzip.conf
+    fi
 }
 
 # PHP-FPM CONFIG
