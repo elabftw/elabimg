@@ -74,6 +74,10 @@ FROM alpine:3.13
 ARG ELABIMG_VERSION=3.0.0
 ENV ELABIMG_VERSION $ELABIMG_VERSION
 
+# select elabftw version or branch here
+ARG ELABFTW_VERSION=hypernext
+ENV ELABFTW_VERSION $ELABFTW_VERSION
+
 LABEL net.elabftw.name="elabftw" \
     net.elabftw.description="Run nginx and php-fpm to serve elabftw" \
     net.elabftw.url="https://www.elabftw.net" \
@@ -164,10 +168,6 @@ COPY ./src/php/elabpool.conf /etc/php8/php-fpm.d/elabpool.conf
 # END PHP
 
 # ELABFTW
-# select version or branch here
-ARG ELABFTW_VERSION=hypernext
-ENV ELABFTW_VERSION $ELABFTW_VERSION
-
 # clone elabftw repository in /elabftw
 RUN git clone --depth 1 -b $ELABFTW_VERSION https://github.com/elabftw/elabftw.git /elabftw && rm -rf /elabftw/.git
 
