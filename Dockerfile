@@ -198,9 +198,9 @@ EXPOSE 443
 
 # run.sh is our entrypoint script
 COPY ./src/run.sh /run.sh
-RUN sed -i -e "s/%ELABIMG_VERSION%/$ELABIMG_VERSION/" /run.sh
-RUN sed -i -e "s/%ELABFTW_VERSION%/$ELABFTW_VERSION/" /run.sh
-RUN sed -i -e "s/%S6_OVERLAY_VERSION%/$S6_OVERLAY_VERSION/" /run.sh
+RUN sed -i -e "s/%ELABIMG_VERSION%/$ELABIMG_VERSION/" \
+    -e "s/%ELABFTW_VERSION%/$ELABFTW_VERSION/" \
+    -e "s/%S6_OVERLAY_VERSION%/$S6_OVERLAY_VERSION/" /run.sh
 
 # launch run.sh on container start
 CMD ["/run.sh"]
