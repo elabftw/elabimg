@@ -1,18 +1,27 @@
 #!/bin/bash
-# elabftw-docker start script for alpine-linux base image
+# elabftw-docker start script for Alpine Linux base image
 
 # get env values
+# and unset the sensitive ones so they cannot be accessed by a rogue process
 getEnv() {
     db_host=${DB_HOST:-localhost}
+    unset DB_HOST
     db_port=${DB_PORT:-3306}
+    unset DB_PORT
     db_name=${DB_NAME:-elabftw}
+    unset DB_NAME
     db_user=${DB_USER:-elabftw}
+    unset DB_USER
+    # Note: no default value here
     db_password=${DB_PASSWORD}
+    unset DB_PASSWORD
     db_cert_path=${DB_CERT_PATH:-}
+    unset DB_CERT_PATH
     server_name=${SERVER_NAME:-localhost}
     disable_https=${DISABLE_HTTPS:-false}
     enable_letsencrypt=${ENABLE_LETSENCRYPT:-false}
     secret_key=${SECRET_KEY}
+    unset SECRET_KEY
     max_php_memory=${MAX_PHP_MEMORY:-256M}
     max_upload_size=${MAX_UPLOAD_SIZE:-100M}
     php_timezone=${PHP_TIMEZONE:-Europe/Paris}
@@ -24,11 +33,16 @@ getEnv() {
     use_redis=${USE_REDIS:-false}
     redis_host=${REDIS_HOST:-redis}
     redis_port=${REDIS_PORT:-6379}
-    ipv6=${ENABLE_IPV6:-false}
+    enable_ipv6=${ENABLE_IPV6:-false}
     elabftw_user=${ELABFTW_USER:-nginx}
     elabftw_group=${ELABFTW_GROUP:-nginx}
     elabftw_userid=${ELABFTW_USERID:-101}
     elabftw_groupid=${ELABFTW_GROUPID:-101}
+    # value for nginx's worker_processes setting
+    nginx_work_proc=${NGINX_WORK_PROC:-auto}
+    # allow limiting log pollution on startup
+    silent_init=${SILENT_INIT:-false}
+    dev_mode=${DEV_MODE:-false}
 }
 
 # Create user if not default user
@@ -72,26 +86,27 @@ nginxConf() {
         if (! $enable_letsencrypt); then
             generateCert
         fi
-        sh /etc/nginx/generate-dhparam.sh
+        source /etc/nginx/generate-dhparam.sh
         # activate an HTTPS server listening on port 443
         ln -fs /etc/nginx/https.conf /etc/nginx/conf.d/elabftw.conf
         if ($enable_letsencrypt); then
             mkdir -p /ssl
-            sed -i -e "s:CERT_PATH:/ssl/live/localhost/fullchain.pem:" /etc/nginx/conf.d/elabftw.conf
-            sed -i -e "s:KEY_PATH:/ssl/live/localhost/privkey.pem:" /etc/nginx/conf.d/elabftw.conf
+            sed -i -e "s:%CERT_PATH%:/ssl/live/${server_name}/fullchain.pem:" /etc/nginx/conf.d/elabftw.conf
+            sed -i -e "s:%KEY_PATH%:/ssl/live/${server_name}/privkey.pem:" /etc/nginx/conf.d/elabftw.conf
         else
-            sed -i -e "s:CERT_PATH:/etc/nginx/certs/server.crt:" /etc/nginx/conf.d/elabftw.conf
-            sed -i -e "s:KEY_PATH:/etc/nginx/certs/server.key:" /etc/nginx/conf.d/elabftw.conf
+            sed -i -e "s:%CERT_PATH%:/etc/nginx/certs/server.crt:" /etc/nginx/conf.d/elabftw.conf
+            sed -i -e "s:%KEY_PATH%:/etc/nginx/certs/server.key:" /etc/nginx/conf.d/elabftw.conf
         fi
     fi
     # set the server name in nginx config
     # works also for the ssl config if ssl is enabled
-    sed -i -e "s/localhost/$server_name/g" /etc/nginx/conf.d/elabftw.conf
-    # fix upload permissions
-    chown -R "${elabftw_user}":"${elabftw_group}" /var/lib/nginx
+    # here elabftw.conf is a symbolic link to either http.conf or https.conf
+    sed -i -e "s/%SERVER_NAME%/${server_name}/" /etc/nginx/conf.d/elabftw.conf
+    # make sure nginx user can write this directory for file uploads
+    chown -R "${elabftw_user}":"${elabftw_group}" /var/lib/nginx/tmp
 
     # adjust client_max_body_size
-    sed -i -e "s/client_max_body_size 100m;/client_max_body_size ${max_upload_size};/" /etc/nginx/nginx.conf
+    sed -i -e "s/%CLIENT_MAX_BODY_SIZE%/${max_upload_size}/" /etc/nginx/nginx.conf
 
     # SET REAL IP CONFIG
     if ($set_real_ip); then
@@ -102,92 +117,94 @@ nginxConf() {
         do
             conf_string+="set_real_ip_from ${element};"
         done
-        sed -i -e "s/#REAL_IP_CONF/${conf_string}/" /etc/nginx/common.conf
+        sed -i -e "s/#%REAL_IP_CONF%/${conf_string}/" /etc/nginx/common.conf
         # enable real_ip_header config
         sed -i -e "s/#real_ip_header X-Forwarded-For;/real_ip_header X-Forwarded-For;/" /etc/nginx/common.conf
     fi
 
     # IPV6 CONFIG
-    if ($ipv6); then
+    if ($enable_ipv6); then
         sed -i -e "s/#listen \[::\]:443;/listen \[::\]:443;/" /etc/nginx/conf.d/elabftw.conf
         sed -i -e "s/#listen \[::\]:443 ssl http2;/listen \[::\]:443 ssl http2;/" /etc/nginx/conf.d/elabftw.conf
     fi
 
     # CHANGE NGINX USER
-    sed -i -e "s/#user-placeholder/user ${elabftw_user} ${elabftw_group};/" /etc/nginx/nginx.conf
+    sed -i -e "s/%USER-GROUP%/${elabftw_user} ${elabftw_group}/" /etc/nginx/nginx.conf
+
+    # SET WORKER PROCESSES (default is auto)
+    sed -i -e "s/%WORKER_PROCESSES%/${nginx_work_proc}/" /etc/nginx/nginx.conf
+
+    # no unsafe-eval in prod
+    unsafe_eval=""
+    # DEV MODE
+    # we don't want to serve brotli/gzip compressed assets in dev (or we would need to recompress them after every change!)
+    if ($dev_mode); then
+        rm /etc/nginx/conf.d/brotli.conf /etc/nginx/conf.d/gzip.conf
+        # to allow webpack in watch/dev mode we need to allow unsafe-eval for script-src
+        unsafe_eval="'unsafe-eval'"
+    fi
+    # set unsafe-eval in CSP
+    sed -i -e "s/%UNSAFE-EVAL4DEV%/${unsafe_eval}/" /etc/nginx/common.conf
 }
 
+# PHP-FPM CONFIG
 phpfpmConf() {
-    # php-fpm config
-    sed -i -e "s/;daemonize\s*=\s*yes/daemonize = no/g" /etc/php8/php-fpm.conf
-    sed -i -e "s/;catch_workers_output\s*=\s*yes/catch_workers_output = yes/g" /etc/php8/php-fpm.d/www.conf
-    # hide php version
-    sed -i -e "s/expose_php = On/expose_php = Off/g" /etc/php8/php.ini
-    # use a unix socket
-    sed -i -e "s;listen = 127.0.0.1:9000;listen = /var/run/php-fpm.sock;g" /etc/php8/php-fpm.d/www.conf
+    f="/etc/php8/php-fpm.d/elabpool.conf"
     # set nginx as user for php-fpm
-    sed -i -e "s/;listen.owner = nobody/listen.owner = ${elabftw_user}/g" /etc/php8/php-fpm.d/www.conf
-    sed -i -e "s/;listen.group = nobody/listen.group = ${elabftw_group}/g" /etc/php8/php-fpm.d/www.conf
-    sed -i -e "s/user = nobody/user = ${elabftw_user}/g" /etc/php8/php-fpm.d/www.conf
-    sed -i -e "s/group = nobody/group = ${elabftw_group}/g" /etc/php8/php-fpm.d/www.conf
+    sed -i -e "s/%ELABFTW_USER%/${elabftw_user}/" $f
+    sed -i -e "s/%ELABFTW_GROUP%/${elabftw_group}/" $f
     # increase max number of simultaneous requests
-    sed -i -e "s/pm.max_children = 5/pm.max_children = ${php_max_children}/g" /etc/php8/php-fpm.d/www.conf
-    # allow more idle server processes
-    sed -i -e "s/pm.start_servers = 2/pm.start_servers = 5/g" /etc/php8/php-fpm.d/www.conf
-    sed -i -e "s/pm.min_spare_servers = 1/pm.min_spare_servers = 4/g" /etc/php8/php-fpm.d/www.conf
-    sed -i -e "s/pm.max_spare_servers = 3/pm.max_spare_servers = 6/g" /etc/php8/php-fpm.d/www.conf
+    sed -i -e "s/%PHP_MAX_CHILDREN%/${php_max_children}/" $f
     # allow using more memory for php-fpm
-    sed -i -e "s/;php_admin_value\[memory_limit\] = 32M/php_admin_value\[memory_limit\] = ${max_php_memory}/" /etc/php8/php-fpm.d/www.conf
-    # allow using more memory for php
-    sed -i -e "s/memory_limit = 128M/memory_limit = ${max_php_memory}/" /etc/php8/php.ini
+    sed -i -e "s/%PHP_MAX_MEMORY%/${max_php_memory}/" $f
     # add container version in env
-    if ! grep -q ELABIMG_VERSION /etc/php8/php-fpm.d/www.conf; then
-        echo "env[ELABIMG_VERSION] = ${elabimg_version}" >> /etc/php8/php-fpm.d/www.conf
-    fi
+    sed -i -e "s/%ELABIMG_VERSION%/${elabimg_version}/" $f
 }
 
+# PHP CONFIG
 phpConf() {
-    # php config
-    sed -i -e "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" /etc/php8/php.ini
-    sed -i -e "s/upload_max_filesize\s*=\s*2M/upload_max_filesize = ${max_upload_size}/g" /etc/php8/php.ini
-    sed -i -e "s/post_max_size\s*=\s*8M/post_max_size = ${max_upload_size}/g" /etc/php8/php.ini
-    # increase this value to allow pdf generation with big body (with base64 encoded images for instance)
-    sed -i -e "s/;pcre.backtrack_limit=100000/pcre.backtrack_limit=10000000/" /etc/php8/php.ini
-    # we want a safe cookie/session
-    sed -i -e "s/session.cookie_httponly.*/session.cookie_httponly = true/" /etc/php8/php.ini
-    sed -i -e "s/;session.cookie_secure.*/session.cookie_secure = true/" /etc/php8/php.ini
-    sed -i -e "s/session.use_strict_mode.*/session.use_strict_mode = 1/" /etc/php8/php.ini
-    sed -i -e "s/session.cookie_samesite.*/session.cookie_samesite = \"Strict\"/" /etc/php8/php.ini
-    # set redis as session handler if requested
+    f="/etc/php8/php.ini"
+    # allow using more memory for php
+    sed -i -e "s/%PHP_MEMORY_LIMIT%/${max_php_memory}/" $f
+    # change upload_max_filesize and post_max_size
+    sed -i -e "s/%PHP_MAX_UPLOAD_SIZE%/${max_upload_size}/" $f
+
+    # PHP SESSIONS
+    # default values for sessions (with files)
+    sess_save_handler="files"
+    sess_save_path="/sessions"
+    # if we use redis then sessions are handled differently
     if ($use_redis); then
-        sed -i -e "s:session.save_handler = files:session.save_handler = redis:" /etc/php8/php.ini
-        sed -i -e "s|;session.save_path = \"/tmp\"|session.save_path = \"tcp://${redis_host}:${redis_port}\"|" /etc/php8/php.ini
+        sess_save_handler="redis"
+        sess_save_path="tcp://${redis_host}:${redis_port}"
     else
-        # the sessions are stored in a separate dir
-        sed -i -e "s:;session.save_path = \"/tmp\":session.save_path = \"/sessions\":" /etc/php8/php.ini
+        # create the custom session dir
+        mkdir -p /sessions
+        chown "${elabftw_user}":"${elabftw_group}" /sessions
+        chmod 700 /sessions
     fi
+    # now set the values
+    sed -i -e "s:%SESSION_SAVE_HANDLER%:${sess_save_handler}:" $f
+    sed -i -e "s|%SESSION_SAVE_PATH%|${sess_save_path}|" $f
 
-    # the sessions are stored in a separate dir
-    sed -i -e "s:;session.save_path = \"/tmp\":session.save_path = \"/sessions\":" /etc/php8/php.ini
-    mkdir -p /sessions
-    chown "${elabftw_user}":"${elabftw_group}" /sessions
-    chmod 700 /sessions
-    # disable url_fopen http://php.net/allow-url-fopen
-    sed -i -e "s/allow_url_fopen = On/allow_url_fopen = Off/" /etc/php8/php.ini
-    # enable opcache
-    sed -i -e "s/;opcache.enable=1/opcache.enable=1/" /etc/php8/php.ini
     # config for timezone, use : because timezone will contain /
-    sed -i -e "s:;date.timezone =:date.timezone = $php_timezone:" /etc/php8/php.ini
-    # enable open_basedir to restrict PHP's ability to read files
-    # use # for separator because we cannot use : ; / or _
-    sed -i -e "s#;open_basedir =#open_basedir = /.dockerenv:/elabftw/:/tmp/:/usr/bin/unzip#" /etc/php8/php.ini
-    # use longer session id length
-    sed -i -e "s/session.sid_length = 26/session.sid_length = 42/" /etc/php8/php.ini
-    # disable some dangerous functions that we don't use
-    sed -i -e "s/disable_functions =$/disable_functions = php_uname, getmyuid, getmypid, passthru, leak, listen, diskfreespace, tmpfile, link, ignore_user_abort, shell_exec, dl, system, highlight_file, source, show_source, fpaththru, virtual, posix_ctermid, posix_getcwd, posix_getegid, posix_geteuid, posix_getgid, posix_getgrgid, posix_getgrnam, posix_getgroups, posix_getlogin, posix_getpgid, posix_getpgrp, posix_getpid, posix_getppid, posix_getpwnam, posix_getpwuid, posix_getrlimit, posix_getsid, posix_getuid, posix_isatty, posix_kill, posix_mkfifo, posix_setegid, posix_seteuid, posix_setgid, posix_setpgid, posix_setsid, posix_setuid, posix_times, posix_ttyname, posix_uname, phpinfo/" /etc/php8/php.ini
+    sed -i -e "s:%TIMEZONE%:${php_timezone}:" $f
     # allow longer requests execution time
-    sed -i -e "s/max_execution_time\s*=\s*30/max_execution_time = ${php_max_execution_time}/" /etc/php8/php.ini
+    sed -i -e "s/%PHP_MAX_EXECUTION_TIME%/${php_max_execution_time}/" $f
 
+    # production open_basedir conf value
+    open_basedir="/.dockerenv:/elabftw/:/tmp/:/usr/bin/unzip"
+    # DEV MODE
+    if ($dev_mode); then
+        # we don't want to use opcache as we want our changes to be immediatly visible
+        sed -i -e "s/opcache\.enable=1/opcache\.enable=0/" $f
+        # also allow url_fopen so composer works
+        sed -i -e "s/allow_url_fopen = Off/allow_url_fopen = On" $f
+        # /proc/version is for symfony, and the rest for composer
+        open_basedir="${open_basedir}:/proc/version:/usr/bin/composer:/composer"
+    fi
+    # now set value for open_basedir
+    sed -i -e "s|%OPEN_BASEDIR%|${open_basedir}|" $f
 }
 
 elabftwConf() {
@@ -212,18 +229,17 @@ writeConfigFile() {
     chmod 600 "$config_path"
 }
 
-# because a global variable is not the best place for a secret value...
-unsetEnv() {
-    unset DB_HOST
-    unset DB_PORT
-    unset DB_NAME
-    unset DB_USER
-    unset DB_PASSWORD
-    unset DB_CERT_PATH
-    unset SERVER_NAME
-    unset DISABLE_HTTPS
-    unset ENABLE_LETSENCRYPT
-    unset SECRET_KEY
+startupMessage() {
+    # display a friendly message with running versions
+    nginx_version=$(nginx -v 2>&1)
+    # IMPORTANT: heredoc EOT must not have spaces before or after, hence the incorrect indent
+    cat >&2 <<EOT
+INFO: Runtime configuration done. Now starting...
+eLabFTW version: %ELABFTW_VERSION%
+Docker image version: %ELABIMG_VERSION%
+${nginx_version}
+s6-overlay version: %S6_OVERLAY_VERSION%
+EOT
 }
 
 # script start
@@ -234,7 +250,10 @@ phpfpmConf
 phpConf
 elabftwConf
 writeConfigFile
-unsetEnv
+
+if [ "${silent_init}" = false ]; then
+    startupMessage
+fi
 
 # start all the services
 /init

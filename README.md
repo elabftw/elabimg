@@ -1,4 +1,3 @@
-[![Layers badge](https://images.microbadger.com/badges/image/elabftw/elabimg.svg)](https://microbadger.com/images/elabftw/elabimg)
 ![vuln test](https://github.com/elabftw/elabimg/workflows/vuln%20test/badge.svg?branch=master)
 
 # Description
@@ -13,4 +12,14 @@ DOCKER_BUILDKIT=1 docker build -t elabftw/elabimg .
 
 # Usage
 
-See [documentation](https://doc.elabftw.net).
+An example configuration file for docker-compose can be fetched like this:
+
+~~~bash
+curl -so docker-compose.yml "https://get.elabftw.net/?config"
+~~~
+
+This will download a pre-filled configuration file.
+
+You can then edit this file where all the options are explained in the comments.
+
+For usage of eLabFTW, see [documentation](https://doc.elabftw.net).

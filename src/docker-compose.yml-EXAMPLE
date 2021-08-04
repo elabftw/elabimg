@@ -30,7 +30,11 @@ services:
         - NET_RAW
         - SYS_PTRACE
     # environment variables passed to the container to configure options at run time (when container is started)
+    # commented variables are optional
     environment:
+        #######################
+        # MYSQL CONFIGURATION #
+        #######################
         # name of the MySQL server (by default "mysql" the name of the mysql container in default elabftw Docker configuration)
         # you can put here the IP address of an existing MySQL server if you already have one running
         # default value: mysql
@@ -60,6 +64,31 @@ services:
         # optional
         #- DB_CERT_PATH=/mysql-cert/cert.pem
 
+        #####################
+        # PHP CONFIGURATION #
+        #####################
+        # the timezone in which the server is
+        # better if changed (see list of available values: http://php.net/manual/en/timezones.php
+        - PHP_TIMEZONE=Europe/Paris
+        # again
+        - TZ=Europe/Paris
+
+        # optional: set the limit of simultaneous request that will be server
+        # see http://php.net/manual/en/install.fpm.configuration.php
+        # default value: 50
+        #- PHP_MAX_CHILDREN=50
+
+        # optional: adjust the max execution time of PHP scripts. Allows for bigger ZIP exports.
+        # default value: 120
+        #- PHP_MAX_EXECUTION_TIME=120
+
+        # optional: adjust the amount of memory available to PHP, increase it if you run into memory issues due to the size of your database
+        # default value: 256M
+        #- MAX_PHP_MEMORY=256M
+
+        #########################
+        # ELABFTW CONFIGURATION #
+        #########################
         # The secret key is used for encrypting the SMTP password
         # A random one has been generated for you, if you wish to change it you can
         # get your secret key from https://demo.elabftw.net/install/generateSecretKey.php
@@ -68,8 +97,16 @@ services:
         # default value: generated randomly if you get the config from get.elabftw.net
         - SECRET_KEY=
 
-        # optional: change to your server name in nginx config
+        # optional: adjust maximum size of uploaded files
+        # default value: 100M
+        #- MAX_UPLOAD_SIZE=100M
+
+        #######################
+        # NGINX CONFIGURATION #
+        #######################
+        # change to your server name in nginx config
         # default value: localhost
+        # example value: elab.uni.edu
         - SERVER_NAME=localhost
 
         # optional: disable https, use this to have an http server listening on port 443
@@ -77,58 +114,16 @@ services:
         # default value: false
         - DISABLE_HTTPS=false
 
-        # set to true to use letsencrypt certificates
+        # set to true to use letsencrypt or other certificates
         # note: does nothing if DISABLE_HTTPS is set to true
         # default value: false
         - ENABLE_LETSENCRYPT=false
 
-        # the amount of memory available to PHP, increase it if you run into memory issues due to the size of your database
-        # default value: 256M
-        - MAX_PHP_MEMORY=256M
-
-        # maximum size of uploaded files
-        # default value: 100M
-        - MAX_UPLOAD_SIZE=100M
-
-        # the timezone in which the server is
-        # better if changed (see list of available values: http://php.net/manual/en/timezones.php
-        - PHP_TIMEZONE=Europe/Paris
-        # again
-        - TZ=Europe/Paris
-
-        # enable if you want nginx to be configured with set_real_ip_from directives
-        - SET_REAL_IP=false
-        # the IP address/addresses. Separate them with a , AND A SPACE. Several set_real_ip_from lines will be added to the nginx config. One for each.
-        # this does nothing if SET_REAL_IP is set to false
-        - SET_REAL_IP_FROM=192.168.31.48, 192.168.0.42, 10.10.13.37
-
-        # optional: set the limit of simultaneous request that will be server
-        # see http://php.net/manual/en/install.fpm.configuration.php
-        # default value: 50
-        - PHP_MAX_CHILDREN=50
-
-        # optional: adjust the max execution time of PHP scripts. Allows for bigger ZIP exports.
-        # default value: 120
-        - PHP_MAX_EXECUTION_TIME=120
-
-        #######################
-        # REDIS CONFIGURATION #
-        #######################
-        # optional: use a redis server to store the PHP sessions
+        # optional: enable ipv6 (make sure you have an AAAA dns record!)
         # default value: false
-        - USE_REDIS=false
-        # optional: set an IP or hostname for the redis server
-        # default value: redis
-        - REDIS_HOST=redis
-        # optional: set a custom port for redis
-        # default value: 6379
-        - REDIS_PORT=6379
+        #- ENABLE_IPV6=false
 
-        # optional: enable ipv6 (make sure you have AAAA dns record!)
-        # default value: false
-        - ENABLE_IPV6=false
-
-        # adjust the user/group that will own the uploaded files
+        # optional: adjust the user/group that will own the uploaded files
         # useful in very particular situations, like with NFSv4
         # you don't really need to change this in most situations
         # so this is left commented (default values are shown)
@@ -140,6 +135,46 @@ services:
         #- ELABFTW_USERID=101
         # default value: 101
         #- ELABFTW_GROUPID=101
+
+        # optional: enable if you want nginx to be configured with set_real_ip_from directives
+        # default value: false
+        #- SET_REAL_IP=false
+        # the IP address/addresses. Separate them with a , AND A SPACE. Several set_real_ip_from lines will be added to the nginx config. One for each.
+        # this does nothing if SET_REAL_IP is set to false
+        #- SET_REAL_IP_FROM=192.168.31.48, 192.168.0.42, 10.10.13.37
+
+        # optional: adjust the number of worker processes nginx will spawn
+        # default value: auto
+        # if auto doesn't work for you, use the number of cores available on the server (or less)
+        #- NGINX_WORK_PROC=auto
+
+        #######################
+        # REDIS CONFIGURATION #
+        #######################
+        # optional: use a redis server to store the PHP sessions
+        # default value: false
+        #- USE_REDIS=false
+        # optional: set an IP or hostname for the redis server
+        # default value: redis
+        #- REDIS_HOST=redis
+        # optional: set a custom port for redis
+        # default value: 6379
+        #- REDIS_PORT=6379
+
+        #################
+        # MISCELLANEOUS #
+        #################
+        # optional: be less verbose during init
+        # default value: false
+        #- SILENT_INIT: false
+
+        #######
+        # DEV #
+        #######
+        # set to true for development
+        # default value: false
+        #- DEV_MODE: false
+
     ports:
         # if you want elabftw to run on a different port, change the first number
         # host:container
@@ -176,9 +211,13 @@ services:
       - elabftw-net
 
   # the mysql database image
+  # Note: if you already have a MySQL server running, you don't need to use this image, as you can use the already existing one
+  # In this case, add the IP address of the server in DB_HOST and comment out or remove this block
   mysql:
     image: mysql:8.0
     restart: always
+     # fix issue with "The server requested authentication method unknown to the client [caching_sha2_password]"
+    command: --default-authentication-plugin=mysql_native_password
     container_name: mysql
     # drop some capabilities
     cap_drop:
@@ -220,6 +259,55 @@ services:
   #  container_name: redis
   #  networks:
   #    - elabftw-net
+
+  ###############################################################
+  # EVERYTHING BELOW THIS LINE IS FOR DEVELOPMENT PURPOSES ONLY #
+  ###############################################################
+
+  # PHPMYADMIN
+  # uncomment this part if you want to have phpmyadmin running too
+  #phpmyadmin:
+  #    image: phpmyadmin/phpmyadmin
+  #    container_name: phpmyadmin
+  #    environment:
+  #        - PMA_PORT=3307
+  #    links:
+  #        - mysql:db
+  #    ports:
+  #        - "8080:80"
+  #    networks:
+  #        - elabftw-net
+
+  # LDAP
+  # example for ldap server + admin interface
+  # uncomment if you want to work on LDAP authentication
+  #ldap:
+  #    image: osixia/openldap:1.4.0
+  #    container_name: ldap
+  #    restart: always
+  #    hostname: example.org
+  #    environment:
+  #      - LDAP_TLS_VERIFY_CLIENT=try
+  #      - LDAP_OPENLDAP_UID=1000
+  #      - LDAP_OPENLDAP_GID=1000
+  #    ports:
+  #      - "389:389"
+  #      - "636:636"
+  #    volumes:
+  #      - /var/elabftw/ldap-data/ldap:/var/lib/ldap
+  #      - /var/elabftw/ldap-data/slapd.d:/etc/ldap/slapd.d
+  #    networks:
+  #        - elabftw-net
+  #ldapadmin:
+  #    image: osixia/phpldapadmin:0.9.0
+  #    container_name: ldapadmin
+  #    environment:
+  #      - PHPLDAPADMIN_LDAP_HOSTS=ldap
+  #    restart: always
+  #    ports:
+  #      - "6443:443"
+  #    networks:
+  #        - elabftw-net
 
 # the internal elabftw network
 networks:
