@@ -74,8 +74,8 @@ FROM alpine:3.14
 ARG ELABIMG_VERSION=3.0.0
 ENV ELABIMG_VERSION $ELABIMG_VERSION
 
-# select elabftw version or branch here
-ARG ELABFTW_VERSION=hypernext
+# select elabftw tag
+ARG ELABFTW_VERSION=4.0.11
 ENV ELABFTW_VERSION $ELABFTW_VERSION
 
 LABEL net.elabftw.name="elabftw" \
@@ -111,7 +111,6 @@ RUN apk upgrade -U -a && apk add --no-cache \
     curl \
     freetype \
     ghostscript \
-    git \
     openssl \
     openjdk11-jre \
     php8 \
@@ -168,8 +167,10 @@ COPY ./src/php/elabpool.conf /etc/php8/php-fpm.d/elabpool.conf
 # END PHP
 
 # ELABFTW
-# clone elabftw repository in /elabftw
-RUN git clone --depth 1 -b $ELABFTW_VERSION https://github.com/elabftw/elabftw.git /elabftw && rm -rf /elabftw/.git
+# get the tar archive for the tagged version/branch we want
+ADD https://github.com/elabftw/elabftw/tarball/$ELABFTW_VERSION src.tgz
+# extracted folder will be named elabftw-elabftw-0abcdef
+RUN tar xzf src.tgz && mv elabftw-* /elabftw && rm src.tgz
 
 WORKDIR /elabftw
 
