@@ -75,7 +75,7 @@ ARG ELABIMG_VERSION=3.0.0
 ENV ELABIMG_VERSION $ELABIMG_VERSION
 
 # select elabftw tag
-ARG ELABFTW_VERSION=4.0.11
+ARG ELABFTW_VERSION=hypernext
 ENV ELABFTW_VERSION $ELABFTW_VERSION
 
 LABEL net.elabftw.name="elabftw" \
@@ -170,7 +170,19 @@ COPY ./src/php/elabpool.conf /etc/php8/php-fpm.d/elabpool.conf
 # get the tar archive for the tagged version/branch we want
 ADD https://github.com/elabftw/elabftw/tarball/$ELABFTW_VERSION src.tgz
 # extracted folder will be named elabftw-elabftw-0abcdef
-RUN tar xzf src.tgz && mv elabftw-* /elabftw && rm src.tgz
+# we only copy the strict necessary
+RUN tar xzf src.tgz && mv elabftw-* src \
+    && mkdir /elabftw \
+    && mv src/bin /elabftw \
+    && mv src/builder.js /elabftw \
+    && mv src/composer.json /elabftw \
+    && mv src/composer.lock /elabftw \
+    && mv src/node-builder.js /elabftw \
+    && mv src/package.json /elabftw \
+    && mv src/src /elabftw \
+    && mv src/web /elabftw \
+    && mv src/yarn.lock /elabftw \
+    && rm -r src src.tgz
 
 WORKDIR /elabftw
 
