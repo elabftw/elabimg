@@ -5,10 +5,6 @@ on:
         branches:
           - hypernext
           - next
-    # maybe this will be enabled once there is CD on nightly.elabftw.net but for now no need to waste electricity
-    # run every day at 1:00
-    #schedule:
-    #- cron: "00 01 * * *"
 
 jobs:
     buildandpush:
@@ -30,6 +26,13 @@ jobs:
             - name: Set up Docker Buildx
               uses: docker/setup-buildx-action@v1
 
+            - name: Cache Docker layers
+              uses: actions/cache@v2
+              with:
+                path: /tmp/.buildx-cache
+                key: ${{ runner.os }}-buildx-${{ github.sha }}
+                restore-keys: |
+                  ${{ runner.os }}-buildx-
             # https://github.com/docker/login-action#docker-hub
             - name: Login to Docker Hub
               uses: docker/login-action@v1
@@ -42,9 +45,20 @@ jobs:
               uses: docker/build-push-action@v2
               with:
                 context: .
+                cache-from: type=local,src=/tmp/.buildx-cache
+                cache-to: type=local,dest=/tmp/.buildx-cache-new
                 platforms: linux/arm64,linux/amd64
                 push: true
                 build-args: |
                     ELABFTW_VERSION=${{ steps.ref.outputs.branch }}
                 tags: |
                     elabftw/elabimg:${{ steps.ref.outputs.branch }}
+              # This ugly bit is necessary if you don't want your cache to grow forever
+              # till it hits GitHub's limit of 5GB.
+              # Temp fix
+              # https://github.com/docker/build-push-action/issues/252
+              # https://github.com/moby/buildkit/issues/1896
+            - name: Move cache
+              run: |
+                rm -rf /tmp/.buildx-cache
+                mv /tmp/.buildx-cache-new /tmp/.buildx-cache
