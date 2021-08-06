@@ -5,7 +5,7 @@
 
 # the nginx server can be in http or https
 protocol=http
-if [ $DISABLE_HTTPS = false ]; then
+if [ "$DISABLE_HTTPS" = false ]; then
     protocol=https
 fi
 

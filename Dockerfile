@@ -4,7 +4,7 @@
 
 # build nginx with only the bare minimum of features or modules
 # Note: no need to chain the RUN commands here as it's a builder image and nothing will be kept
-FROM alpine:3.13 as nginx-builder
+FROM alpine:3.14 as nginx-builder
 
 ENV NGINX_VERSION=1.21.1
 # releases can be signed by any key on this page https://nginx.org/en/pgp_keys.html
@@ -68,7 +68,7 @@ USER root
 RUN make install
 
 # elabftw + nginx + php-fpm in a container
-FROM alpine:3.13
+FROM alpine:3.14
 
 # this is versioning for the container image
 ARG ELABIMG_VERSION=3.0.0
@@ -111,7 +111,6 @@ RUN apk upgrade -U -a && apk add --no-cache \
     curl \
     freetype \
     ghostscript \
-    git \
     openssl \
     openjdk11-jre \
     php8 \
@@ -168,8 +167,22 @@ COPY ./src/php/elabpool.conf /etc/php8/php-fpm.d/elabpool.conf
 # END PHP
 
 # ELABFTW
-# clone elabftw repository in /elabftw
-RUN git clone --depth 1 -b $ELABFTW_VERSION https://github.com/elabftw/elabftw.git /elabftw && rm -rf /elabftw/.git
+# get the tar archive for the tagged version/branch we want
+ADD https://github.com/elabftw/elabftw/tarball/$ELABFTW_VERSION src.tgz
+# extracted folder will be named elabftw-elabftw-0abcdef
+# we only copy the strict necessary
+RUN tar xzf src.tgz && mv elabftw-* src \
+    && mkdir /elabftw \
+    && mv src/bin /elabftw \
+    && mv src/builder.js /elabftw \
+    && mv src/composer.json /elabftw \
+    && mv src/composer.lock /elabftw \
+    && mv src/node-builder.js /elabftw \
+    && mv src/package.json /elabftw \
+    && mv src/src /elabftw \
+    && mv src/web /elabftw \
+    && mv src/yarn.lock /elabftw \
+    && rm -r src src.tgz
 
 WORKDIR /elabftw
 
@@ -198,9 +211,9 @@ EXPOSE 443
 
 # run.sh is our entrypoint script
 COPY ./src/run.sh /run.sh
-RUN sed -i -e "s/%ELABIMG_VERSION%/$ELABIMG_VERSION/" /run.sh
-RUN sed -i -e "s/%ELABFTW_VERSION%/$ELABFTW_VERSION/" /run.sh
-RUN sed -i -e "s/%S6_OVERLAY_VERSION%/$S6_OVERLAY_VERSION/" /run.sh
+RUN sed -i -e "s/%ELABIMG_VERSION%/$ELABIMG_VERSION/" \
+    -e "s/%ELABFTW_VERSION%/$ELABFTW_VERSION/" \
+    -e "s/%S6_OVERLAY_VERSION%/$S6_OVERLAY_VERSION/" /run.sh
 
 # launch run.sh on container start
 CMD ["/run.sh"]

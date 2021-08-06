@@ -1,2 +1,9 @@
 .git
 .gitignore
+.github
+CHANGELOG.md
+FUNDING.yml
+LICENSE
+README.md
+SECURITY.md
+src/docker-compose.yml-EXAMPLE

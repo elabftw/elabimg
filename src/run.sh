@@ -86,7 +86,7 @@ nginxConf() {
         if (! $enable_letsencrypt); then
             generateCert
         fi
-        source /etc/nginx/generate-dhparam.sh
+        /bin/sh /etc/nginx/generate-dhparam.sh
         # activate an HTTPS server listening on port 443
         ln -fs /etc/nginx/https.conf /etc/nginx/conf.d/elabftw.conf
         if ($enable_letsencrypt); then
@@ -199,7 +199,7 @@ phpConf() {
         # we don't want to use opcache as we want our changes to be immediatly visible
         sed -i -e "s/opcache\.enable=1/opcache\.enable=0/" $f
         # also allow url_fopen so composer works
-        sed -i -e "s/allow_url_fopen = Off/allow_url_fopen = On" $f
+        sed -i -e "s/allow_url_fopen = Off/allow_url_fopen = On/" $f
         # /proc/version is for symfony, and the rest for composer
         open_basedir="${open_basedir}:/proc/version:/usr/bin/composer:/composer"
     fi
