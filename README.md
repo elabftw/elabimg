@@ -1,6 +1,3 @@
-[![build status](https://github.com/elabftw/elabimg/actions/workflows/push_next_hypernext_image.yaml/badge.svg)](https://github.com/elabftw/elabimg/actions/workflows/push_next_hypernext_image.yaml)
-[![vuln scan](https://github.com/elabftw/elabimg/actions/workflows/push_next_hypernext_image.yaml/badge.svg)](https://github.com/elabftw/elabimg/actions/workflows/push_next_hypernext_image.yaml)
-
 # Description
 
 This Docker image is for [eLabFTW](https://www.elabftw.net). It runs nginx + php + elabftw.
