@@ -20,6 +20,11 @@ services:
     # comment this out if you use several containers with redis, as you can't have several containers with the same name
     # default value: elabftw
     container_name: elabftw
+
+    # security options
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 42
     # drop some capabilities not needed by the app
     cap_drop:
         - SYS_ADMIN
@@ -29,6 +34,7 @@ services:
         - SETFCAP
         - NET_RAW
         - SYS_PTRACE
+
     # environment variables passed to the container to configure options at run time (when container is started)
     # commented variables are optional
     environment:
