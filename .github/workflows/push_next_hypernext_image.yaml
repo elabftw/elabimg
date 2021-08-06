@@ -9,6 +9,7 @@ on:
 jobs:
     buildandpush:
         runs-on: ubuntu-latest
+        name: Build images and push to Docker Hub
         steps:
             - name: Checkout elabimg repo
               uses: actions/checkout@v2
@@ -53,6 +54,16 @@ jobs:
                     ELABFTW_VERSION=${{ steps.ref.outputs.branch }}
                 tags: |
                     elabftw/elabimg:${{ steps.ref.outputs.branch }}
+
+            - name: Run vulnerabilities scanner
+              uses: anchore/scan-action@v2
+              with:
+                image: elabftw/elabimg:${{ steps.ref.outputs.branch }}
+                fail-build: true
+
+            - name: Anchore inline scan JSON results
+              run: for j in `ls ./anchore-reports/*.json`; do echo "---- ${j} ----"; cat ${j}; echo; done
+
               # This ugly bit is necessary if you don't want your cache to grow forever
               # till it hits GitHub's limit of 5GB.
               # Temp fix
