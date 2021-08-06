@@ -1,4 +1,5 @@
-![vuln test](https://github.com/elabftw/elabimg/workflows/vuln%20test/badge.svg?branch=master)
+[![build status](https://github.com/elabftw/elabimg/actions/workflows/push_next_hypernext_image.yaml/badge.svg)](https://github.com/elabftw/elabimg/actions/workflows/push_next_hypernext_image.yaml)
+[![vuln scan](https://github.com/elabftw/elabimg/actions/workflows/push_next_hypernext_image.yaml/badge.svg)](https://github.com/elabftw/elabimg/actions/workflows/push_next_hypernext_image.yaml)
 
 # Description
 
