@@ -1,4 +1,4 @@
-name: Deploy images of new releases to Docker
+name: Push images of new releases to Docker Hub
 
 on:
     push:
@@ -8,25 +8,23 @@ on:
 jobs:
     buildandpush:
         runs-on: ubuntu-latest
-        env:
-            DOCKER_FILE: Dockerfile
         steps:
             # see https://github.community/t/checkout-with-code-from-the-latest-release/17649
-            - name: get latest release of elabftw with tag
+            - name: Get latest release of elabftw with tag
               id: elabftwrelease
               run: |
                   echo "::set-output name=releasetag::$(curl -s https://api.github.com/repos/elabftw/elabftw/releases/latest | jq '.tag_name' | sed 's/\"//g')"
-            
-            - name: get latest release of elabimg with tag
+
+            - name: Get latest release of elabimg with tag
               id: elabimgrelease
               run: |
                   echo "::set-output name=releasetag::$(curl -s https://api.github.com/repos/elabftw/elabimg/releases/latest | jq '.tag_name' | sed 's/\"//g')"
-                  
-            - name: verify release tags
+
+            - name: Verify release tags
               run: |
                   echo ${{ steps.elabftwrelease.outputs.releasetag }}
                   echo ${{ steps.elabimgrelease.outputs.releasetag }}
-                  
+
             - name: Checkout elabimg repo on latest tag
               uses: actions/checkout@v2
               with:
@@ -53,7 +51,6 @@ jobs:
               uses: docker/build-push-action@v2
               with:
                 context: .
-                file: ${{ env.DOCKER_FILE }}
                 platforms: linux/arm64,linux/amd64
                 push: true
                 build-args: |

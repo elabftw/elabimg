@@ -1,0 +1,72 @@
+name: Push images of hypernext and next to Docker Hub
+
+on:
+    push:
+        branches:
+          - hypernext
+          - next
+
+jobs:
+    buildandpush:
+        runs-on: ubuntu-latest
+        name: Build images and push to Docker Hub
+        steps:
+            - name: Checkout elabimg repo
+              uses: actions/checkout@v2
+
+            - name: Get the current branch name
+              shell: bash
+              run: echo "::set-output name=branch::${GITHUB_REF#refs/heads/}"
+              id: ref
+
+            # https://github.com/docker/setup-qemu-action#usage
+            - name: Set up QEMU
+              uses: docker/setup-qemu-action@v1
+
+            # https://github.com/marketplace/actions/docker-setup-buildx
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v1
+
+            - name: Cache Docker layers
+              uses: actions/cache@v2
+              with:
+                path: /tmp/.buildx-cache
+                key: ${{ runner.os }}-buildx-${{ github.sha }}
+                restore-keys: |
+                  ${{ runner.os }}-buildx-
+            # https://github.com/docker/login-action#docker-hub
+            - name: Login to Docker Hub
+              uses: docker/login-action@v1
+              with:
+                username: ${{ secrets.DOCKER_HUB_USERNAME }}
+                password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+            # https://github.com/docker/build-push-action#multi-platform-image
+            - name: Build latest release for all platforms and push to Docker Hub
+              uses: docker/build-push-action@v2
+              with:
+                context: .
+                cache-from: type=local,src=/tmp/.buildx-cache
+                cache-to: type=local,dest=/tmp/.buildx-cache-new
+                platforms: linux/arm64,linux/amd64
+                push: true
+                build-args: |
+                    ELABFTW_VERSION=${{ steps.ref.outputs.branch }}
+                tags: |
+                    elabftw/elabimg:${{ steps.ref.outputs.branch }}
+
+            - name: Run vulnerabilities scanner
+              uses: anchore/scan-action@v2
+              with:
+                image: elabftw/elabimg:${{ steps.ref.outputs.branch }}
+                fail-build: true
+
+              # This ugly bit is necessary if you don't want your cache to grow forever
+              # till it hits GitHub's limit of 5GB.
+              # Temp fix
+              # https://github.com/docker/build-push-action/issues/252
+              # https://github.com/moby/buildkit/issues/1896
+            - name: Move cache
+              run: |
+                rm -rf /tmp/.buildx-cache
+                mv /tmp/.buildx-cache-new /tmp/.buildx-cache
