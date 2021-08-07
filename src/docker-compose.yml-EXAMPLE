@@ -21,9 +21,7 @@ services:
     # default value: elabftw
     container_name: elabftw
 
-    # security options
-    security_opt:
-      - no-new-privileges:true
+    # limit number of processes
     pids_limit: 42
     # drop some capabilities not needed by the app
     cap_drop:
