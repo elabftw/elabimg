@@ -5,6 +5,9 @@ on:
         branches:
           - hypernext
           - next
+     # also run every day at 1:00
+    schedule:
+        - cron: "00 01 * * *"
 
 jobs:
     buildandpush:
