@@ -102,6 +102,7 @@ RUN addgroup -S -g 101 nginx \
 # END NGINX
 
 # install required packages
+# php8-bcmath is required to send emails via Exchange (NTLM authenticator)
 # php8-gd is required by mpdf for transparent png
 # php8-tokenizer and php8-xmlwriter are for dev only
 # don't put line comments inside this instruction
@@ -114,6 +115,7 @@ RUN apk upgrade -U -a && apk add --no-cache \
     openssl \
     openjdk11-jre \
     php8 \
+    php8-bcmath \
     php8-curl \
     php8-ctype \
     php8-dev \
