@@ -22,7 +22,10 @@ services:
     container_name: elabftw
 
     # limit number of processes
-    pids_limit: 42
+    # this option is commented out because it is not in v3 of compose files, only v2
+    # even though it works as expected in a v3 file with recent docker-compose
+    #pids_limit: 42
+
     # drop some capabilities not needed by the app
     cap_drop:
         - SYS_ADMIN
@@ -170,14 +173,14 @@ services:
         #################
         # optional: be less verbose during init
         # default value: false
-        #- SILENT_INIT: false
+        #- SILENT_INIT=false
 
         #######
         # DEV #
         #######
         # set to true for development
         # default value: false
-        #- DEV_MODE: false
+        #- DEV_MODE=false
 
     ports:
         # if you want elabftw to run on a different port, change the first number

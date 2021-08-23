@@ -157,8 +157,8 @@ phpfpmConf() {
     sed -i -e "s/%PHP_MAX_CHILDREN%/${php_max_children}/" $f
     # allow using more memory for php-fpm
     sed -i -e "s/%PHP_MAX_MEMORY%/${max_php_memory}/" $f
-    # add container version in env
-    sed -i -e "s/%ELABIMG_VERSION%/${elabimg_version}/" $f
+    # add container version in env (named env or it will get replaced by Docker build instruction
+    sed -i -e "s/%ELABIMG_VERSION_ENV%/${elabimg_version}/" $f
 }
 
 # PHP CONFIG
