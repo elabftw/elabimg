@@ -46,8 +46,6 @@ jobs:
                 context: .
                 platforms: linux/arm64,linux/amd64
                 push: true
-                  build-args: |
-                    ELABFTW_VERSION=${{ steps.latesttag.outputs.tag }}
                 tags: |
                     elabftw/elabimg:latest
                     elabftw/elabimg:${{ steps.latesttag.outputs.tag }}
