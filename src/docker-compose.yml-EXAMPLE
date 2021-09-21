@@ -98,7 +98,7 @@ services:
         #########################
         # The secret key is used for encrypting the SMTP password
         # A random one has been generated for you, if you wish to change it you can
-        # get your secret key from https://demo.elabftw.net/install/generateSecretKey.php
+        # get your secret key from https://get.elabftw.net/?key
         # if you don't want to get it from an external source you can also do that:
         # docker run --rm -t --entrypoint '/bin/sh' elabftw/elabimg -c "php /elabftw/web/install/generateSecretKey.php"
         # default value: generated randomly if you get the config from get.elabftw.net
