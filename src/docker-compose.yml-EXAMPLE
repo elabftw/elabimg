@@ -183,6 +183,10 @@ services:
         #- DEV_MODE=false
 
     ports:
+        # Important note about exposing ports: due to the way Docker deals with the host firewall, it is recommended to use '127.0.0.1:1234:443'
+        # if you only want to expose the service locally (on port 1234 in this example). See https://github.com/moby/moby/issues/22054
+        # Another option is to use the "expose" directive instead of "ports" and let your reverse proxy figure things out.
+        #
         # if you want elabftw to run on a different port, change the first number
         # host:container
         - '443:443'
