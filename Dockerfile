@@ -71,7 +71,7 @@ RUN make install
 FROM alpine:3.14
 
 # this is versioning for the container image
-ARG ELABIMG_VERSION=3.0.0
+ARG ELABIMG_VERSION=3.0.1
 ENV ELABIMG_VERSION $ELABIMG_VERSION
 
 # select elabftw tag
@@ -113,7 +113,6 @@ RUN apk upgrade -U -a && apk add --no-cache \
     freetype \
     ghostscript \
     openssl \
-    openjdk11-jre \
     php8 \
     php8-bcmath \
     php8-curl \
