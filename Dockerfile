@@ -71,8 +71,7 @@ RUN make install
 FROM alpine:3.14
 
 # this is versioning for the container image
-ARG ELABIMG_VERSION=3.0.1
-ENV ELABIMG_VERSION $ELABIMG_VERSION
+ENV ELABIMG_VERSION 3.0.1
 
 # select elabftw tag
 ARG ELABFTW_VERSION=hypernext
