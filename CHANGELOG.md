@@ -1,6 +1,10 @@
 # Container image version
 # Note: the version here is from Dockerfile:ELABIMG_VERSION not the tagged one
 
+# 3.0.1
+
+* Remove java dependency (not needed any longer)
+
 # 3.0.0
 
 * BREAKING CHANGE FOR DEVELOPERS ONLY: the `dev` branch is no more. Use DEV_MODE=true env var instead and use `hypernext` branch for the dev image.

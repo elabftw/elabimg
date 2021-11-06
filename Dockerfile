@@ -6,7 +6,7 @@
 # Note: no need to chain the RUN commands here as it's a builder image and nothing will be kept
 FROM alpine:3.14 as nginx-builder
 
-ENV NGINX_VERSION=1.21.1
+ENV NGINX_VERSION=1.21.3
 # releases can be signed by any key on this page https://nginx.org/en/pgp_keys.html
 # so this might need to be updated for a new release
 # available keys: mdounin, maxim, sb
@@ -71,8 +71,7 @@ RUN make install
 FROM alpine:3.14
 
 # this is versioning for the container image
-ARG ELABIMG_VERSION=3.0.0
-ENV ELABIMG_VERSION $ELABIMG_VERSION
+ENV ELABIMG_VERSION 3.0.1
 
 # select elabftw version or branch here
 ARG ELABFTW_VERSION=4.1.0
@@ -113,7 +112,6 @@ RUN apk upgrade -U -a && apk add --no-cache \
     freetype \
     ghostscript \
     openssl \
-    openjdk11-jre \
     php8 \
     php8-bcmath \
     php8-curl \
