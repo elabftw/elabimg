@@ -43,6 +43,8 @@ getEnv() {
     # allow limiting log pollution on startup
     silent_init=${SILENT_INIT:-false}
     dev_mode=${DEV_MODE:-false}
+    aws_ak=${ELAB_AWS_ACCESS_KEY:-}
+    aws_sk=${ELAB_AWS_SECRET_KEY:-}
 }
 
 # Create user if not default user
@@ -223,7 +225,9 @@ writeConfigFile() {
     define('DB_USER', '${db_user}');
     define('DB_PASSWORD', '${db_password}');
     define('DB_CERT_PATH', '${db_cert_path}');
-    define('SECRET_KEY', '${secret_key}');"
+    define('SECRET_KEY', '${secret_key}');
+    define('ELAB_AWS_ACCESS_KEY', '${aws_ak}');
+    define('ELAB_AWS_SECRET_KEY', '${aws_sk}');"
     echo "$config" > "$config_path"
     chown "${elabftw_user}":"${elabftw_group}" "$config_path"
     chmod 600 "$config_path"
