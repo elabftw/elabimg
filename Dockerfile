@@ -132,6 +132,7 @@ RUN apk upgrade -U -a && apk add --no-cache \
     php8-pecl-imagick \
     php8-phar \
     php8-redis \
+    php8-simplexml \
     php8-session \
     php8-sodium \
     php8-tokenizer \
