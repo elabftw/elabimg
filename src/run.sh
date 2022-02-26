@@ -1,5 +1,13 @@
 #!/bin/bash
-# elabftw-docker start script for Alpine Linux base image
+#
+# @author Nicolas CARPi <nico-git@deltablot.email>
+# @copyright 2020 Nicolas CARPi
+# @see https://www.elabftw.net Official website
+# @license AGPL-3.0
+# @package elabftw/elabimg
+#
+# This script is called by the oneshot service "init"
+# It will get config from env and adjust configuration files and system accordingly
 
 # get env values
 # and unset the sensitive ones so they cannot be accessed by a rogue process
@@ -45,7 +53,9 @@ getEnv() {
     silent_init=${SILENT_INIT:-false}
     dev_mode=${DEV_MODE:-false}
     aws_ak=${ELAB_AWS_ACCESS_KEY:-}
+    unset ELAB_AWS_ACCESS_KEY
     aws_sk=${ELAB_AWS_SECRET_KEY:-}
+    unset ELAB_AWS_SECRET_KEY
 }
 
 # Create user if not default user
