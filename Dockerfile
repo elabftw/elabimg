@@ -162,11 +162,11 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then ARCHITECTURE=x86_64; elif [ "
     && tar xpJf "/tmp/s6-overlay-noarch-${S6_OVERLAY_VERSION}.tar.xz" -C /
 # create nginx s6 service
 RUN mkdir -p /etc/s6-overlay/s6-rc.d/nginx && echo "longrun" > /etc/s6-overlay/s6-rc.d/nginx/type
-COPY ./src/services/nginx /etc/s6-overlay/s6-rc.d/nginx
+COPY ./src/nginx/run /etc/s6-overlay/s6-rc.d/nginx/
 RUN touch /etc/s6-overlay/s6-rc.d/user/contents.d/nginx
 # create php s6 service
 RUN mkdir -p /etc/s6-overlay/s6-rc.d/php && echo "longrun" > /etc/s6-overlay/s6-rc.d/php/type
-COPY ./src/services/php /etc/s6-overlay/s6-rc.d/php
+COPY ./src/php/run /etc/s6-overlay/s6-rc.d/php/
 RUN touch /etc/s6-overlay/s6-rc.d/user/contents.d/php
 # END S6-OVERLAY
 
@@ -224,7 +224,7 @@ EXPOSE 443
 # PREPARE.SH
 # create a oneshot service
 RUN mkdir -p /etc/s6-overlay/s6-rc.d/init && echo "oneshot" > /etc/s6-overlay/s6-rc.d/init/type
-COPY ./src/services/init /etc/s6-overlay/s6-rc.d/init
+COPY ./src/init/up /etc/s6-overlay/s6-rc.d/init/
 RUN touch /etc/s6-overlay/s6-rc.d/user/contents.d/init
 
 # prepare.sh must run before nginx and php are started
