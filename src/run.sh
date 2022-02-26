@@ -246,7 +246,7 @@ writeConfigFile() {
 
 startupMessage() {
     # display a friendly message with running versions
-    nginx_version=$(nginx -v 2>&1)
+    nginx_version=$(/usr/sbin/nginx -v 2>&1)
     # IMPORTANT: heredoc EOT must not have spaces before or after, hence the incorrect indent
     cat >&2 <<EOT
 INFO: Runtime configuration done. Now starting...
@@ -270,6 +270,3 @@ writeConfigFile
 if [ "${silent_init}" = false ]; then
     startupMessage
 fi
-
-# start all the services
-/init

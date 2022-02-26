@@ -45,7 +45,7 @@ touch $GEN_LOCKFILE
         nice -n +5 openssl dhparam -out "${DHPARAM_FILE}.tmp" "${DHPARAM_BITS}" 2>&1 \
         && mv $DHPARAM_FILE.tmp $DHPARAM_FILE \
         && echo "INFO: New dhparam generation complete, reloading nginx..." \
-        && nginx -s reload
+        && /usr/sbin/nginx -s reload
     ) | grep -vE '^[\.+]+'
     rm $GEN_LOCKFILE
 ) &

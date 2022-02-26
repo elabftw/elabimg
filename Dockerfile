@@ -151,14 +151,23 @@ RUN ln -s /usr/bin/php8 /usr/bin/php
 # S6-OVERLAY
 # install s6-overlay, our init system. Workaround for different versions using TARGETPLATFORM
 # platform see https://docs.docker.com/engine/reference/builder/#automatic-platform-args-in-the-global-scope
-ARG S6_OVERLAY_VERSION=2.2.0.3
+ARG S6_OVERLAY_VERSION=3.0.0.2-2
 ENV S6_OVERLAY_VERSION $S6_OVERLAY_VERSION
 
 ARG TARGETPLATFORM
-RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then ARCHITECTURE=amd64; elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then ARCHITECTURE=arm; elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then ARCHITECTURE=aarch64; else ARCHITECTURE=amd64; fi \
-    && curl -sS -L -O --output-dir /tmp/ --create-dirs "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-${ARCHITECTURE}.tar.gz" \
-    && tar xzf "/tmp/s6-overlay-${ARCHITECTURE}.tar.gz" -C /
-COPY ./src/services /etc/services.d
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then ARCHITECTURE=x86_64; elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then ARCHITECTURE=arm; elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then ARCHITECTURE=aarch64; else ARCHITECTURE=amd64; fi \
+    && curl -sS -L -O --output-dir /tmp/ --create-dirs "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-${ARCHITECTURE}-${S6_OVERLAY_VERSION}.tar.xz" \
+    && curl -sS -L -O --output-dir /tmp/ --create-dirs "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch-${S6_OVERLAY_VERSION}.tar.xz" \
+    && tar xpJf "/tmp/s6-overlay-${ARCHITECTURE}-${S6_OVERLAY_VERSION}.tar.xz" -C / \
+    && tar xpJf "/tmp/s6-overlay-noarch-${S6_OVERLAY_VERSION}.tar.xz" -C /
+# create nginx s6 service
+RUN mkdir -p /etc/s6-overlay/s6-rc.d/nginx && echo "longrun" > /etc/s6-overlay/s6-rc.d/nginx/type
+COPY ./src/services/nginx /etc/s6-overlay/s6-rc.d/nginx
+RUN touch /etc/s6-overlay/s6-rc.d/user/contents.d/nginx
+# create php s6 service
+RUN mkdir -p /etc/s6-overlay/s6-rc.d/php && echo "longrun" > /etc/s6-overlay/s6-rc.d/php/type
+COPY ./src/services/php /etc/s6-overlay/s6-rc.d/php
+RUN touch /etc/s6-overlay/s6-rc.d/user/contents.d/php
 # END S6-OVERLAY
 
 # PHP
@@ -212,11 +221,20 @@ HEALTHCHECK --interval=2m --timeout=5s --retries=3 CMD sh /etc/nginx/healthcheck
 EXPOSE 443
 # END NGINX PART 2
 
+# RUN.SH
+# create a oneshot service for run.sh
+RUN mkdir -p /etc/s6-overlay/s6-rc.d/init && echo "oneshot" > /etc/s6-overlay/s6-rc.d/init/type
+COPY ./src/services/init /etc/s6-overlay/s6-rc.d/init
+RUN touch /etc/s6-overlay/s6-rc.d/user/contents.d/init
+# run.sh must run before nginx and php are started
+RUN echo "init" > /etc/s6-overlay/s6-rc.d/nginx/dependencies
+RUN echo "init" > /etc/s6-overlay/s6-rc.d/php/dependencies
 # run.sh is our entrypoint script
 COPY ./src/run.sh /run.sh
 RUN sed -i -e "s/%ELABIMG_VERSION%/$ELABIMG_VERSION/" \
     -e "s/%ELABFTW_VERSION%/$ELABFTW_VERSION/" \
     -e "s/%S6_OVERLAY_VERSION%/$S6_OVERLAY_VERSION/" /run.sh
+# END RUN.SH
 
-# launch run.sh on container start
-CMD ["/run.sh"]
+# start s6
+CMD ["/init"]
