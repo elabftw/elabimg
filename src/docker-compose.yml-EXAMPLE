@@ -104,6 +104,11 @@ services:
         # default value: generated randomly if you get the config from get.elabftw.net
         - SECRET_KEY=
 
+        # The canonical URL to the website, including port if not standard
+        # example value: https://elab.uni-delta.fr
+        # example value: https://elab.uni-delta.fr:3148
+        - SITE_URL=
+
         # optional: adjust maximum size of uploaded files
         # default value: 100M
         #- MAX_UPLOAD_SIZE=100M

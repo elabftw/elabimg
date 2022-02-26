@@ -1,6 +1,10 @@
 # Container image version
 # Note: the version here is from Dockerfile:ELABIMG_VERSION not the tagged one
 
+# 3.1.0
+
+* Add mandatory environment variable SITE_URL
+
 # 3.0.3
 
 * Add php8-xml package

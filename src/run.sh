@@ -13,14 +13,15 @@ getEnv() {
     db_user=${DB_USER:-elabftw}
     unset DB_USER
     # Note: no default value here
-    db_password=${DB_PASSWORD}
+    db_password=${DB_PASSWORD:-}
     unset DB_PASSWORD
     db_cert_path=${DB_CERT_PATH:-}
     unset DB_CERT_PATH
+    site_url=${SITE_URL:-}
     server_name=${SERVER_NAME:-localhost}
     disable_https=${DISABLE_HTTPS:-false}
     enable_letsencrypt=${ENABLE_LETSENCRYPT:-false}
-    secret_key=${SECRET_KEY}
+    secret_key=${SECRET_KEY:-}
     unset SECRET_KEY
     max_php_memory=${MAX_PHP_MEMORY:-256M}
     max_upload_size=${MAX_UPLOAD_SIZE:-100M}
@@ -52,6 +53,13 @@ createUser() {
     if [ "${elabftw_user}" != "nginx" ]; then
         addgroup -g "${elabftw_groupid}" "${elabftw_group}"
         adduser -S -u "${elabftw_userid}" -G "${elabftw_group}" "${elabftw_user}"
+    fi
+}
+
+checkSiteUrl() {
+    if [ -z "${site_url}" ]; then
+        echo "Error: environment variable SITE_URL not set. Aborting!" >&2
+        exit 1
     fi
 }
 
@@ -226,6 +234,7 @@ writeConfigFile() {
     define('DB_PASSWORD', '${db_password}');
     define('DB_CERT_PATH', '${db_cert_path}');
     define('SECRET_KEY', '${secret_key}');
+    define('SITE_URL', '${site_url}');
     define('ELAB_AWS_ACCESS_KEY', '${aws_ak}');
     define('ELAB_AWS_SECRET_KEY', '${aws_sk}');"
     echo "$config" > "$config_path"
@@ -248,6 +257,7 @@ EOT
 
 # script start
 getEnv
+checkSiteUrl
 createUser
 nginxConf
 phpfpmConf
