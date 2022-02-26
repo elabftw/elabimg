@@ -6,7 +6,7 @@
 # Note: no need to chain the RUN commands here as it's a builder image and nothing will be kept
 FROM alpine:3.15 as nginx-builder
 
-ENV NGINX_VERSION=1.21.3
+ENV NGINX_VERSION=1.21.6
 # releases can be signed by any key on this page https://nginx.org/en/pgp_keys.html
 # so this might need to be updated for a new release
 # available keys: mdounin, maxim, sb
