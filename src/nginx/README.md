@@ -4,7 +4,7 @@
 
 This folder is copied into `/etc/nginx` in the image. It contains all the configuration files necessary for `nginx` to run.
 
-Some configuration files contain placeholders (`%EXAMPLE%`) that are replaced by a correct value at runtime (script `/run.sh`).
+Some configuration files contain placeholders (`%EXAMPLE%`) that are replaced by a correct value at runtime (script [prepare.sh](../init/prepare.sh)).
 
 ## Files
 

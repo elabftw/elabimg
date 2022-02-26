@@ -4,7 +4,7 @@
 
 This folder contains the configuration files for PHP/PHP-FPM.
 
-Some configuration files contain placeholders (`%EXAMPLE%`) that are replaced by a correct value at runtime (script `/run.sh`).
+Some configuration files contain placeholders (`%EXAMPLE%`) that are replaced by a correct value at runtime (script [prepare.sh](../init/prepare.sh)).
 
 ## Files
 

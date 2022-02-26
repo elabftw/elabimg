@@ -221,20 +221,22 @@ HEALTHCHECK --interval=2m --timeout=5s --retries=3 CMD sh /etc/nginx/healthcheck
 EXPOSE 443
 # END NGINX PART 2
 
-# RUN.SH
-# create a oneshot service for run.sh
+# PREPARE.SH
+# create a oneshot service
 RUN mkdir -p /etc/s6-overlay/s6-rc.d/init && echo "oneshot" > /etc/s6-overlay/s6-rc.d/init/type
 COPY ./src/services/init /etc/s6-overlay/s6-rc.d/init
 RUN touch /etc/s6-overlay/s6-rc.d/user/contents.d/init
-# run.sh must run before nginx and php are started
+
+# prepare.sh must run before nginx and php are started
 RUN echo "init" > /etc/s6-overlay/s6-rc.d/nginx/dependencies
 RUN echo "init" > /etc/s6-overlay/s6-rc.d/php/dependencies
-# run.sh is our entrypoint script
-COPY ./src/run.sh /run.sh
+
+COPY ./src/init/prepare.sh /usr/sbin/prepare.sh
+# these values are not in env and cannot be accessed by script so modify them here
 RUN sed -i -e "s/%ELABIMG_VERSION%/$ELABIMG_VERSION/" \
     -e "s/%ELABFTW_VERSION%/$ELABFTW_VERSION/" \
-    -e "s/%S6_OVERLAY_VERSION%/$S6_OVERLAY_VERSION/" /run.sh
-# END RUN.SH
+    -e "s/%S6_OVERLAY_VERSION%/$S6_OVERLAY_VERSION/" /usr/sbin/prepare.sh
+# END PREPARE.SH
 
 # start s6
 CMD ["/init"]
