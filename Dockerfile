@@ -42,15 +42,15 @@ WORKDIR /build/nginx-$NGINX_VERSION
 RUN ./configure \
         --prefix=/var/lib/nginx \
         --sbin-path=/usr/sbin/nginx \
+        --with-cc-opt='-g0 -O3 -fstack-protector -flto --param=ssp-buffer-size=4 -Wformat -Werror=format-security'\
         --modules-path=/usr/lib/nginx/modules \
         --conf-path=/etc/nginx/nginx.conf \
         --pid-path=/run/nginx.pid \
-        --error-log-path=/var/log/nginx/error.log \
-        --http-log-path=/var/log/nginx/access.log \
+        --error-log-path=/run/nginx/error.log \
+        --http-log-path=/run/nginx/access.log \
         --lock-path=/run/nginx/nginx.lock \
-        --http-client-body-temp-path=/var/lib/nginx/tmp/client_body \
-        --http-proxy-temp-path=/var/lib/nginx/tmp/proxy \
-        --http-fastcgi-temp-path=/var/lib/nginx/tmp/fastcgi \
+        --http-client-body-temp-path=/run/nginx/client_body \
+        --http-fastcgi-temp-path=/run/nginx/fastcgi \
         --user=nginx \
         --group=nginx \
         --with-threads \
@@ -58,9 +58,26 @@ RUN ./configure \
         --with-http_v2_module \
         --with-http_realip_module \
         --with-http_gzip_static_module \
-        --with-cc-opt='-g0 -O3 -fstack-protector -flto --param=ssp-buffer-size=4 -Wformat -Werror=format-security'\
         --add-module=/build/ngx_brotli \
         --add-module=/build/headers-more-nginx-module \
+        --without-http_autoindex_module \
+        --without-http_auth_basic_module \
+        --without-http_browser_module \
+        --without-http_empty_gif_module \
+        --without-http_geo_module \
+        --without-http_gzip_module \
+        --without-http_limit_conn_module \
+        --without-http_limit_req_module \
+        --without-http_map_module \
+        --without-http_memcached_module \
+        --without-http_proxy_module \
+        --without-http_referer_module \
+        --without-http_scgi_module \
+        --without-http_split_clients_module \
+        --without-http_ssi_module \
+        --without-http_upstream_ip_hash_module \
+        --without-http_userid_module \
+        --without-http_uwsgi_module \
     && make -j$(getconf _NPROCESSORS_ONLN) \
     && strip -s objs/nginx
 
@@ -94,10 +111,10 @@ COPY --from=nginx-builder /etc/nginx/fastcgi.conf /etc/nginx/fastcgi.conf
 # the necessary nginx dirs,
 # and redirect logs to stdout/stderr for docker logs to catch
 RUN addgroup -S -g 101 nginx \
-    && adduser -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx -u 101 nginx \
-    && mkdir -pv /var/lib/nginx/tmp/{client_body,fastcgi} /var/log/nginx/{access.log,error.log} \
-    && ln -sf /dev/stdout /var/log/nginx/access.log \
-    && ln -sf /dev/stderr /var/log/nginx/error.log
+    && adduser -D -S -h /run/nginx -s /sbin/nologin -G nginx -u 101 nginx \
+    && mkdir -pv /run/nginx/{client_body,fastcgi} \
+    && ln -sf /dev/stdout /run/nginx/access.log \
+    && ln -sf /dev/stderr /run/nginx/error.log
 # END NGINX
 
 # install required packages
