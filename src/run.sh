@@ -224,6 +224,8 @@ elabftwConf() {
 }
 
 writeConfigFile() {
+    # remove trailing slash for site_url
+    site_url=$(echo "${site_url}" | sed 's:/$::')
     # write config file from env var
     config_path="/elabftw/config.php"
     config="<?php
