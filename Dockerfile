@@ -4,7 +4,7 @@
 
 # build nginx with only the bare minimum of features or modules
 # Note: no need to chain the RUN commands here as it's a builder image and nothing will be kept
-FROM alpine:3.14 as nginx-builder
+FROM alpine:3.15 as nginx-builder
 
 ENV NGINX_VERSION=1.21.3
 # releases can be signed by any key on this page https://nginx.org/en/pgp_keys.html
@@ -68,7 +68,7 @@ USER root
 RUN make install
 
 # elabftw + nginx + php-fpm in a container
-FROM alpine:3.14
+FROM alpine:3.15
 
 # this is versioning for the container image
 ENV ELABIMG_VERSION 3.0.3
