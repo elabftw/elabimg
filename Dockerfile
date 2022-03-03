@@ -87,7 +87,7 @@ RUN make install
 FROM alpine:3.15
 
 # this is versioning for the container image
-ENV ELABIMG_VERSION 3.0.3
+ENV ELABIMG_VERSION 3.1.0
 
 # select elabftw tag
 ARG ELABFTW_VERSION=hypernext
@@ -214,7 +214,7 @@ WORKDIR /elabftw
 
 # COMPOSER
 ENV COMPOSER_HOME=/composer
-COPY --from=composer:2.1.5 /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2.2.7 /usr/bin/composer /usr/bin/composer
 
 # install php and js dependencies and build assets
 # some ini settings are set on the command line to override the restrictive production ones already set
