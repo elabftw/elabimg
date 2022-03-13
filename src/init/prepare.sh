@@ -106,7 +106,6 @@ nginxConf() {
         if (! $enable_letsencrypt); then
             generateCert
         fi
-        /bin/sh /etc/nginx/generate-dhparam.sh
         # activate an HTTPS server listening on port 443
         ln -fs /etc/nginx/https.conf /etc/nginx/conf.d/elabftw.conf
         if ($enable_letsencrypt); then

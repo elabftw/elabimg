@@ -16,6 +16,6 @@ Some configuration files contain placeholders (`%EXAMPLE%`) that are replaced by
 
 `Nginx` is configured and compiled with only the bare minimum, see the build step in `Dockerfile`.
 
-Upon starting, an existing `dhparams` file is used while another random new one is generated in the background, once this one is generated, it replaces the pre-generated one and `nginx` is reloaded to take it into account.
-
 Custom error pages are also added.
+
+The Diffie-Hellman group used is `ffdhe4096` from [IETC RFC 7919](https://datatracker.ietf.org/doc/html/rfc7919).
