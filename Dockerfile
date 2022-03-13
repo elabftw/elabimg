@@ -140,6 +140,7 @@ RUN apk upgrade -U -a && apk add --no-cache \
     php8-fileinfo \
     php8-fpm \
     php8-json \
+    php8-intl \
     php8-ldap \
     php8-mbstring \
     php8-opcache \
