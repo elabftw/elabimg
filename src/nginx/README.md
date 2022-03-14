@@ -17,5 +17,3 @@ Some configuration files contain placeholders (`%EXAMPLE%`) that are replaced by
 `Nginx` is configured and compiled with only the bare minimum, see the build step in `Dockerfile`.
 
 Custom error pages are also added.
-
-The Diffie-Hellman group used is `ffdhe4096` from [IETC RFC 7919](https://datatracker.ietf.org/doc/html/rfc7919).
