@@ -5,7 +5,7 @@
 
 * Add mandatory environment variable SITE_URL (elabftw/elabftw#3319)
 * Customize nginx build a bit more by removing unneeded modules
-* Use RFC7919 DHE group instead of generating a new one (in https mode)
+* Remove dhparams because no DHE ciphersuites are used anyway
 * Update the init system (s6) to v3
 * Update nginx to 1.21.6
 * Use alpine 3.15

@@ -4,7 +4,7 @@ This Docker image is for [eLabFTW](https://www.elabftw.net). It runs nginx + php
 
 # Tags and branches
 
-The `hypernext` (dev) and `next` (unstable) branches are rebuilt and pushed to Docker Hub on a "push" event.
+The `hypernext` (dev) and `next` (unstable) branches are rebuilt and pushed to Docker Hub on a "push" event as well as on a daily schedule.
 
 The `master` branch is built for the `latest` tag on Docker Hub and contains the stable eLabFTW version.
 
