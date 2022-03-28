@@ -29,3 +29,10 @@ This will download a pre-filled configuration file.
 You can then edit this file where all the options are explained in the comments.
 
 For usage of eLabFTW, see [documentation](https://doc.elabftw.net).
+
+## Reloading a service
+
+~~~bash
+/package/admin/s6/command/s6-svc -r /run/service/php
+/package/admin/s6/command/s6-svc -r /run/service/nginx
+~~~
