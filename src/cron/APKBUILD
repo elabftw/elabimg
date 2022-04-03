@@ -1,0 +1,40 @@
+# Contributor: Mark Hills <mark@xwax.org>
+# Maintainer: Mark Hills <mark@xwax.org>
+# Modified for elabftw/elabimg container
+# removed things we don't need and enable pie and relro elf hardening
+# we don't want anacron so obstack is not needed
+pkgname=cronie
+pkgver=1.5.7
+pkgrel=0
+pkgdesc="The standard UNIX daemon crond that runs specified programs at scheduled times"
+url="https://github.com/cronie-crond/cronie"
+arch="all"
+license="ISC"
+makedepends="autoconf automake"
+options="suid !check" # No testsuite
+subpackages="$pkgname-doc"
+source="https://github.com/cronie-crond/cronie/releases/download/cronie-$pkgver/cronie-$pkgver.tar.gz"
+
+build() {
+    ./configure \
+    --build="$CBUILD" \
+    --host="$CHOST" \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --localstatedir=/run \
+    --mandir=/usr/share/man \
+    --without-pam \
+    --without-selinux \
+    --without-inotify \
+    --disable-anacron \
+    --enable-pie \
+    --enable-relro \
+    SPOOL_DIR=/etc/crontabs
+    make
+}
+
+package() {
+    make install DESTDIR="$pkgdir"
+}
+
+sha512sums="c306468d2e8d618a168e55204796f15d845520130d9601395e6413c55a71e94b4264a73e2e3f5d7011b3e53af9dad812f56662de3a7c9e50977d57b2a49a6893  cronie-1.5.7.tar.gz"

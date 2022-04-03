@@ -83,7 +83,25 @@ RUN ./configure \
 USER root
 RUN make install
 
-# elabftw + nginx + php-fpm in a container
+# CRONIE BUILDER
+FROM alpine:3.15 as cronie-builder
+ENV CRONIE_VERSION=1.5.7
+# install dependencies
+RUN apk add --no-cache build-base libc-dev make gcc autoconf automake abuild musl-obstack-dev
+# create a builder user and add it to abuild group so it can build packages
+RUN adduser -D -G abuild builder
+RUN mkdir /build && chown builder:abuild /build
+WORKDIR /build
+USER builder
+COPY ./src/cron/APKBUILD .
+# generate a RSA key, non-interactive and append to config file, and then build package
+# we move it to /build so it's easier to find from the other image
+RUN abuild-keygen -n -a && abuild && mv /home/builder/packages/x86_64/cronie-$CRONIE_VERSION-r0.apk /build/apk
+# END CRONIE BUILDER
+
+#############################
+# ELABFTW + NGINX + PHP-FPM #
+#############################
 FROM alpine:3.15
 
 # this is versioning for the container image
@@ -185,6 +203,10 @@ RUN touch /etc/s6-overlay/s6-rc.d/user/contents.d/nginx
 RUN mkdir -p /etc/s6-overlay/s6-rc.d/php && echo "longrun" > /etc/s6-overlay/s6-rc.d/php/type
 COPY ./src/php/run /etc/s6-overlay/s6-rc.d/php/
 RUN touch /etc/s6-overlay/s6-rc.d/user/contents.d/php
+# create cron s6 service
+RUN mkdir -p /etc/s6-overlay/s6-rc.d/cron && echo "longrun" > /etc/s6-overlay/s6-rc.d/cron/type
+COPY ./src/cron/run /etc/s6-overlay/s6-rc.d/cron/
+RUN touch /etc/s6-overlay/s6-rc.d/user/contents.d/cron
 # END S6-OVERLAY
 
 # PHP
@@ -254,6 +276,14 @@ RUN sed -i -e "s/%ELABIMG_VERSION%/$ELABIMG_VERSION/" \
     -e "s/%ELABFTW_VERSION%/$ELABFTW_VERSION/" \
     -e "s/%S6_OVERLAY_VERSION%/$S6_OVERLAY_VERSION/" /usr/sbin/prepare.sh
 # END PREPARE.SH
+
+# CRONIE
+COPY --from=cronie-builder --chown=root:root /build/apk /tmp/cronie.apk
+COPY --from=cronie-builder --chown=root:root /home/builder/.abuild/*.pub /etc/apk/keys
+RUN apk add /tmp/cronie.apk && rm /tmp/cronie.apk
+COPY ./src/cron/cronjob /etc/crontabs/nginx
+COPY ./src/cron/cron.allow /etc/cron.d/cron.allow
+# END CRONIE
 
 # start s6
 CMD ["/init"]
