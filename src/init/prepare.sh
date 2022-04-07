@@ -61,8 +61,8 @@ getEnv() {
 # Create user if not default user
 createUser() {
     if [ "${elabftw_user}" != "nginx" ]; then
-        addgroup -g "${elabftw_groupid}" "${elabftw_group}"
-        adduser -S -u "${elabftw_userid}" -G "${elabftw_group}" "${elabftw_user}"
+        /usr/sbin/addgroup -g "${elabftw_groupid}" "${elabftw_group}"
+        /usr/sbin/adduser -S -u "${elabftw_userid}" -G "${elabftw_group}" "${elabftw_user}"
     fi
 }
 
