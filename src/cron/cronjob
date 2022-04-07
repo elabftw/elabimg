@@ -1,0 +1,2 @@
+# send elabftw notifications emails every minute
+*/1 * * * * /usr/bin/php /elabftw/bin/console notifications:send

@@ -61,8 +61,10 @@ getEnv() {
 # Create user if not default user
 createUser() {
     if [ "${elabftw_user}" != "nginx" ]; then
-        addgroup -g "${elabftw_groupid}" "${elabftw_group}"
-        adduser -S -u "${elabftw_userid}" -G "${elabftw_group}" "${elabftw_user}"
+        /usr/sbin/addgroup -g "${elabftw_groupid}" "${elabftw_group}"
+        /usr/sbin/adduser -S -u "${elabftw_userid}" -G "${elabftw_group}" "${elabftw_user}"
+        /bin/echo "${elabftw_user}" > /etc/cron.d/cron.allow
+        /bin/mv /etc/crontabs/nginx "/etc/crontabs/${elabftw_user}"
     fi
 }
 
@@ -258,11 +260,11 @@ startupMessage() {
     nginx_version=$(/usr/sbin/nginx -v 2>&1)
     # IMPORTANT: heredoc EOT must not have spaces before or after, hence the incorrect indent
     cat >&2 <<EOT
-INFO: Runtime configuration done. Now starting...
-eLabFTW version: %ELABFTW_VERSION%
-Docker image version: %ELABIMG_VERSION%
-${nginx_version}
-s6-overlay version: %S6_OVERLAY_VERSION%
+elabimg: info: eLabFTW version: %ELABFTW_VERSION%
+elabimg: info: image version: %ELABIMG_VERSION%
+elabimg: info: ${nginx_version}
+elabimg: info: s6-overlay version: %S6_OVERLAY_VERSION%
+elabimg: info: runtime configuration successfully finished
 EOT
 }
 
