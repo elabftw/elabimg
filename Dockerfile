@@ -269,6 +269,7 @@ RUN touch /etc/s6-overlay/s6-rc.d/user/contents.d/init
 # prepare.sh must run before nginx and php are started
 RUN echo "init" > /etc/s6-overlay/s6-rc.d/nginx/dependencies
 RUN echo "init" > /etc/s6-overlay/s6-rc.d/php/dependencies
+RUN echo "init" > /etc/s6-overlay/s6-rc.d/cron/dependencies
 
 COPY ./src/init/prepare.sh /usr/sbin/prepare.sh
 # these values are not in env and cannot be accessed by script so modify them here
