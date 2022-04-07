@@ -6,6 +6,7 @@
 * Add mandatory environment variable SITE_URL (elabftw/elabftw#3319)
 * Customize nginx build a bit more by removing unneeded modules
 * Remove dhparams because no DHE ciphersuites are used anyway
+* Add a cronjob daemon to send email notifications
 * Update the init system (s6) to v3
 * Update nginx to 1.21.6
 * Use alpine 3.15
