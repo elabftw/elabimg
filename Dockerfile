@@ -96,7 +96,8 @@ USER builder
 COPY ./src/cron/APKBUILD .
 # generate a RSA key, non-interactive and append to config file, and then build package
 # we move it to /build so it's easier to find from the other image
-RUN abuild-keygen -n -a && abuild && mv /home/builder/packages/x86_64/cronie-$CRONIE_VERSION-r0.apk /build/apk
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then ARCHITECTURE=x86_64; elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then ARCHITECTURE=arm; elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then ARCHITECTURE=aarch64; else ARCHITECTURE=amd64; fi \
+    abuild-keygen -n -a && abuild && mv /home/builder/packages/$ARCHITECTURE/cronie-$CRONIE_VERSION-r0.apk /build/apk
 # END CRONIE BUILDER
 
 #############################
