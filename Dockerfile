@@ -4,9 +4,9 @@
 
 # build nginx with only the bare minimum of features or modules
 # Note: no need to chain the RUN commands here as it's a builder image and nothing will be kept
-FROM alpine:3.14 as nginx-builder
+FROM alpine:3.15 as nginx-builder
 
-ENV NGINX_VERSION=1.21.3
+ENV NGINX_VERSION=1.21.6
 # releases can be signed by any key on this page https://nginx.org/en/pgp_keys.html
 # so this might need to be updated for a new release
 # available keys: mdounin, maxim, sb
@@ -42,15 +42,15 @@ WORKDIR /build/nginx-$NGINX_VERSION
 RUN ./configure \
         --prefix=/var/lib/nginx \
         --sbin-path=/usr/sbin/nginx \
+        --with-cc-opt='-g0 -O3 -fstack-protector -flto --param=ssp-buffer-size=4 -Wformat -Werror=format-security'\
         --modules-path=/usr/lib/nginx/modules \
         --conf-path=/etc/nginx/nginx.conf \
         --pid-path=/run/nginx.pid \
-        --error-log-path=/var/log/nginx/error.log \
-        --http-log-path=/var/log/nginx/access.log \
+        --error-log-path=/run/nginx/error.log \
+        --http-log-path=/run/nginx/access.log \
         --lock-path=/run/nginx/nginx.lock \
-        --http-client-body-temp-path=/var/lib/nginx/tmp/client_body \
-        --http-proxy-temp-path=/var/lib/nginx/tmp/proxy \
-        --http-fastcgi-temp-path=/var/lib/nginx/tmp/fastcgi \
+        --http-client-body-temp-path=/run/nginx/client_body \
+        --http-fastcgi-temp-path=/run/nginx/fastcgi \
         --user=nginx \
         --group=nginx \
         --with-threads \
@@ -58,20 +58,56 @@ RUN ./configure \
         --with-http_v2_module \
         --with-http_realip_module \
         --with-http_gzip_static_module \
-        --with-cc-opt='-g0 -O3 -fstack-protector -flto --param=ssp-buffer-size=4 -Wformat -Werror=format-security'\
         --add-module=/build/ngx_brotli \
         --add-module=/build/headers-more-nginx-module \
+        --without-http_autoindex_module \
+        --without-http_auth_basic_module \
+        --without-http_browser_module \
+        --without-http_empty_gif_module \
+        --without-http_geo_module \
+        --without-http_limit_conn_module \
+        --without-http_limit_req_module \
+        --without-http_map_module \
+        --without-http_memcached_module \
+        --without-http_proxy_module \
+        --without-http_referer_module \
+        --without-http_scgi_module \
+        --without-http_split_clients_module \
+        --without-http_ssi_module \
+        --without-http_upstream_ip_hash_module \
+        --without-http_userid_module \
+        --without-http_uwsgi_module \
     && make -j$(getconf _NPROCESSORS_ONLN) \
     && strip -s objs/nginx
 
 USER root
 RUN make install
 
-# elabftw + nginx + php-fpm in a container
-FROM alpine:3.14
+# CRONIE BUILDER
+FROM alpine:3.15 as cronie-builder
+ENV CRONIE_VERSION=1.5.7
+# install dependencies
+RUN apk add --no-cache build-base libc-dev make gcc autoconf automake abuild musl-obstack-dev
+# create a builder user and add it to abuild group so it can build packages
+RUN adduser -D -G abuild builder
+RUN mkdir /build && chown builder:abuild /build
+WORKDIR /build
+USER builder
+COPY ./src/cron/APKBUILD .
+# generate a RSA key, non-interactive and append to config file, and then build package
+# we use find because the package will end up in an arch specific dir (x86_64, arm, ...)
+# and this way it'll work every time
+# we move it to /build so it's easier to find from the other image
+RUN abuild-keygen -n -a && abuild && find /home/builder/packages -type f -name '*.apk' -exec mv {} /build/apk \;
+# END CRONIE BUILDER
+
+#############################
+# ELABFTW + NGINX + PHP-FPM #
+#############################
+FROM alpine:3.15
 
 # this is versioning for the container image
-ENV ELABIMG_VERSION 3.0.3
+ENV ELABIMG_VERSION 3.1.0
 
 # select elabftw version or branch here
 ARG ELABFTW_VERSION=4.2.4
@@ -94,10 +130,10 @@ COPY --from=nginx-builder /etc/nginx/fastcgi.conf /etc/nginx/fastcgi.conf
 # the necessary nginx dirs,
 # and redirect logs to stdout/stderr for docker logs to catch
 RUN addgroup -S -g 101 nginx \
-    && adduser -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx -u 101 nginx \
-    && mkdir -pv /var/lib/nginx/tmp/{client_body,fastcgi} /var/log/nginx/{access.log,error.log} \
-    && ln -sf /dev/stdout /var/log/nginx/access.log \
-    && ln -sf /dev/stderr /var/log/nginx/error.log
+    && adduser -D -S -h /run/nginx -s /sbin/nologin -G nginx -u 101 nginx \
+    && mkdir -pv /run/nginx/{client_body,fastcgi} \
+    && ln -sf /dev/stdout /run/nginx/access.log \
+    && ln -sf /dev/stderr /run/nginx/error.log
 # END NGINX
 
 # install required packages
@@ -124,6 +160,7 @@ RUN apk upgrade -U -a && apk add --no-cache \
     php8-fileinfo \
     php8-fpm \
     php8-json \
+    php8-intl \
     php8-ldap \
     php8-mbstring \
     php8-opcache \
@@ -132,6 +169,7 @@ RUN apk upgrade -U -a && apk add --no-cache \
     php8-pecl-imagick \
     php8-phar \
     php8-redis \
+    php8-simplexml \
     php8-session \
     php8-sodium \
     php8-tokenizer \
@@ -150,14 +188,27 @@ RUN ln -s /usr/bin/php8 /usr/bin/php
 # S6-OVERLAY
 # install s6-overlay, our init system. Workaround for different versions using TARGETPLATFORM
 # platform see https://docs.docker.com/engine/reference/builder/#automatic-platform-args-in-the-global-scope
-ARG S6_OVERLAY_VERSION=2.2.0.3
+ARG S6_OVERLAY_VERSION=3.0.0.2-2
 ENV S6_OVERLAY_VERSION $S6_OVERLAY_VERSION
 
 ARG TARGETPLATFORM
-RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then ARCHITECTURE=amd64; elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then ARCHITECTURE=arm; elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then ARCHITECTURE=aarch64; else ARCHITECTURE=amd64; fi \
-    && curl -sS -L -O --output-dir /tmp/ --create-dirs "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-${ARCHITECTURE}.tar.gz" \
-    && tar xzf "/tmp/s6-overlay-${ARCHITECTURE}.tar.gz" -C /
-COPY ./src/services /etc/services.d
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then ARCHITECTURE=x86_64; elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then ARCHITECTURE=arm; elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then ARCHITECTURE=aarch64; else ARCHITECTURE=amd64; fi \
+    && curl -sS -L -O --output-dir /tmp/ --create-dirs "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-${ARCHITECTURE}-${S6_OVERLAY_VERSION}.tar.xz" \
+    && curl -sS -L -O --output-dir /tmp/ --create-dirs "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch-${S6_OVERLAY_VERSION}.tar.xz" \
+    && tar xpJf "/tmp/s6-overlay-${ARCHITECTURE}-${S6_OVERLAY_VERSION}.tar.xz" -C / \
+    && tar xpJf "/tmp/s6-overlay-noarch-${S6_OVERLAY_VERSION}.tar.xz" -C /
+# create nginx s6 service
+RUN mkdir -p /etc/s6-overlay/s6-rc.d/nginx && echo "longrun" > /etc/s6-overlay/s6-rc.d/nginx/type
+COPY ./src/nginx/run /etc/s6-overlay/s6-rc.d/nginx/
+RUN touch /etc/s6-overlay/s6-rc.d/user/contents.d/nginx
+# create php s6 service
+RUN mkdir -p /etc/s6-overlay/s6-rc.d/php && echo "longrun" > /etc/s6-overlay/s6-rc.d/php/type
+COPY ./src/php/run /etc/s6-overlay/s6-rc.d/php/
+RUN touch /etc/s6-overlay/s6-rc.d/user/contents.d/php
+# create cron s6 service
+RUN mkdir -p /etc/s6-overlay/s6-rc.d/cron && echo "longrun" > /etc/s6-overlay/s6-rc.d/cron/type
+COPY ./src/cron/run /etc/s6-overlay/s6-rc.d/cron/
+RUN touch /etc/s6-overlay/s6-rc.d/user/contents.d/cron
 # END S6-OVERLAY
 
 # PHP
@@ -188,14 +239,16 @@ WORKDIR /elabftw
 
 # COMPOSER
 ENV COMPOSER_HOME=/composer
-COPY --from=composer:2.1.5 /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2.2.7 /usr/bin/composer /usr/bin/composer
 
 # install php and js dependencies and build assets
 # some ini settings are set on the command line to override the restrictive production ones already set
-RUN php -d memory_limit=256M -d allow_url_fopen=On -d open_basedir='' /usr/bin/composer install --prefer-dist --no-cache --no-progress --no-dev -a \
-    && yarn config set network-timeout 300000 \
+# IMPORTANT: the yarn/build step must be done before the composer/install step because a source file (advancedQuery) will be generated by yarn
+# so in order for composer to take it into account, it must exist before we call the install command of composer.
+RUN yarn config set network-timeout 300000 \
     && yarn install --pure-lockfile --prod \
     && yarn run buildall \
+    && php -d memory_limit=256M -d allow_url_fopen=On -d open_basedir='' /usr/bin/composer install --prefer-dist --no-cache --no-progress --no-dev -a \
     && rm -rf node_modules && yarn cache clean
 # END ELABFTW
 
@@ -209,11 +262,31 @@ HEALTHCHECK --interval=2m --timeout=5s --retries=3 CMD sh /etc/nginx/healthcheck
 EXPOSE 443
 # END NGINX PART 2
 
-# run.sh is our entrypoint script
-COPY ./src/run.sh /run.sh
+# PREPARE.SH
+# create a oneshot service
+RUN mkdir -p /etc/s6-overlay/s6-rc.d/init && echo "oneshot" > /etc/s6-overlay/s6-rc.d/init/type
+COPY ./src/init/up /etc/s6-overlay/s6-rc.d/init/
+RUN touch /etc/s6-overlay/s6-rc.d/user/contents.d/init
+
+# prepare.sh must run before nginx and php are started
+RUN echo "init" > /etc/s6-overlay/s6-rc.d/nginx/dependencies
+RUN echo "init" > /etc/s6-overlay/s6-rc.d/php/dependencies
+RUN echo "init" > /etc/s6-overlay/s6-rc.d/cron/dependencies
+
+COPY ./src/init/prepare.sh /usr/sbin/prepare.sh
+# these values are not in env and cannot be accessed by script so modify them here
 RUN sed -i -e "s/%ELABIMG_VERSION%/$ELABIMG_VERSION/" \
     -e "s/%ELABFTW_VERSION%/$ELABFTW_VERSION/" \
-    -e "s/%S6_OVERLAY_VERSION%/$S6_OVERLAY_VERSION/" /run.sh
+    -e "s/%S6_OVERLAY_VERSION%/$S6_OVERLAY_VERSION/" /usr/sbin/prepare.sh
+# END PREPARE.SH
 
-# launch run.sh on container start
-CMD ["/run.sh"]
+# CRONIE
+COPY --from=cronie-builder --chown=root:root /build/apk /tmp/cronie.apk
+COPY --from=cronie-builder --chown=root:root /home/builder/.abuild/*.pub /etc/apk/keys
+RUN apk add /tmp/cronie.apk && rm /tmp/cronie.apk
+COPY ./src/cron/cronjob /etc/crontabs/nginx
+COPY ./src/cron/cron.allow /etc/cron.d/cron.allow
+# END CRONIE
+
+# start s6
+CMD ["/init"]

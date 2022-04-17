@@ -1,5 +1,13 @@
 #!/bin/bash
-# elabftw-docker start script for Alpine Linux base image
+#
+# @author Nicolas CARPi <nico-git@deltablot.email>
+# @copyright 2020 Nicolas CARPi
+# @see https://www.elabftw.net Official website
+# @license AGPL-3.0
+# @package elabftw/elabimg
+#
+# This script is called by the oneshot service "init"
+# It will get config from env and adjust configuration files and system accordingly
 
 # get env values
 # and unset the sensitive ones so they cannot be accessed by a rogue process
@@ -13,14 +21,15 @@ getEnv() {
     db_user=${DB_USER:-elabftw}
     unset DB_USER
     # Note: no default value here
-    db_password=${DB_PASSWORD}
+    db_password=${DB_PASSWORD:-}
     unset DB_PASSWORD
     db_cert_path=${DB_CERT_PATH:-}
     unset DB_CERT_PATH
+    site_url=${SITE_URL:-}
     server_name=${SERVER_NAME:-localhost}
     disable_https=${DISABLE_HTTPS:-false}
     enable_letsencrypt=${ENABLE_LETSENCRYPT:-false}
-    secret_key=${SECRET_KEY}
+    secret_key=${SECRET_KEY:-}
     unset SECRET_KEY
     max_php_memory=${MAX_PHP_MEMORY:-256M}
     max_upload_size=${MAX_UPLOAD_SIZE:-100M}
@@ -43,13 +52,26 @@ getEnv() {
     # allow limiting log pollution on startup
     silent_init=${SILENT_INIT:-false}
     dev_mode=${DEV_MODE:-false}
+    aws_ak=${ELAB_AWS_ACCESS_KEY:-}
+    unset ELAB_AWS_ACCESS_KEY
+    aws_sk=${ELAB_AWS_SECRET_KEY:-}
+    unset ELAB_AWS_SECRET_KEY
 }
 
 # Create user if not default user
 createUser() {
     if [ "${elabftw_user}" != "nginx" ]; then
-        addgroup -g "${elabftw_groupid}" "${elabftw_group}"
-        adduser -S -u "${elabftw_userid}" -G "${elabftw_group}" "${elabftw_user}"
+        /usr/sbin/addgroup -g "${elabftw_groupid}" "${elabftw_group}"
+        /usr/sbin/adduser -S -u "${elabftw_userid}" -G "${elabftw_group}" "${elabftw_user}"
+        /bin/echo "${elabftw_user}" > /etc/cron.d/cron.allow
+        /bin/mv /etc/crontabs/nginx "/etc/crontabs/${elabftw_user}"
+    fi
+}
+
+checkSiteUrl() {
+    if [ -z "${site_url}" ]; then
+        echo "Error: environment variable SITE_URL not set. Aborting!" >&2
+        exit 1
     fi
 }
 
@@ -86,7 +108,6 @@ nginxConf() {
         if (! $enable_letsencrypt); then
             generateCert
         fi
-        /bin/sh /etc/nginx/generate-dhparam.sh
         # activate an HTTPS server listening on port 443
         ln -fs /etc/nginx/https.conf /etc/nginx/conf.d/elabftw.conf
         if ($enable_letsencrypt); then
@@ -103,7 +124,7 @@ nginxConf() {
     # here elabftw.conf is a symbolic link to either http.conf or https.conf
     sed -i -e "s/%SERVER_NAME%/${server_name}/" /etc/nginx/conf.d/elabftw.conf
     # make sure nginx user can write this directory for file uploads
-    chown -R "${elabftw_user}":"${elabftw_group}" /var/lib/nginx/tmp
+    chown -R "${elabftw_user}":"${elabftw_group}" /run/nginx
 
     # adjust client_max_body_size
     sed -i -e "s/%CLIENT_MAX_BODY_SIZE%/${max_upload_size}/" /etc/nginx/nginx.conf
@@ -214,6 +235,8 @@ elabftwConf() {
 }
 
 writeConfigFile() {
+    # remove trailing slash for site_url
+    site_url=$(echo "${site_url}" | sed 's:/$::')
     # write config file from env var
     config_path="/elabftw/config.php"
     config="<?php
@@ -223,7 +246,10 @@ writeConfigFile() {
     define('DB_USER', '${db_user}');
     define('DB_PASSWORD', '${db_password}');
     define('DB_CERT_PATH', '${db_cert_path}');
-    define('SECRET_KEY', '${secret_key}');"
+    define('SECRET_KEY', '${secret_key}');
+    define('SITE_URL', '${site_url}');
+    define('ELAB_AWS_ACCESS_KEY', '${aws_ak}');
+    define('ELAB_AWS_SECRET_KEY', '${aws_sk}');"
     echo "$config" > "$config_path"
     chown "${elabftw_user}":"${elabftw_group}" "$config_path"
     chmod 600 "$config_path"
@@ -231,19 +257,20 @@ writeConfigFile() {
 
 startupMessage() {
     # display a friendly message with running versions
-    nginx_version=$(nginx -v 2>&1)
+    nginx_version=$(/usr/sbin/nginx -v 2>&1)
     # IMPORTANT: heredoc EOT must not have spaces before or after, hence the incorrect indent
     cat >&2 <<EOT
-INFO: Runtime configuration done. Now starting...
-eLabFTW version: %ELABFTW_VERSION%
-Docker image version: %ELABIMG_VERSION%
-${nginx_version}
-s6-overlay version: %S6_OVERLAY_VERSION%
+elabimg: info: eLabFTW version: %ELABFTW_VERSION%
+elabimg: info: image version: %ELABIMG_VERSION%
+elabimg: info: ${nginx_version}
+elabimg: info: s6-overlay version: %S6_OVERLAY_VERSION%
+elabimg: info: runtime configuration successfully finished
 EOT
 }
 
 # script start
 getEnv
+checkSiteUrl
 createUser
 nginxConf
 phpfpmConf
@@ -254,6 +281,3 @@ writeConfigFile
 if [ "${silent_init}" = false ]; then
     startupMessage
 fi
-
-# start all the services
-/init

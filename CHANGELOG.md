@@ -1,6 +1,17 @@
 # Container image version
 # Note: the version here is from Dockerfile:ELABIMG_VERSION not the tagged one
 
+# 3.1.0
+
+* Add mandatory environment variable SITE_URL (elabftw/elabftw#3319)
+* Customize nginx build a bit more by removing unneeded modules
+* Remove dhparams because no DHE ciphersuites are used anyway
+* Add a cronjob daemon to send email notifications
+* Update the init system (s6) to v3
+* Update nginx to 1.21.6
+* Use alpine 3.15
+* Use composer 2.2.7
+
 # 3.0.3
 
 * Add php8-xml package
