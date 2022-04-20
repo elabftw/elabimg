@@ -70,7 +70,13 @@ createUser() {
 
 checkSiteUrl() {
     if [ -z "${site_url}" ]; then
-        echo "Error: environment variable SITE_URL not set. Aborting!" >&2
+        echo "=======================================================" >&2
+        echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" >&2
+        echo "" >&2
+        echo "ERROR: environment variable SITE_URL not set. Aborting!" >&2
+        echo "" >&2
+        echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" >&2
+        echo "=======================================================" >&2
         exit 1
     fi
 }
