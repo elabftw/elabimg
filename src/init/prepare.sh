@@ -129,6 +129,9 @@ nginxConf() {
     # works also for the ssl config if ssl is enabled
     # here elabftw.conf is a symbolic link to either http.conf or https.conf
     sed -i -e "s/%SERVER_NAME%/${server_name}/" /etc/nginx/conf.d/elabftw.conf
+    # Ensure that the nginx directory exists
+    mkdir -p /run/nginx
+
     # make sure nginx user can write this directory for file uploads
     chown -R "${elabftw_user}":"${elabftw_group}" /run/nginx
 
