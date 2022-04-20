@@ -131,7 +131,8 @@ COPY --from=nginx-builder /etc/nginx/fastcgi.conf /etc/nginx/fastcgi.conf
 # and redirect logs to stdout/stderr for docker logs to catch
 RUN addgroup -S -g 101 nginx \
     && adduser -D -S -h /run/nginx -s /sbin/nologin -G nginx -u 101 nginx \
-    && mkdir -pv /run/nginx/{client_body,fastcgi} \
+    && mkdir -pv /run/nginx/client_body \
+    && mkdir -pv /run/nginx/fastcgi \
     && ln -sf /dev/stdout /run/nginx/access.log \
     && ln -sf /dev/stderr /run/nginx/error.log
 # END NGINX
