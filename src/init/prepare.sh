@@ -73,11 +73,11 @@ checkSiteUrl() {
         echo "=======================================================" >&2
         echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" >&2
         echo "" >&2
-        echo "ERROR: environment variable SITE_URL not set. Aborting!" >&2
+        echo "ERROR: environment variable SITE_URL not set!" >&2
+        echo "Continuing anyway but you need to set it and restart the container." >&2
         echo "" >&2
         echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" >&2
         echo "=======================================================" >&2
-        exit 1
     fi
 }
 
