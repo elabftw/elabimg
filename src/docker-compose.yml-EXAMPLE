@@ -255,7 +255,7 @@ services:
         - MYSQL_PASSWORD=secr3t
         # need to change, this is your timezone, see PHP_TIMEZONE from the elabftw container
         - TZ=Europe/Paris
-        # Update this if you want to run the server on a different port than 3306. Also update the expose directive below.
+        # Update this if you want to run the server on a different port than 3306.
         # - MYSQL_TCP_PORT=3306
 
     volumes:
@@ -264,9 +264,8 @@ services:
         # - D:\Users\Nico\elab-data\mysql:/var/lib/mysql
         # host:container
         - /var/elabftw/mysql:/var/lib/mysql
-     # The official mysql docker image will by default expose ports 3306 and 33060.
-     # See definitions under https://hub.docker.com/_/mysql , and mysql.com documentation.
-     # Ports below appear to be exposed _in addition to_ this.
+     # The mysql container exposes 3306/33060. Though it does not make an operational difference,
+     # make sure to document your usage here.
     expose:
       - '3306'
     networks:
