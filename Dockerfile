@@ -46,11 +46,11 @@ RUN ./configure \
         --modules-path=/usr/lib/nginx/modules \
         --conf-path=/etc/nginx/nginx.conf \
         --pid-path=/run/nginx.pid \
-        --error-log-path=/run/nginx/error.log \
-        --http-log-path=/run/nginx/access.log \
-        --lock-path=/run/nginx/nginx.lock \
-        --http-client-body-temp-path=/run/nginx/client_body \
-        --http-fastcgi-temp-path=/run/nginx/fastcgi \
+        --error-log-path=/var/log/nginx/error.log \
+        --http-log-path=/var/log/nginx/access.log \
+        --lock-path=/run/nginx.lock \
+        --http-client-body-temp-path=/run/nginx-client_body \
+        --http-fastcgi-temp-path=/run/nginx-fastcgi \
         --user=nginx \
         --group=nginx \
         --with-threads \
@@ -130,11 +130,11 @@ COPY --from=nginx-builder /etc/nginx/fastcgi.conf /etc/nginx/fastcgi.conf
 # the necessary nginx dirs,
 # and redirect logs to stdout/stderr for docker logs to catch
 RUN addgroup -S -g 101 nginx \
-    && adduser -D -S -h /run/nginx -s /sbin/nologin -G nginx -u 101 nginx \
-    && mkdir -pv /run/nginx/client_body \
-    && mkdir -pv /run/nginx/fastcgi \
-    && ln -sf /dev/stdout /run/nginx/access.log \
-    && ln -sf /dev/stderr /run/nginx/error.log
+    && adduser -D -S -H -s /sbin/nologin -G nginx -u 101 nginx \
+    && mkdir -p /var/log/nginx \
+    && chown nginx:nginx /var/log/nginx \
+    && ln -sf /dev/stdout /var/log/nginx/access.log \
+    && ln -sf /dev/stderr /var/log/nginx/error.log
 # END NGINX
 
 # install required packages
