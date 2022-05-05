@@ -1,6 +1,13 @@
 # Container image version
 # Note: the version here is from Dockerfile:ELABIMG_VERSION not the tagged one
 
+# 3.2.0
+
+* Make the /run folder empty in image (#27)
+* Update MySQL port settings documentation (#26 by @anargam)
+* Don't exit with error on SITE_URL absence, go on so a nice error message can be shown on the web app
+* Fix incorrect nginx folders creation
+
 # 3.1.0
 
 * Add mandatory environment variable SITE_URL (elabftw/elabftw#3319)
