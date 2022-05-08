@@ -113,6 +113,10 @@ services:
         # default value: 100M
         #- MAX_UPLOAD_SIZE=100M
 
+        # optional: s3 storage credentials
+        #- ELAB_AWS_ACCESS_KEY=
+        #- ELAB_AWS_SECRET_KEY=
+
         #######################
         # NGINX CONFIGURATION #
         #######################
@@ -255,6 +259,8 @@ services:
         - MYSQL_PASSWORD=secr3t
         # need to change, this is your timezone, see PHP_TIMEZONE from the elabftw container
         - TZ=Europe/Paris
+        # Update this if you want to run the server on a different port than 3306.
+        # - MYSQL_TCP_PORT=3306
 
     volumes:
         # this is where you will keep the database persistently
@@ -262,6 +268,8 @@ services:
         # - D:\Users\Nico\elab-data\mysql:/var/lib/mysql
         # host:container
         - /var/elabftw/mysql:/var/lib/mysql
+     # The mysql container exposes 3306/33060. Though it does not make an operational difference,
+     # make sure to document your usage here.
     expose:
       - '3306'
     networks:

@@ -73,11 +73,11 @@ checkSiteUrl() {
         echo "=======================================================" >&2
         echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" >&2
         echo "" >&2
-        echo "ERROR: environment variable SITE_URL not set. Aborting!" >&2
+        echo "ERROR: environment variable SITE_URL not set!" >&2
+        echo "Continuing anyway but you need to set it and restart the container." >&2
         echo "" >&2
         echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" >&2
         echo "=======================================================" >&2
-        exit 1
     fi
 }
 
@@ -129,8 +129,6 @@ nginxConf() {
     # works also for the ssl config if ssl is enabled
     # here elabftw.conf is a symbolic link to either http.conf or https.conf
     sed -i -e "s/%SERVER_NAME%/${server_name}/" /etc/nginx/conf.d/elabftw.conf
-    # make sure nginx user can write this directory for file uploads
-    chown -R "${elabftw_user}":"${elabftw_group}" /run/nginx
 
     # adjust client_max_body_size
     sed -i -e "s/%CLIENT_MAX_BODY_SIZE%/${max_upload_size}/" /etc/nginx/nginx.conf
