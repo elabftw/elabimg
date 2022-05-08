@@ -113,6 +113,10 @@ services:
         # default value: 100M
         #- MAX_UPLOAD_SIZE=100M
 
+        # optional: s3 storage credentials
+        #- ELAB_AWS_ACCESS_KEY=
+        #- ELAB_AWS_SECRET_KEY=
+
         #######################
         # NGINX CONFIGURATION #
         #######################
