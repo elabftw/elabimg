@@ -1,6 +1,10 @@
 # Container image version
 # Note: the version here is from Dockerfile:ELABIMG_VERSION not the tagged one
 
+# 3.2.1
+
+* Fix incorrect cronie install
+
 # 3.2.0
 
 * Make the /run folder empty in image (#27)
