@@ -278,10 +278,12 @@ EOT
 migrations() {
     mkdir -p $migration_data_dir
     initPath="$migration_data_dir/.dbinit"
-    if [ ! -f $initPath ] && [ ! $skip_db_init ]; then
-        cat >&2 <<EOT
+    if [ ! -f $initPath ] && [ "$skip_db_init" = false ]; then
+        if [ "${silent_init}" = false ]; then
+            cat >&2 <<EOT
 INFO: Init database structure
 EOT
+        fi
         bin/install start | tee $initPath
     fi
     bin/console db:update
@@ -297,7 +299,7 @@ phpConf
 elabftwConf
 writeConfigFile
 
-if ($auto_migration); then
+if [ "$auto_migration" = true ]; then
     migrations
 fi
 
