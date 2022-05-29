@@ -108,7 +108,7 @@ RUN abuild-keygen -n -a && abuild && find /home/builder/packages -type f -name '
 FROM alpine:3.15
 
 # this is versioning for the container image
-ENV ELABIMG_VERSION 3.2.1
+ENV ELABIMG_VERSION 3.2.2
 
 # select elabftw version or branch here
 ARG ELABFTW_VERSION=4.3.0
@@ -127,13 +127,8 @@ COPY --from=nginx-builder /usr/sbin/nginx /usr/sbin/nginx
 COPY --from=nginx-builder /etc/nginx/mime.types /etc/nginx/mime.types
 COPY --from=nginx-builder /etc/nginx/fastcgi.conf /etc/nginx/fastcgi.conf
 
-# create the nginx group and user (101:101),
-# the necessary nginx dirs,
-# and redirect logs to stdout/stderr for docker logs to catch
-RUN addgroup -S -g 101 nginx \
-    && adduser -D -S -H -s /sbin/nologin -G nginx -u 101 nginx \
-    && mkdir -p /var/log/nginx \
-    && chown nginx:nginx /var/log/nginx \
+# create the log folder and make the logfiles links to stdout/stderr so docker logs will catch it
+RUN mkdir -p /var/log/nginx \
     && ln -sf /dev/stdout /var/log/nginx/access.log \
     && ln -sf /dev/stderr /var/log/nginx/error.log
 # END NGINX
