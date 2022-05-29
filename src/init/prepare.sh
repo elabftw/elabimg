@@ -60,12 +60,13 @@ getEnv() {
 
 # Create user if not default user
 createUser() {
-    if [ "${elabftw_user}" != "nginx" ]; then
-        /usr/sbin/addgroup -g "${elabftw_groupid}" "${elabftw_group}"
-        /usr/sbin/adduser -S -u "${elabftw_userid}" -G "${elabftw_group}" "${elabftw_user}"
-        /bin/echo "${elabftw_user}" > /etc/cron.d/cron.allow
-        /bin/mv /etc/crontabs/nginx "/etc/crontabs/${elabftw_user}"
-    fi
+    /usr/sbin/addgroup -g "${elabftw_groupid}" "${elabftw_group}"
+    /usr/sbin/adduser -S -u "${elabftw_userid}" -G "${elabftw_group}" "${elabftw_user}"
+    # nginx
+    /bin/chown "${elabftw_user}:${elabftw_group}" /var/log/nginx
+    # crontab
+    /bin/echo "${elabftw_user}" > /etc/cron.d/cron.allow
+    /bin/mv /etc/crontabs/nginx "/etc/crontabs/${elabftw_user}"
 }
 
 checkSiteUrl() {
