@@ -281,7 +281,7 @@ migrations() {
 elabimg: info: intializing database structure
 EOT
         fi
-        bin/install start | tee $initPath
+        bin/install start
     fi
     if [ "${silent_init}" = false ]; then
         cat >&2 <<EOT
