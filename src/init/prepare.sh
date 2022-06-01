@@ -52,9 +52,8 @@ getEnv() {
     # allow limiting log pollution on startup
     silent_init=${SILENT_INIT:-false}
     dev_mode=${DEV_MODE:-false}
-    auto_migration=${AUTO_MIGRATION:-false}
-    skip_db_init=${SKIP_DB_INIT:-true}
-    migration_data_dir=${MIGRATION_DATA_DIR:-/elabftw/migration_state}
+    auto_db_update=${AUTO_DB_UPDATE:-false}
+    auto_db_init=${AUTO_DB_INIT:-false}
     aws_ak=${ELAB_AWS_ACCESS_KEY:-}
     unset ELAB_AWS_ACCESS_KEY
     aws_sk=${ELAB_AWS_SECRET_KEY:-}
@@ -276,15 +275,18 @@ EOT
 }
 
 migrations() {
-    mkdir -p $migration_data_dir
-    initPath="$migration_data_dir/.dbinit"
-    if [ ! -f $initPath ] && [ "$skip_db_init" = false ]; then
+    if [ "$auto_db_init" = true ]; then
         if [ "${silent_init}" = false ]; then
             cat >&2 <<EOT
-INFO: Init database structure
+elabimg: info: intializing database structure
 EOT
         fi
         bin/install start | tee $initPath
+    fi
+    if [ "${silent_init}" = false ]; then
+        cat >&2 <<EOT
+elabimg: info: updating database structure
+EOT
     fi
     bin/console db:update
 }
@@ -299,7 +301,7 @@ phpConf
 elabftwConf
 writeConfigFile
 
-if [ "$auto_migration" = true ]; then
+if [ "$auto_db_update" = true ]; then
     migrations
 fi
 
