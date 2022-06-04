@@ -1,6 +1,10 @@
 # Container image version
 # Note: the version here is from Dockerfile:ELABIMG_VERSION not the tagged one
 
+# 3.3.0
+
+* Update s6-overlay to 3.1.0.1
+
 # 3.2.2
 
 * Fix cronjob not working when default user/group was used. Now the user is only created at runtime, not at build time too.
