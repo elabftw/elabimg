@@ -60,14 +60,13 @@ getEnv() {
     unset ELAB_AWS_SECRET_KEY
 }
 
-# Create user if not default user
+# Create the user that will run nginx/php/cronjobs
 createUser() {
-    if [ "${elabftw_user}" != "nginx" ]; then
-        /usr/sbin/addgroup -g "${elabftw_groupid}" "${elabftw_group}"
-        /usr/sbin/adduser -S -u "${elabftw_userid}" -G "${elabftw_group}" "${elabftw_user}"
-        /bin/echo "${elabftw_user}" > /etc/cron.d/cron.allow
-        /bin/mv /etc/crontabs/nginx "/etc/crontabs/${elabftw_user}"
-    fi
+    /usr/sbin/addgroup -g "${elabftw_groupid}" "${elabftw_group}"
+    /usr/sbin/adduser -S -u "${elabftw_userid}" -G "${elabftw_group}" "${elabftw_user}"
+    # crontab
+    /bin/echo "${elabftw_user}" > /etc/cron.d/cron.allow
+    /bin/mv /etc/crontabs/nginx "/etc/crontabs/${elabftw_user}"
 }
 
 checkSiteUrl() {
