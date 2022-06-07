@@ -108,7 +108,7 @@ RUN abuild-keygen -n -a && abuild && find /home/builder/packages -type f -name '
 FROM alpine:3.15
 
 # this is versioning for the container image
-ENV ELABIMG_VERSION 3.3.0
+ENV ELABIMG_VERSION 3.4.0
 
 # select elabftw tag
 ARG ELABFTW_VERSION=hypernext

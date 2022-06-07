@@ -191,6 +191,14 @@ services:
         # default value: false
         #- SILENT_INIT=false
 
+        # optional: automatically install the database structure on container start
+        # default value: false
+        #- AUTO_DB_INIT=false
+
+        # optional: automatically update the database structure on container start
+        # default value: false
+        #- AUTO_DB_UPDATE=false
+
         #######
         # DEV #
         #######
@@ -250,7 +258,7 @@ services:
     # use double $ here so env vars are correctly found
     healthcheck:
       test: "/usr/bin/mysql --user=$$MYSQL_USER --password=$$MYSQL_PASSWORD --execute 'SHOW DATABASES;'"
-      interval: 3s
+      interval: 5s
       timeout: 5s
       retries: 20
     # drop some capabilities
