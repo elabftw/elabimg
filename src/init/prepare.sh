@@ -52,6 +52,8 @@ getEnv() {
     # allow limiting log pollution on startup
     silent_init=${SILENT_INIT:-false}
     dev_mode=${DEV_MODE:-false}
+    auto_db_update=${AUTO_DB_UPDATE:-false}
+    auto_db_init=${AUTO_DB_INIT:-false}
     aws_ak=${ELAB_AWS_ACCESS_KEY:-}
     unset ELAB_AWS_ACCESS_KEY
     aws_sk=${ELAB_AWS_SECRET_KEY:-}
@@ -259,16 +261,38 @@ writeConfigFile() {
 }
 
 startupMessage() {
-    # display a friendly message with running versions
-    nginx_version=$(/usr/sbin/nginx -v 2>&1)
-    # IMPORTANT: heredoc EOT must not have spaces before or after, hence the incorrect indent
-    cat >&2 <<EOT
+    if (! $silent_init); then
+        # display a friendly message with running versions
+        nginx_version=$(/usr/sbin/nginx -v 2>&1)
+        # IMPORTANT: heredoc EOT must not have spaces before or after, hence the incorrect indent
+        cat >&2 <<EOT
 elabimg: info: eLabFTW version: %ELABFTW_VERSION%
 elabimg: info: image version: %ELABIMG_VERSION%
 elabimg: info: ${nginx_version}
 elabimg: info: s6-overlay version: %S6_OVERLAY_VERSION%
 elabimg: info: runtime configuration successfully finished
 EOT
+    fi
+}
+
+# Automatically initialize the database structure
+dbInit() {
+    if ($auto_db_init); then
+        if (! $silent_init); then
+            echo "elabimg: info: initializing database structure"
+        fi
+        /elabftw/bin/install start
+    fi
+}
+
+# Automatically update the database schema
+dbUpdate() {
+    if ($auto_db_update); then
+        if (! $silent_init); then
+            echo "elabimg: info: updating database structure"
+        fi
+        /elabftw/bin/console db:update
+    fi
 }
 
 # script start
@@ -280,7 +304,6 @@ phpfpmConf
 phpConf
 elabftwConf
 writeConfigFile
-
-if [ "${silent_init}" = false ]; then
-    startupMessage
-fi
+dbInit
+dbUpdate
+startupMessage
