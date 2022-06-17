@@ -1,6 +1,10 @@
 # Container image version
 # Note: the version here is from Dockerfile:ELABIMG_VERSION not the tagged one
 
+# 3.4.1
+
+* Avoid errors when container is restarted and prepare.sh is run again
+
 # 3.4.0
 
 * Add `auto_db_init` and `auto_db_update` to run migrations automatically on container start

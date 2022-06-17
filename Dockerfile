@@ -108,7 +108,7 @@ RUN abuild-keygen -n -a && abuild && find /home/builder/packages -type f -name '
 FROM alpine:3.15
 
 # this is versioning for the container image
-ENV ELABIMG_VERSION 3.4.0
+ENV ELABIMG_VERSION 3.4.1
 
 # select elabftw tag
 ARG ELABFTW_VERSION=hypernext
@@ -281,7 +281,7 @@ RUN sed -i -e "s/%ELABIMG_VERSION%/$ELABIMG_VERSION/" \
 COPY --from=cronie-builder --chown=root:root /build/apk /tmp/cronie.apk
 COPY --from=cronie-builder --chown=root:root /home/builder/.abuild/*.pub /etc/apk/keys
 RUN apk add /tmp/cronie.apk && rm /tmp/cronie.apk
-COPY ./src/cron/cronjob /etc/crontabs/nginx
+COPY ./src/cron/cronjob /etc/elabftw-cronjob
 COPY ./src/cron/cron.allow /etc/cron.d/cron.allow
 # END CRONIE
 

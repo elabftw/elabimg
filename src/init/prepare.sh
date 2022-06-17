@@ -62,11 +62,13 @@ getEnv() {
 
 # Create the user that will run nginx/php/cronjobs
 createUser() {
-    /usr/sbin/addgroup -g "${elabftw_groupid}" "${elabftw_group}"
-    /usr/sbin/adduser -S -u "${elabftw_userid}" -G "${elabftw_group}" "${elabftw_user}"
+    getent group "${elabftw_group}" || /usr/sbin/addgroup -g "${elabftw_groupid}" "${elabftw_group}"
+    getent shadow "${elabftw_user}" || /usr/sbin/adduser -S -u "${elabftw_userid}" -G "${elabftw_group}" "${elabftw_user}"
     # crontab
     /bin/echo "${elabftw_user}" > /etc/cron.d/cron.allow
-    /bin/mv /etc/crontabs/nginx "/etc/crontabs/${elabftw_user}"
+    if [ -f /etc/elabftw-cronjob ]; then
+        /bin/mv /etc/elabftw-cronjob "/etc/crontabs/${elabftw_user}"
+    fi
 }
 
 checkSiteUrl() {
@@ -165,7 +167,7 @@ nginxConf() {
     # DEV MODE
     # we don't want to serve brotli/gzip compressed assets in dev (or we would need to recompress them after every change!)
     if ($dev_mode); then
-        rm /etc/nginx/conf.d/brotli.conf /etc/nginx/conf.d/gzip.conf
+        rm -f /etc/nginx/conf.d/brotli.conf /etc/nginx/conf.d/gzip.conf
         # to allow webpack in watch/dev mode we need to allow unsafe-eval for script-src
         unsafe_eval="'unsafe-eval'"
     fi
