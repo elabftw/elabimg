@@ -173,6 +173,9 @@ nginxConf() {
     fi
     # set unsafe-eval in CSP
     sed -i -e "s/%UNSAFE-EVAL4DEV%/${unsafe_eval}/" /etc/nginx/common.conf
+    # put a random short string as the server header to prevent fingerprinting
+    server_header=$RANDOM | md5sum | head -c 3
+    sed -i -e "s/%SERVER_HEADER%/${server_header}/" /etc/nginx/common.conf
 }
 
 # PHP-FPM CONFIG
