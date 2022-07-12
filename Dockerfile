@@ -108,7 +108,7 @@ RUN abuild-keygen -n -a && abuild && find /home/builder/packages -type f -name '
 FROM alpine:3.15
 
 # this is versioning for the container image
-ENV ELABIMG_VERSION 3.2.2
+ENV ELABIMG_VERSION 3.4.1
 
 # select elabftw version or branch here
 ARG ELABFTW_VERSION=4.3.6
@@ -185,15 +185,15 @@ RUN ln -s /usr/bin/php8 /usr/bin/php
 # S6-OVERLAY
 # install s6-overlay, our init system. Workaround for different versions using TARGETPLATFORM
 # platform see https://docs.docker.com/engine/reference/builder/#automatic-platform-args-in-the-global-scope
-ARG S6_OVERLAY_VERSION=3.0.0.2-2
+ARG S6_OVERLAY_VERSION=3.1.0.1
 ENV S6_OVERLAY_VERSION $S6_OVERLAY_VERSION
 
 ARG TARGETPLATFORM=linux/amd64
 RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then ARCHITECTURE=x86_64; elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then ARCHITECTURE=arm; elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then ARCHITECTURE=aarch64; else ARCHITECTURE=amd64; fi \
-    && curl -sS -L -O --output-dir /tmp/ --create-dirs "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-${ARCHITECTURE}-${S6_OVERLAY_VERSION}.tar.xz" \
-    && curl -sS -L -O --output-dir /tmp/ --create-dirs "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch-${S6_OVERLAY_VERSION}.tar.xz" \
-    && tar xpJf "/tmp/s6-overlay-${ARCHITECTURE}-${S6_OVERLAY_VERSION}.tar.xz" -C / \
-    && tar xpJf "/tmp/s6-overlay-noarch-${S6_OVERLAY_VERSION}.tar.xz" -C /
+    && curl -sS -L -O --output-dir /tmp/ --create-dirs "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-${ARCHITECTURE}.tar.xz" \
+    && curl -sS -L -O --output-dir /tmp/ --create-dirs "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch.tar.xz" \
+    && tar xpJf "/tmp/s6-overlay-${ARCHITECTURE}.tar.xz" -C / \
+    && tar xpJf "/tmp/s6-overlay-noarch.tar.xz" -C /
 # create nginx s6 service
 RUN mkdir -p /etc/s6-overlay/s6-rc.d/nginx && echo "longrun" > /etc/s6-overlay/s6-rc.d/nginx/type
 COPY ./src/nginx/run /etc/s6-overlay/s6-rc.d/nginx/
@@ -281,7 +281,7 @@ RUN sed -i -e "s/%ELABIMG_VERSION%/$ELABIMG_VERSION/" \
 COPY --from=cronie-builder --chown=root:root /build/apk /tmp/cronie.apk
 COPY --from=cronie-builder --chown=root:root /home/builder/.abuild/*.pub /etc/apk/keys
 RUN apk add /tmp/cronie.apk && rm /tmp/cronie.apk
-COPY ./src/cron/cronjob /etc/crontabs/nginx
+COPY ./src/cron/cronjob /etc/elabftw-cronjob
 COPY ./src/cron/cron.allow /etc/cron.d/cron.allow
 # END CRONIE
 

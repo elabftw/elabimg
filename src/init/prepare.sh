@@ -52,6 +52,8 @@ getEnv() {
     # allow limiting log pollution on startup
     silent_init=${SILENT_INIT:-false}
     dev_mode=${DEV_MODE:-false}
+    auto_db_init=${AUTO_DB_INIT:-false}
+    auto_db_update=${AUTO_DB_UPDATE:-false}
     aws_ak=${ELAB_AWS_ACCESS_KEY:-}
     unset ELAB_AWS_ACCESS_KEY
     aws_sk=${ELAB_AWS_SECRET_KEY:-}
@@ -60,11 +62,13 @@ getEnv() {
 
 # Create the user that will run nginx/php/cronjobs
 createUser() {
-    /usr/sbin/addgroup -g "${elabftw_groupid}" "${elabftw_group}"
-    /usr/sbin/adduser -S -u "${elabftw_userid}" -G "${elabftw_group}" "${elabftw_user}"
+    getent group "${elabftw_group}" || /usr/sbin/addgroup -g "${elabftw_groupid}" "${elabftw_group}"
+    getent shadow "${elabftw_user}" || /usr/sbin/adduser -S -u "${elabftw_userid}" -G "${elabftw_group}" "${elabftw_user}"
     # crontab
     /bin/echo "${elabftw_user}" > /etc/cron.d/cron.allow
-    /bin/mv /etc/crontabs/nginx "/etc/crontabs/${elabftw_user}"
+    if [ -f /etc/elabftw-cronjob ]; then
+        /bin/mv /etc/elabftw-cronjob "/etc/crontabs/${elabftw_user}"
+    fi
 }
 
 checkSiteUrl() {
@@ -163,12 +167,15 @@ nginxConf() {
     # DEV MODE
     # we don't want to serve brotli/gzip compressed assets in dev (or we would need to recompress them after every change!)
     if ($dev_mode); then
-        rm /etc/nginx/conf.d/brotli.conf /etc/nginx/conf.d/gzip.conf
+        rm -f /etc/nginx/conf.d/brotli.conf /etc/nginx/conf.d/gzip.conf
         # to allow webpack in watch/dev mode we need to allow unsafe-eval for script-src
         unsafe_eval="'unsafe-eval'"
     fi
     # set unsafe-eval in CSP
     sed -i -e "s/%UNSAFE-EVAL4DEV%/${unsafe_eval}/" /etc/nginx/common.conf
+    # put a random short string as the server header to prevent fingerprinting
+    server_header=$RANDOM | md5sum | head -c 3
+    sed -i -e "s/%SERVER_HEADER%/${server_header}/" /etc/nginx/common.conf
 }
 
 # PHP-FPM CONFIG
@@ -258,17 +265,36 @@ writeConfigFile() {
     chmod 600 "$config_path"
 }
 
+# display a friendly message with running versions
 startupMessage() {
-    # display a friendly message with running versions
     nginx_version=$(/usr/sbin/nginx -v 2>&1)
-    # IMPORTANT: heredoc EOT must not have spaces before or after, hence the incorrect indent
-    cat >&2 <<EOT
-elabimg: info: eLabFTW version: %ELABFTW_VERSION%
-elabimg: info: image version: %ELABIMG_VERSION%
-elabimg: info: ${nginx_version}
-elabimg: info: s6-overlay version: %S6_OVERLAY_VERSION%
-elabimg: info: runtime configuration successfully finished
-EOT
+    say "elabimg: info: eLabFTW version: %ELABFTW_VERSION%"
+    say "elabimg: info: image version: %ELABIMG_VERSION%"
+    say "elabimg: info: ${nginx_version}"
+    say "elabimg: info: s6-overlay version: %S6_OVERLAY_VERSION%"
+    say "elabimg: info: runtime configuration successfully finished"
+}
+
+# Automatically initialize the database structure
+dbInit() {
+    if ($auto_db_init); then
+        say "elabimg: info: initializing database structure"
+        /elabftw/bin/install start
+    fi
+}
+
+# Automatically update the database schema
+dbUpdate() {
+    if ($auto_db_update); then
+        say "elabimg: info: updating database structure"
+        /elabftw/bin/console db:update
+    fi
+}
+
+say() {
+    if (! $silent_init); then
+        echo "$1"
+    fi
 }
 
 # script start
@@ -280,7 +306,6 @@ phpfpmConf
 phpConf
 elabftwConf
 writeConfigFile
-
-if [ "${silent_init}" = false ]; then
-    startupMessage
-fi
+dbInit
+dbUpdate
+startupMessage

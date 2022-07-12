@@ -20,6 +20,12 @@ services:
     # comment this out if you use several containers with redis, as you can't have several containers with the same name
     # default value: elabftw
     container_name: elabftw
+    # make sure we wait for mysql to be available before starting
+    # comment this out if you're not using a mysql container
+    # note: the mysql container needs an healthcheck block for this to work
+    depends_on:
+      mysql:
+        condition: service_healthy
 
     # limit number of processes
     # this option is commented out because it is not in v3 of compose files, only v2
@@ -185,6 +191,14 @@ services:
         # default value: false
         #- SILENT_INIT=false
 
+        # optional: automatically install the database structure on container start
+        # default value: false
+        #- AUTO_DB_INIT=false
+
+        # optional: automatically update the database structure on container start
+        # default value: false
+        #- AUTO_DB_UPDATE=false
+
         #######
         # DEV #
         #######
@@ -240,6 +254,13 @@ services:
      # fix issue with "The server requested authentication method unknown to the client [caching_sha2_password]"
     command: --default-authentication-plugin=mysql_native_password
     container_name: mysql
+    # add an healthcheck block so the web container knows when it is ready to accept connections
+    # use double $ here so env vars are correctly found
+    healthcheck:
+      test: "/usr/bin/mysql --user=$$MYSQL_USER --password=$$MYSQL_PASSWORD --execute 'SHOW DATABASES;'"
+      interval: 5s
+      timeout: 5s
+      retries: 20
     # drop some capabilities
     cap_drop:
         - AUDIT_WRITE
