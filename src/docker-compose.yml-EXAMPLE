@@ -32,6 +32,10 @@ services:
     # even though it works as expected in a v3 file with recent docker-compose
     #pids_limit: 42
 
+    # add a security flag to prevent a process gaining new privileges
+    security_opt:
+      - no-new-privileges:true
+
     # drop some capabilities not needed by the app
     cap_drop:
         - SYS_ADMIN
