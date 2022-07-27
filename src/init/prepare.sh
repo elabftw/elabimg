@@ -180,7 +180,7 @@ nginxConf() {
 
 # PHP-FPM CONFIG
 phpfpmConf() {
-    f="/etc/php8/php-fpm.d/elabpool.conf"
+    f="/etc/php81/php-fpm.d/elabpool.conf"
     # set nginx as user for php-fpm
     sed -i -e "s/%ELABFTW_USER%/${elabftw_user}/" $f
     sed -i -e "s/%ELABFTW_GROUP%/${elabftw_group}/" $f
@@ -194,7 +194,7 @@ phpfpmConf() {
 
 # PHP CONFIG
 phpConf() {
-    f="/etc/php8/php.ini"
+    f="/etc/php81/php.ini"
     # allow using more memory for php
     sed -i -e "s/%PHP_MEMORY_LIMIT%/${max_php_memory}/" $f
     # change upload_max_filesize and post_max_size
