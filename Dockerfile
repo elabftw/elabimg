@@ -6,12 +6,12 @@
 # Note: no need to chain the RUN commands here as it's a builder image and nothing will be kept
 FROM alpine:3.16 as nginx-builder
 
-ENV NGINX_VERSION=1.21.6
+ENV NGINX_VERSION=1.23.1
 # releases can be signed by any key on this page https://nginx.org/en/pgp_keys.html
 # so this might need to be updated for a new release
-# available keys: mdounin, maxim, sb
+# available keys: mdounin, maxim, sb, thresh
 # the "signing key" is used for linux packages, see https://trac.nginx.org/nginx/ticket/205
-ENV PGP_SIGNING_KEY_OWNER=mdounin
+ENV PGP_SIGNING_KEY_OWNER=thresh
 
 # install dependencies
 RUN apk add --no-cache git libc-dev pcre-dev make gcc zlib-dev openssl-dev brotli-dev binutils gnupg
@@ -108,7 +108,7 @@ RUN abuild-keygen -n -a && abuild && find /home/builder/packages -type f -name '
 FROM alpine:3.16
 
 # this is versioning for the container image
-ENV ELABIMG_VERSION 3.4.1
+ENV ELABIMG_VERSION 3.5.0
 
 # select elabftw tag
 ARG ELABFTW_VERSION=hypernext
@@ -185,7 +185,7 @@ RUN ln -s /usr/bin/php81 /usr/bin/php
 # S6-OVERLAY
 # install s6-overlay, our init system. Workaround for different versions using TARGETPLATFORM
 # platform see https://docs.docker.com/engine/reference/builder/#automatic-platform-args-in-the-global-scope
-ARG S6_OVERLAY_VERSION=3.1.0.1
+ARG S6_OVERLAY_VERSION=3.1.1.2
 ENV S6_OVERLAY_VERSION $S6_OVERLAY_VERSION
 
 ARG TARGETPLATFORM=linux/amd64
@@ -236,7 +236,7 @@ WORKDIR /elabftw
 
 # COMPOSER
 ENV COMPOSER_HOME=/composer
-COPY --from=composer:2.2.7 /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2.3.10 /usr/bin/composer /usr/bin/composer
 
 # install php and js dependencies and build assets
 # some ini settings are set on the command line to override the restrictive production ones already set
