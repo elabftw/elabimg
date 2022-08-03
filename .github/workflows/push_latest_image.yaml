@@ -9,27 +9,8 @@ jobs:
     buildandpush:
         runs-on: ubuntu-latest
         steps:
-            # see https://github.community/t/checkout-with-code-from-the-latest-release/17649
-            - name: Get latest release of elabftw with tag
-              id: elabftwrelease
-              run: |
-                  echo "::set-output name=releasetag::$(curl -s https://api.github.com/repos/elabftw/elabftw/releases/latest | jq '.tag_name' | sed 's/\"//g')"
-
-            - name: Get latest release of elabimg with tag
-              id: elabimgrelease
-              run: |
-                  echo "::set-output name=releasetag::$(curl -s https://api.github.com/repos/elabftw/elabimg/releases/latest | jq '.tag_name' | sed 's/\"//g')"
-
-            - name: Verify release tags
-              run: |
-                  echo ${{ steps.elabftwrelease.outputs.releasetag }}
-                  echo ${{ steps.elabimgrelease.outputs.releasetag }}
-
-            - name: Checkout elabimg repo on latest tag
+            - name: Checkout elabimg repo
               uses: actions/checkout@v2
-              with:
-                  repository: "elabftw/elabimg"
-                  ref: ${{ steps.elabimgrelease.outputs.releasetag }}
 
             # https://github.com/docker/setup-qemu-action#usage
             - name: Set up QEMU
@@ -54,7 +35,7 @@ jobs:
                 platforms: linux/arm64,linux/amd64
                 push: true
                 build-args: |
-                    ELABFTW_VERSION=${{ steps.elabftwrelease.outputs.releasetag }}
+                    ELABFTW_VERSION=${{ github.ref_name }}
                 tags: |
                     elabftw/elabimg:latest
-                    elabftw/elabimg:${{ steps.elabftwrelease.outputs.releasetag }}
+                    elabftw/elabimg:${{ github.ref_name }}
