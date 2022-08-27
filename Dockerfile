@@ -185,7 +185,7 @@ RUN ln -s /usr/bin/php81 /usr/bin/php
 # S6-OVERLAY
 # install s6-overlay, our init system. Workaround for different versions using TARGETPLATFORM
 # platform see https://docs.docker.com/engine/reference/builder/#automatic-platform-args-in-the-global-scope
-ARG S6_OVERLAY_VERSION=3.1.1.2
+ARG S6_OVERLAY_VERSION=3.1.2.0
 ENV S6_OVERLAY_VERSION $S6_OVERLAY_VERSION
 
 ARG TARGETPLATFORM=linux/amd64
