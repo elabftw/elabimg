@@ -54,7 +54,18 @@ jobs:
                 tags: |
                     elabftw/elabimg:${{ github.ref_name }}
 
-            - name: Run vulnerabilities scanner
+            # VULN SCANS
+            - name: Run Trivy vulnerability scanner
+              uses: aquasecurity/trivy-action@master
+              with:
+                image-ref: elabftw/elabimg:${{ github.ref_name }}
+                format: 'table'
+                exit-code: '1'
+                ignore-unfixed: true
+                vuln-type: 'os,library'
+                severity: 'CRITICAL,HIGH'
+
+            - name: Run Anchore vulnerabilities scanner
               uses: anchore/scan-action@v2
               with:
                 image: elabftw/elabimg:${{ github.ref_name }}
