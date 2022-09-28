@@ -8,6 +8,7 @@
 * Use nginx 1.23.1 (was 1.21.6)
 * Use composer 2.3.10 (was 2.2.7)
 * Use s6-overlay 3.1.1.2 (was 3.1.0.1)
+* Add LDAP_TLS_REQCERT env variable to control ldap certificate behaviour
 
 # 3.4.1
 

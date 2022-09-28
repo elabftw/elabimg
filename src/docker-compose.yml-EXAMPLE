@@ -188,6 +188,14 @@ services:
         # default value: 6379
         #- REDIS_PORT=6379
 
+        ######################
+        # LDAP CONFIGURATION #
+        ######################
+        # optional: configure ldap certificate verification behavior: will create /etc/openldap/ldap.conf with TLS_REQCERT config line
+        # default value: false
+        # possible values: never, allow, try
+        #- LDAP_TLS_REQCERT=false
+
         #################
         # MISCELLANEOUS #
         #################

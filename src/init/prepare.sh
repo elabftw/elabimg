@@ -58,6 +58,7 @@ getEnv() {
     unset ELAB_AWS_ACCESS_KEY
     aws_sk=${ELAB_AWS_SECRET_KEY:-}
     unset ELAB_AWS_SECRET_KEY
+    ldap_tls_reqcert=${LDAP_TLS_REQCERT:-false}
 }
 
 # Create the user that will run nginx/php/cronjobs
@@ -244,6 +245,15 @@ elabftwConf() {
     chmod 700 /elabftw/uploads /elabftw/cache
 }
 
+ldapConf() {
+    mkdir -p /etc/openldap
+    if [ "$ldap_tls_reqcert" != false ]; then
+        # remove a possibly existing line or it will append every time container is restarted
+        sed -ie '/^TLS_REQCERT/d' /etc/openldap/ldap.conf
+        echo "TLS_REQCERT ${ldap_tls_reqcert}" >> /etc/openldap/ldap.conf
+    fi
+}
+
 writeConfigFile() {
     # remove trailing slash for site_url
     site_url=$(echo "${site_url}" | sed 's:/$::')
@@ -305,6 +315,7 @@ nginxConf
 phpfpmConf
 phpConf
 elabftwConf
+ldapConf
 writeConfigFile
 dbInit
 dbUpdate
