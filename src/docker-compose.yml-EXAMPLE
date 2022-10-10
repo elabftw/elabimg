@@ -32,6 +32,10 @@ services:
     # even though it works as expected in a v3 file with recent docker-compose
     #pids_limit: 42
 
+    # add a security flag to prevent a process gaining new privileges
+    security_opt:
+      - no-new-privileges:true
+
     # drop some capabilities not needed by the app
     cap_drop:
         - SYS_ADMIN
@@ -183,6 +187,14 @@ services:
         # optional: set a custom port for redis
         # default value: 6379
         #- REDIS_PORT=6379
+
+        ######################
+        # LDAP CONFIGURATION #
+        ######################
+        # optional: configure ldap certificate verification behavior: will create /etc/openldap/ldap.conf with TLS_REQCERT config line
+        # default value: false
+        # possible values: never, allow, try
+        #- LDAP_TLS_REQCERT=false
 
         #################
         # MISCELLANEOUS #

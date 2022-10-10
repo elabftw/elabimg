@@ -9,20 +9,8 @@ jobs:
     buildandpush:
         runs-on: ubuntu-latest
         steps:
-            - name: Get the current elabftw version tag from Dockerfile
-              id: latesttag
-              run: |
-                echo "::set-output name=tag::$(curl -s https://raw.githubusercontent.com/elabftw/elabimg/master/Dockerfile | grep ELABFTW_VERSION | head -n 1 | rev | cut -d= -f1 | rev)"
-
-            - name: Verify release tags
-              run: |
-                  echo ${{ steps.latesttag.outputs.tag}}
-
-            - name: Checkout elabimg repo on latest tag
+            - name: Checkout elabimg repo
               uses: actions/checkout@v2
-              with:
-                  repository: "elabftw/elabimg"
-                  ref: ${{ steps.latesttag.outputs.tag }}
 
             # https://github.com/docker/setup-qemu-action#usage
             - name: Set up QEMU
@@ -46,6 +34,8 @@ jobs:
                 context: .
                 platforms: linux/arm64,linux/amd64
                 push: true
+                build-args: |
+                    ELABFTW_VERSION=${{ github.ref_name }}
                 tags: |
                     elabftw/elabimg:latest
-                    elabftw/elabimg:${{ steps.latesttag.outputs.tag }}
+                    elabftw/elabimg:${{ github.ref_name }}

@@ -17,11 +17,6 @@ jobs:
             - name: Checkout elabimg repo
               uses: actions/checkout@v2
 
-            - name: Get the current branch name
-              shell: bash
-              run: echo "::set-output name=branch::${GITHUB_REF#refs/heads/}"
-              id: ref
-
             # https://github.com/docker/setup-qemu-action#usage
             - name: Set up QEMU
               uses: docker/setup-qemu-action@v1
@@ -37,6 +32,7 @@ jobs:
                 key: ${{ runner.os }}-buildxL-${{ github.sha }}
                 restore-keys: |
                   ${{ runner.os }}-buildxL-
+
             # https://github.com/docker/login-action#docker-hub
             - name: Login to Docker Hub
               uses: docker/login-action@v1
@@ -54,14 +50,25 @@ jobs:
                 platforms: linux/arm64,linux/amd64
                 push: true
                 build-args: |
-                    ELABFTW_VERSION=${{ steps.ref.outputs.branch }}
+                    ELABFTW_VERSION=${{ github.ref_name }}
                 tags: |
-                    elabftw/elabimg:${{ steps.ref.outputs.branch }}
+                    elabftw/elabimg:${{ github.ref_name }}
 
-            - name: Run vulnerabilities scanner
+            # VULN SCANS
+            - name: Run Trivy vulnerability scanner
+              uses: aquasecurity/trivy-action@master
+              with:
+                image-ref: elabftw/elabimg:${{ github.ref_name }}
+                format: 'table'
+                exit-code: '1'
+                ignore-unfixed: true
+                vuln-type: 'os,library'
+                severity: 'CRITICAL,HIGH'
+
+            - name: Run Anchore vulnerabilities scanner
               uses: anchore/scan-action@v2
               with:
-                image: elabftw/elabimg:${{ steps.ref.outputs.branch }}
+                image: elabftw/elabimg:${{ github.ref_name }}
                 fail-build: true
 
               # This ugly bit is necessary if you don't want your cache to grow forever

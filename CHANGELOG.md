@@ -1,6 +1,15 @@
 # Container image version
 # Note: the version here is from Dockerfile:ELABIMG_VERSION not the tagged one
 
+# 3.5.0
+
+* Use Alpine linux 3.16 (was 3.15)
+* Use PHP 8.1 (was 8.0)
+* Use nginx 1.23.1 (was 1.21.6)
+* Use composer 2.3.10 (was 2.2.7)
+* Use s6-overlay 3.1.1.2 (was 3.1.0.1)
+* Add LDAP_TLS_REQCERT env variable to control ldap certificate behaviour
+
 # 3.4.1
 
 * Avoid errors when container is restarted and prepare.sh is run again

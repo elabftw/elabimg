@@ -4,14 +4,14 @@
 
 # build nginx with only the bare minimum of features or modules
 # Note: no need to chain the RUN commands here as it's a builder image and nothing will be kept
-FROM alpine:3.15 as nginx-builder
+FROM alpine:3.16 as nginx-builder
 
-ENV NGINX_VERSION=1.21.6
+ENV NGINX_VERSION=1.23.1
 # releases can be signed by any key on this page https://nginx.org/en/pgp_keys.html
 # so this might need to be updated for a new release
-# available keys: mdounin, maxim, sb
+# available keys: mdounin, maxim, sb, thresh
 # the "signing key" is used for linux packages, see https://trac.nginx.org/nginx/ticket/205
-ENV PGP_SIGNING_KEY_OWNER=mdounin
+ENV PGP_SIGNING_KEY_OWNER=thresh
 
 # install dependencies
 RUN apk add --no-cache git libc-dev pcre-dev make gcc zlib-dev openssl-dev brotli-dev binutils gnupg
@@ -84,7 +84,7 @@ USER root
 RUN make install
 
 # CRONIE BUILDER
-FROM alpine:3.15 as cronie-builder
+FROM alpine:3.16 as cronie-builder
 ENV CRONIE_VERSION=1.5.7
 # install dependencies
 RUN apk add --no-cache build-base libc-dev make gcc autoconf automake abuild musl-obstack-dev
@@ -105,10 +105,10 @@ RUN abuild-keygen -n -a && abuild && find /home/builder/packages -type f -name '
 #############################
 # ELABFTW + NGINX + PHP-FPM #
 #############################
-FROM alpine:3.15
+FROM alpine:3.16
 
 # this is versioning for the container image
-ENV ELABIMG_VERSION 3.4.1
+ENV ELABIMG_VERSION 3.5.0
 
 # select elabftw version or branch here
 ARG ELABFTW_VERSION=4.3.10
@@ -145,47 +145,47 @@ RUN apk upgrade -U -a && apk add --no-cache \
     freetype \
     ghostscript \
     openssl \
-    php8 \
-    php8-bcmath \
-    php8-curl \
-    php8-ctype \
-    php8-dev \
-    php8-dom \
-    php8-exif \
-    php8-gd \
-    php8-gettext \
-    php8-fileinfo \
-    php8-fpm \
-    php8-json \
-    php8-intl \
-    php8-ldap \
-    php8-mbstring \
-    php8-opcache \
-    php8-openssl \
-    php8-pdo_mysql \
-    php8-pecl-imagick \
-    php8-phar \
-    php8-redis \
-    php8-simplexml \
-    php8-session \
-    php8-sodium \
-    php8-tokenizer \
-    php8-xml \
-    php8-xmlwriter \
-    php8-zip \
-    php8-zlib \
+    php81 \
+    php81-bcmath \
+    php81-curl \
+    php81-ctype \
+    php81-dev \
+    php81-dom \
+    php81-exif \
+    php81-gd \
+    php81-gettext \
+    php81-fileinfo \
+    php81-fpm \
+    php81-json \
+    php81-intl \
+    php81-ldap \
+    php81-mbstring \
+    php81-opcache \
+    php81-openssl \
+    php81-pdo_mysql \
+    php81-pecl-imagick \
+    php81-phar \
+    php81-redis \
+    php81-simplexml \
+    php81-session \
+    php81-sodium \
+    php81-tokenizer \
+    php81-xml \
+    php81-xmlwriter \
+    php81-zip \
+    php81-zlib \
     tzdata \
     unzip \
     yarn \
     zopfli
 
 # add a symlink to php8
-RUN ln -s /usr/bin/php8 /usr/bin/php
+RUN ln -s /usr/bin/php81 /usr/bin/php
 
 # S6-OVERLAY
 # install s6-overlay, our init system. Workaround for different versions using TARGETPLATFORM
 # platform see https://docs.docker.com/engine/reference/builder/#automatic-platform-args-in-the-global-scope
-ARG S6_OVERLAY_VERSION=3.1.0.1
+ARG S6_OVERLAY_VERSION=3.1.2.0
 ENV S6_OVERLAY_VERSION $S6_OVERLAY_VERSION
 
 ARG TARGETPLATFORM=linux/amd64
@@ -209,9 +209,9 @@ RUN touch /etc/s6-overlay/s6-rc.d/user/contents.d/cron
 # END S6-OVERLAY
 
 # PHP
-COPY ./src/php/php.ini /etc/php8/php.ini
-COPY ./src/php/php-fpm.conf /etc/php8/php-fpm.conf
-COPY ./src/php/elabpool.conf /etc/php8/php-fpm.d/elabpool.conf
+COPY ./src/php/php.ini /etc/php81/php.ini
+COPY ./src/php/php-fpm.conf /etc/php81/php-fpm.conf
+COPY ./src/php/elabpool.conf /etc/php81/php-fpm.d/elabpool.conf
 # END PHP
 
 # ELABFTW
@@ -236,7 +236,7 @@ WORKDIR /elabftw
 
 # COMPOSER
 ENV COMPOSER_HOME=/composer
-COPY --from=composer:2.2.7 /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2.3.10 /usr/bin/composer /usr/bin/composer
 
 # install php and js dependencies and build assets
 # some ini settings are set on the command line to override the restrictive production ones already set

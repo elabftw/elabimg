@@ -58,6 +58,7 @@ getEnv() {
     unset ELAB_AWS_ACCESS_KEY
     aws_sk=${ELAB_AWS_SECRET_KEY:-}
     unset ELAB_AWS_SECRET_KEY
+    ldap_tls_reqcert=${LDAP_TLS_REQCERT:-false}
 }
 
 # Create the user that will run nginx/php/cronjobs
@@ -174,13 +175,13 @@ nginxConf() {
     # set unsafe-eval in CSP
     sed -i -e "s/%UNSAFE-EVAL4DEV%/${unsafe_eval}/" /etc/nginx/common.conf
     # put a random short string as the server header to prevent fingerprinting
-    server_header=$RANDOM | md5sum | head -c 3
+    server_header=$(echo $RANDOM | md5sum | head -c 3)
     sed -i -e "s/%SERVER_HEADER%/${server_header}/" /etc/nginx/common.conf
 }
 
 # PHP-FPM CONFIG
 phpfpmConf() {
-    f="/etc/php8/php-fpm.d/elabpool.conf"
+    f="/etc/php81/php-fpm.d/elabpool.conf"
     # set nginx as user for php-fpm
     sed -i -e "s/%ELABFTW_USER%/${elabftw_user}/" $f
     sed -i -e "s/%ELABFTW_GROUP%/${elabftw_group}/" $f
@@ -194,7 +195,7 @@ phpfpmConf() {
 
 # PHP CONFIG
 phpConf() {
-    f="/etc/php8/php.ini"
+    f="/etc/php81/php.ini"
     # allow using more memory for php
     sed -i -e "s/%PHP_MEMORY_LIMIT%/${max_php_memory}/" $f
     # change upload_max_filesize and post_max_size
@@ -242,6 +243,15 @@ elabftwConf() {
     mkdir -p /elabftw/uploads /elabftw/cache
     chown "${elabftw_userid}":"${elabftw_groupid}" /elabftw/uploads /elabftw/cache
     chmod 700 /elabftw/uploads /elabftw/cache
+}
+
+ldapConf() {
+    mkdir -p /etc/openldap
+    if [ "$ldap_tls_reqcert" != false ]; then
+        # remove a possibly existing line or it will append every time container is restarted
+        sed -ie '/^TLS_REQCERT/d' /etc/openldap/ldap.conf
+        echo "TLS_REQCERT ${ldap_tls_reqcert}" >> /etc/openldap/ldap.conf
+    fi
 }
 
 writeConfigFile() {
@@ -305,6 +315,7 @@ nginxConf
 phpfpmConf
 phpConf
 elabftwConf
+ldapConf
 writeConfigFile
 dbInit
 dbUpdate
