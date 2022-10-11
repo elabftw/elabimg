@@ -54,7 +54,7 @@ jobs:
                 tags: |
                     elabftw/elabimg:${{ github.ref_name }}
 
-            # VULN SCANS
+            # VULN SCAN
             - name: Run Trivy vulnerability scanner
               uses: aquasecurity/trivy-action@master
               with:
@@ -64,12 +64,6 @@ jobs:
                 ignore-unfixed: true
                 vuln-type: 'os,library'
                 severity: 'CRITICAL,HIGH'
-
-            - name: Run Anchore vulnerabilities scanner
-              uses: anchore/scan-action@v2
-              with:
-                image: elabftw/elabimg:${{ github.ref_name }}
-                fail-build: true
 
               # This ugly bit is necessary if you don't want your cache to grow forever
               # till it hits GitHub's limit of 5GB.
