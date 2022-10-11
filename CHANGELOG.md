@@ -1,6 +1,10 @@
 # Container image version
 # Note: the version here is from Dockerfile:ELABIMG_VERSION not the tagged one
 
+# 3.5.1
+
+* Change SameSite attribute of PHP Session cookie to Lax (see elabftw/elabftw#3749)
+
 # 3.5.0
 
 * Use Alpine linux 3.16 (was 3.15)
