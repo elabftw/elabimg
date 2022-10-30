@@ -42,6 +42,8 @@ getEnv() {
     use_redis=${USE_REDIS:-false}
     redis_host=${REDIS_HOST:-redis}
     redis_port=${REDIS_PORT:-6379}
+    redis_username=${REDIS_USERNAME:-}
+    redis_password=${REDIS_PASSWORD:-}
     enable_ipv6=${ENABLE_IPV6:-false}
     elabftw_user=${ELABFTW_USER:-nginx}
     elabftw_group=${ELABFTW_GROUP:-nginx}
@@ -193,6 +195,18 @@ phpfpmConf() {
     sed -i -e "s/%ELABIMG_VERSION_ENV%/${elabimg_version}/" $f
 }
 
+getRedisUri() {
+    username=""
+    password=""
+    if ($redis_username); then
+        username="${redis_username}:"
+    fi
+    if ($redis_password); then
+        username="${redis_password}@"
+    fi
+    printf "tcp://%s%s%s:%d" "$protocol" "$username" "$password" "$redis_host" "$redis_port"
+}
+
 # PHP CONFIG
 phpConf() {
     f="/etc/php81/php.ini"
@@ -208,7 +222,7 @@ phpConf() {
     # if we use redis then sessions are handled differently
     if ($use_redis); then
         sess_save_handler="redis"
-        sess_save_path="tcp://${redis_host}:${redis_port}"
+        sess_save_path=$(getRedisUri)
     else
         # create the custom session dir
         mkdir -p /sessions
