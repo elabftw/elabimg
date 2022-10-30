@@ -204,7 +204,7 @@ getRedisUri() {
     if ($redis_password); then
         username="${redis_password}@"
     fi
-    printf "tcp://%s%s%s:%d" "$protocol" "$username" "$password" "$redis_host" "$redis_port"
+    printf "tcp://%s%s%s:%d" "$username" "$password" "$redis_host" "$redis_port"
 }
 
 # PHP CONFIG
