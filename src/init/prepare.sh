@@ -198,13 +198,20 @@ phpfpmConf() {
 getRedisUri() {
     username=""
     password=""
-    if ($redis_username); then
-        username="${redis_username}:"
+    # the & and ? are escaped because of the sed
+    # it's probably a good idea to not have to many weird characters in redis username/password
+    query_link="\&"
+    if [ -n "$redis_username" ]; then
+        username="\?auth[user]=${redis_username}"
     fi
-    if ($redis_password); then
-        username="${redis_password}@"
+    if [ -n "$redis_password" ]; then
+        if [ -z "$redis_username" ]; then
+            query_link="\?"
+        fi
+        password="${query_link}auth[pass]=${redis_password}"
     fi
-    printf "tcp://%s%s%s:%d" "$username" "$password" "$redis_host" "$redis_port"
+    # add a set of quotes or the = sign will pose problem in php.ini
+    printf "\"tcp://%s:%d%s%s\"" "$redis_host" "$redis_port" "$username" "$password"
 }
 
 # PHP CONFIG
