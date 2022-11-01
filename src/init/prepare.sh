@@ -65,8 +65,8 @@ getEnv() {
 
 # Create the user that will run nginx/php/cronjobs
 createUser() {
-    getent group "${elabftw_group}" || /usr/sbin/addgroup -g "${elabftw_groupid}" "${elabftw_group}"
-    getent shadow "${elabftw_user}" || /usr/sbin/adduser -S -u "${elabftw_userid}" -G "${elabftw_group}" "${elabftw_user}"
+    getent group "${elabftw_group}" 2>&1 > /dev/null || /usr/sbin/addgroup -g "${elabftw_groupid}" "${elabftw_group}"
+    getent shadow "${elabftw_user}" 2>&1 > /dev/null || /usr/sbin/adduser -S -u "${elabftw_userid}" -G "${elabftw_group}" "${elabftw_user}"
     # crontab
     /bin/echo "${elabftw_user}" > /etc/cron.d/cron.allow
     if [ -f /etc/elabftw-cronjob ]; then
