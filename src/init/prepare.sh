@@ -42,6 +42,8 @@ getEnv() {
     use_redis=${USE_REDIS:-false}
     redis_host=${REDIS_HOST:-redis}
     redis_port=${REDIS_PORT:-6379}
+    redis_username=${REDIS_USERNAME:-}
+    redis_password=${REDIS_PASSWORD:-}
     enable_ipv6=${ENABLE_IPV6:-false}
     elabftw_user=${ELABFTW_USER:-nginx}
     elabftw_group=${ELABFTW_GROUP:-nginx}
@@ -63,8 +65,8 @@ getEnv() {
 
 # Create the user that will run nginx/php/cronjobs
 createUser() {
-    getent group "${elabftw_group}" || /usr/sbin/addgroup -g "${elabftw_groupid}" "${elabftw_group}"
-    getent shadow "${elabftw_user}" || /usr/sbin/adduser -S -u "${elabftw_userid}" -G "${elabftw_group}" "${elabftw_user}"
+    getent group "${elabftw_group}" 2>&1 > /dev/null || /usr/sbin/addgroup -g "${elabftw_groupid}" "${elabftw_group}"
+    getent shadow "${elabftw_user}" 2>&1 > /dev/null || /usr/sbin/adduser -S -u "${elabftw_userid}" -G "${elabftw_group}" "${elabftw_user}"
     # crontab
     /bin/echo "${elabftw_user}" > /etc/cron.d/cron.allow
     if [ -f /etc/elabftw-cronjob ]; then
@@ -193,6 +195,25 @@ phpfpmConf() {
     sed -i -e "s/%ELABIMG_VERSION_ENV%/${elabimg_version}/" $f
 }
 
+getRedisUri() {
+    username=""
+    password=""
+    # the & and ? are escaped because of the sed
+    # it's probably a good idea to not have to many weird characters in redis username/password
+    query_link="\&"
+    if [ -n "$redis_username" ]; then
+        username="\?auth[user]=${redis_username}"
+    fi
+    if [ -n "$redis_password" ]; then
+        if [ -z "$redis_username" ]; then
+            query_link="\?"
+        fi
+        password="${query_link}auth[pass]=${redis_password}"
+    fi
+    # add a set of quotes or the = sign will pose problem in php.ini
+    printf "\"tcp://%s:%d%s%s\"" "$redis_host" "$redis_port" "$username" "$password"
+}
+
 # PHP CONFIG
 phpConf() {
     f="/etc/php81/php.ini"
@@ -208,7 +229,7 @@ phpConf() {
     # if we use redis then sessions are handled differently
     if ($use_redis); then
         sess_save_handler="redis"
-        sess_save_path="tcp://${redis_host}:${redis_port}"
+        sess_save_path=$(getRedisUri)
     else
         # create the custom session dir
         mkdir -p /sessions

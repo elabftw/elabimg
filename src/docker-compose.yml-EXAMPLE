@@ -187,6 +187,12 @@ services:
         # optional: set a custom port for redis
         # default value: 6379
         #- REDIS_PORT=6379
+        # optional: set a username for redis
+        # default value: <empty>
+        #- REDIS_USERNAME=
+        # optional: set a password for redis
+        # default value: <empty>
+        #- REDIS_PASSWORD=
 
         ######################
         # LDAP CONFIGURATION #
