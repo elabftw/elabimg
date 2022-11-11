@@ -261,7 +261,7 @@ phpConf() {
 }
 
 elabftwConf() {
-    mkdir -p /elabftw/uploads /elabftw/cache /elabftw/purifier/CSS /elabftw/purifier/HTML /elabftw/purifier/URI
+    mkdir -p /elabftw/uploads /elabftw/cache/purifier/CSS /elabftw/cache/purifier/HTML /elabftw/cache/purifier/URI
     chown -R "${elabftw_userid}":"${elabftw_groupid}" /elabftw/cache
     # no recursive flage for uploads
     chown "${elabftw_userid}":"${elabftw_groupid}" /elabftw/uploads
