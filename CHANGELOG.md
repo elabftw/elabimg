@@ -1,9 +1,10 @@
 # Container image version
 # Note: the version here is from Dockerfile:ELABIMG_VERSION not the tagged one
 
-# 3.5.2
+# 3.6.0
 
 * Add support for redis username and password settings
+* Make sure /elabftw/cache/purifier folder is created with correct permissions at init time
 
 # 3.5.1
 
