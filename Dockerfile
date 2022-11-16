@@ -108,7 +108,7 @@ RUN abuild-keygen -n -a && abuild && find /home/builder/packages -type f -name '
 FROM alpine:3.16
 
 # this is versioning for the container image
-ENV ELABIMG_VERSION 3.6.0
+ENV ELABIMG_VERSION 3.6.1
 
 # select elabftw version or branch here
 ARG ELABFTW_VERSION=4.4.0-beta3
@@ -245,7 +245,7 @@ COPY --from=composer:2.3.10 /usr/bin/composer /usr/bin/composer
 RUN yarn config set network-timeout 300000 \
     && yarn install --pure-lockfile --prod \
     && yarn run buildall \
-    && php -d memory_limit=256M -d allow_url_fopen=On -d open_basedir='' /usr/bin/composer install --prefer-dist --no-cache --no-progress --no-dev -a \
+    && php -d memory_limit=256M -d open_basedir='' /usr/bin/composer install --prefer-dist --no-cache --no-progress --no-dev -a \
     && rm -rf node_modules && yarn cache clean
 # END ELABFTW
 

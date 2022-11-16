@@ -150,17 +150,19 @@ services:
         # default value: false
         #- ENABLE_IPV6=false
 
-        # optional: adjust the user/group that will own the uploaded files
-        # useful in very particular situations, like with NFSv4
-        # you don't really need to change this in most situations
-        # so this is left commented (default values are shown)
+        # optional: adjust the user/group that will own the uploaded files (and run the webserver)
+        # useful if your files are stored on an NFS mount point where the files ownership are imposed by the NFS server
         # default value: nginx
+        # example value: nobody
         #- ELABFTW_USER=nginx
         # default value: nginx
+        # example value: nobody
         #- ELABFTW_GROUP=nginx
         # default value: 101
+        # example value: 65534
         #- ELABFTW_USERID=101
         # default value: 101
+        # example value: 65534
         #- ELABFTW_GROUPID=101
 
         # optional: enable if you want nginx to be configured with set_real_ip_from directives
