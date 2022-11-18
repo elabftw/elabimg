@@ -99,7 +99,8 @@ services:
         # default value: 120
         #- PHP_MAX_EXECUTION_TIME=120
 
-        # optional: adjust the amount of memory available to PHP, increase it if you run into memory issues due to the size of your database
+        # optional: adjust the amount of memory available to PHP, increase it if you run into issues
+        # example value: 512M
         # default value: 256M
         #- MAX_PHP_MEMORY=256M
 
