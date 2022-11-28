@@ -117,6 +117,7 @@ services:
         - SECRET_KEY=
 
         # The canonical URL to the website, including port if not standard
+        # Use the user-facing URL here.
         # example value: https://elab.uni-delta.fr
         # example value: https://elab.uni-delta.fr:3148
         - SITE_URL=
