@@ -1,6 +1,10 @@
 # Container image version
 # Note: the version here is from Dockerfile:ELABIMG_VERSION not the tagged one
 
+# 3.6.2
+
+* Fix issue with api query parameters in nginx config. See elabftw/elabftw#3954.
+
 # 3.6.1
 
 * Set `allow_url_fopen` to `On` because the application needs it.
