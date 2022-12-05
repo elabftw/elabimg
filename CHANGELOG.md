@@ -1,6 +1,14 @@
 # Container image version
 # Note: the version here is from Dockerfile:ELABIMG_VERSION not the tagged one
 
+# 3.7.0
+
+* Allow CORS requests:
+* OPTIONS method
+* Add ALLOW_ORIGIN configuration option
+* Add ALLOW_METHODS configuration option
+* Add ALLOW_HEADERS configuration option
+
 # 3.6.2
 
 * Fix issue with api query parameters in nginx config. See elabftw/elabftw#3954.
