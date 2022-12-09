@@ -61,6 +61,9 @@ getEnv() {
     aws_sk=${ELAB_AWS_SECRET_KEY:-}
     unset ELAB_AWS_SECRET_KEY
     ldap_tls_reqcert=${LDAP_TLS_REQCERT:-false}
+    allow_origin=${ALLOW_ORIGIN:-}
+    allow_methods=${ALLOW_METHODS:-}
+    allow_headers=${ALLOW_HEADERS:-}
 }
 
 # Create the user that will run nginx/php/cronjobs
@@ -179,6 +182,24 @@ nginxConf() {
     # put a random short string as the server header to prevent fingerprinting
     server_header=$(echo $RANDOM | md5sum | head -c 3)
     sed -i -e "s/%SERVER_HEADER%/${server_header}/" /etc/nginx/common.conf
+    # add Access-Control-Allow-Origin header if enabled
+    acao_header=""
+    if [ -n "$allow_origin" ]; then
+        acao_header="more_set_headers 'Access-Control-Allow-Origin: ${allow_origin}';"
+    fi
+    sed -i -e "s#%ACAO_HEADER%#${acao_header}#" /etc/nginx/common.conf
+    # add Access-Control-Allow-Methods header if enabled
+    acam_header=""
+    if [ -n "$allow_methods" ]; then
+        acam_header="more_set_headers 'Access-Control-Allow-Methods: ${allow_methods}';"
+    fi
+    sed -i -e "s/%ACAM_HEADER%/${acam_header}/" /etc/nginx/common.conf
+    # add Access-Control-Allow-Headers header if enabled
+    acah_header=""
+    if [ -n "$allow_headers" ]; then
+        acah_header="more_set_headers 'Access-Control-Allow-Headers: ${allow_headers}';"
+    fi
+    sed -i -e "s/%ACAH_HEADER%/${acah_header}/" /etc/nginx/common.conf
 }
 
 # PHP-FPM CONFIG

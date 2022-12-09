@@ -117,6 +117,7 @@ services:
         - SECRET_KEY=
 
         # The canonical URL to the website, including port if not standard
+        # Use the user-facing URL here.
         # example value: https://elab.uni-delta.fr
         # example value: https://elab.uni-delta.fr:3148
         - SITE_URL=
@@ -177,6 +178,28 @@ services:
         # default value: auto
         # if auto doesn't work for you, use the number of cores available on the server (or less)
         #- NGINX_WORK_PROC=auto
+
+        # optional: allow javascript code to call the API from an external service
+        # this will add a response header Access-Control-Allow-Origin with content of the env var as value
+        # mdn doc: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin
+        # default: header not set (empty value)
+        # example value: app.example.org
+        # example value: *
+        #- ALLOW_ORIGIN=
+
+        # optional: define methods allowed to javascript code calling the API from an external service
+        # this will add a response header Access-Control-Allow-Methods with content of the env var as value
+        # mdn doc: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Methods
+        # default: header not set (empty value)
+        # example value: GET, POST, PATCH
+        #- ALLOW_METHODS=
+
+        # optional: define headers allowed to javascript code calling the API from an external service
+        # this will add a response header Access-Control-Allow-Headers with content of the env var as value
+        # mdn doc: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Headers
+        # default: header not set (empty value)
+        # example value: Content-Type, Authorization
+        #- ALLOW_HEADERS=
 
         #######################
         # REDIS CONFIGURATION #
