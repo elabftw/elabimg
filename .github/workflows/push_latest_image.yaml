@@ -39,3 +39,15 @@ jobs:
                 tags: |
                     elabftw/elabimg:latest
                     elabftw/elabimg:${{ github.ref_name }}
+
+            # build the IRD branch
+            - name: Build IRD image
+              uses: docker/build-push-action@v3
+              with:
+                context: .
+                platforms: linux/amd64
+                push: true
+                build-args: |
+                    ELABFTW_VERSION=ird
+                tags: |
+                    elabftw/elabimg:ird
