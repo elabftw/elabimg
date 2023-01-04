@@ -111,7 +111,7 @@ FROM alpine:3.16
 ENV ELABIMG_VERSION 3.7.0
 
 # select elabftw version or branch here
-ARG ELABFTW_VERSION=4.4.3
+ARG ELABFTW_VERSION=4.5.0-beta
 ENV ELABFTW_VERSION $ELABFTW_VERSION
 
 LABEL net.elabftw.name="elabftw" \
