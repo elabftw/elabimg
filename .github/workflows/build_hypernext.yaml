@@ -1,10 +1,9 @@
-name: Push images of hypernext and next to Docker Hub
+name: Push images of hypernext to Docker Hub
 
 on:
     push:
         branches:
           - hypernext
-          - next
      # also run every day at 1:00
     schedule:
       - cron: "42 01 * * *"
