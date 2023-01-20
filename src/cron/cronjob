@@ -1,2 +1,4 @@
+# check for timestamp balance daily
+37 13 * * * /usr/bin/php /elabftw/bin/console notifications:tsbalance
 # send elabftw notifications emails every minute
 */1 * * * * /usr/bin/php /elabftw/bin/console notifications:send
