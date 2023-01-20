@@ -188,7 +188,9 @@ RUN ln -s /usr/bin/php81 /usr/bin/php
 ARG S6_OVERLAY_VERSION=3.1.2.0
 ENV S6_OVERLAY_VERSION $S6_OVERLAY_VERSION
 
-ARG TARGETPLATFORM=linux/amd64
+# using an explicit default argument for TARGETPLATFORM will override the buildx implicit value
+ARG TARGETPLATFORM
+ENV TARGETPLATFORM=${TARGETPLATFORM:-linux/amd64}
 RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then ARCHITECTURE=x86_64; elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then ARCHITECTURE=arm; elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then ARCHITECTURE=aarch64; else ARCHITECTURE=amd64; fi \
     && curl -sS -L -O --output-dir /tmp/ --create-dirs "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-${ARCHITECTURE}.tar.xz" \
     && curl -sS -L -O --output-dir /tmp/ --create-dirs "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch.tar.xz" \
