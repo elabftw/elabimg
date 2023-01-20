@@ -3,6 +3,7 @@
 
 # 3.8.0
 
+* Fix issue with ARM build. Fix #30 via #31 by @nilssta
 * Add cronjob for available timestamp tokens left notifications
 
 # 3.7.0
