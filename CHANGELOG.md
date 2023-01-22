@@ -1,6 +1,11 @@
 # Container image version
 # Note: the version here is from Dockerfile:ELABIMG_VERSION not the tagged one
 
+# 3.8.0
+
+* Fix issue with ARM build. Fix #30 via #31 by @nilssta
+* Add cronjob for available timestamp tokens left notifications
+
 # 3.7.0
 
 * Allow CORS requests:
