@@ -214,6 +214,8 @@ RUN touch /etc/s6-overlay/s6-rc.d/user/contents.d/cron
 COPY ./src/php/php.ini /etc/php81/php.ini
 COPY ./src/php/php-fpm.conf /etc/php81/php-fpm.conf
 COPY ./src/php/elabpool.conf /etc/php81/php-fpm.d/elabpool.conf
+# this is unique to the build and is better than the previously used elabftw version for asset cache busting
+RUN BUILD_ID=$(openssl rand -hex 4) && sed -ie "s/%ELABIMG_BUILD_ID%/$BUILD_ID/" /etc/php81/php-fpm.d/elabpool.conf
 # END PHP
 
 # ELABFTW

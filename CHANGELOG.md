@@ -1,6 +1,10 @@
 # Container image version
 # Note: the version here is from Dockerfile:ELABIMG_VERSION not the tagged one
 
+# 3.9.0
+
+* Use a random string as BUILD_ID to use for the v query string parameter for loading assets
+
 # 3.8.0
 
 * Fix issue with ARM build. Fix #30 via #31 by @nilssta
