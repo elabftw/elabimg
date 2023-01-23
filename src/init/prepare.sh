@@ -291,30 +291,39 @@ ldapConf() {
     mkdir -p /etc/openldap
     if [ "$ldap_tls_reqcert" != false ]; then
         # remove a possibly existing line or it will append every time container is restarted
-        sed -ie '/^TLS_REQCERT/d' /etc/openldap/ldap.conf
+        sed -i -e '/^TLS_REQCERT/d' /etc/openldap/ldap.conf
         echo "TLS_REQCERT ${ldap_tls_reqcert}" >> /etc/openldap/ldap.conf
     fi
 }
 
-writeConfigFile() {
+populatePhpEnv() {
     # remove trailing slash for site_url
     site_url=$(echo "${site_url}" | sed 's:/$::')
-    # write config file from env var
-    config_path="/elabftw/config.php"
-    config="<?php
-    define('DB_HOST', '${db_host}');
-    define('DB_PORT', '${db_port}');
-    define('DB_NAME', '${db_name}');
-    define('DB_USER', '${db_user}');
-    define('DB_PASSWORD', '${db_password}');
-    define('DB_CERT_PATH', '${db_cert_path}');
-    define('SECRET_KEY', '${secret_key}');
-    define('SITE_URL', '${site_url}');
-    define('ELAB_AWS_ACCESS_KEY', '${aws_ak}');
-    define('ELAB_AWS_SECRET_KEY', '${aws_sk}');"
-    echo "$config" > "$config_path"
-    chown "${elabftw_user}":"${elabftw_group}" "$config_path"
-    chmod 600 "$config_path"
+
+    sed -i -e "s/%DB_HOST%/${db_host}/" /etc/php81/php-fpm.d/elabpool.conf
+    sed -i -e "s/%DB_PORT%/${db_port}/" /etc/php81/php-fpm.d/elabpool.conf
+    sed -i -e "s/%DB_NAME%/${db_name}/" /etc/php81/php-fpm.d/elabpool.conf
+    sed -i -e "s/%DB_USER%/${db_user}/" /etc/php81/php-fpm.d/elabpool.conf
+    sed -i -e "s/%DB_PASSWORD%/${db_password}/" /etc/php81/php-fpm.d/elabpool.conf
+    # don't add empty stuff
+    if [ -n "$db_cert_path" ]; then
+        # use # as separator instead of slash
+        sed -i -e "s#%DB_CERT_PATH%#${db_cert_path}#" /etc/php81/php-fpm.d/elabpool.conf
+    else
+        # remove this if not in use
+        sed -i -e "/%DB_CERT_PATH%/d" /etc/php81/php-fpm.d/elabpool.conf
+    fi
+    sed -i -e "s/%SECRET_KEY%/${secret_key}/" /etc/php81/php-fpm.d/elabpool.conf
+    # use # as separator instead of slash
+    sed -i -e "s#%SITE_URL%#${site_url}#" /etc/php81/php-fpm.d/elabpool.conf
+    # assume that if ak is set, then sk is too
+    if [ -n "$aws_ak" ]; then
+        sed -i -e "s/%ELAB_AWS_ACCESS_KEY%/${aws_ak}/" /etc/php81/php-fpm.d/elabpool.conf
+        sed -i -e "s/%ELAB_AWS_SECRET_KEY%/${aws_sk}/" /etc/php81/php-fpm.d/elabpool.conf
+    else
+        sed -i -e "/%ELAB_AWS_ACCESS_KEY%/d" /etc/php81/php-fpm.d/elabpool.conf
+        sed -i -e "/%ELAB_AWS_SECRET_KEY%/d" /etc/php81/php-fpm.d/elabpool.conf
+    fi
 }
 
 # display a friendly message with running versions
@@ -358,7 +367,7 @@ phpfpmConf
 phpConf
 elabftwConf
 ldapConf
-writeConfigFile
+populatePhpEnv
 dbInit
 dbUpdate
 startupMessage

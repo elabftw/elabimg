@@ -110,9 +110,9 @@ FROM alpine:3.16
 # this is versioning for the container image
 ENV ELABIMG_VERSION 3.8.0
 
-# select elabftw version or branch here
-ARG ELABFTW_VERSION=hypernext
-ENV ELABFTW_VERSION $ELABFTW_VERSION
+# the target elabftw version is passed with --build-arg
+# it is a mandatory ARG
+ARG ELABFTW_VERSION
 
 LABEL net.elabftw.name="elabftw" \
     net.elabftw.description="Run nginx and php-fpm to serve elabftw" \
@@ -214,8 +214,6 @@ RUN touch /etc/s6-overlay/s6-rc.d/user/contents.d/cron
 COPY ./src/php/php.ini /etc/php81/php.ini
 COPY ./src/php/php-fpm.conf /etc/php81/php-fpm.conf
 COPY ./src/php/elabpool.conf /etc/php81/php-fpm.d/elabpool.conf
-# this is unique to the build and is better than the previously used elabftw version for asset cache busting
-RUN BUILD_ID=$(openssl rand -hex 4) && sed -ie "s/%ELABIMG_BUILD_ID%/$BUILD_ID/" /etc/php81/php-fpm.d/elabpool.conf
 # END PHP
 
 # ELABFTW
@@ -288,6 +286,11 @@ RUN apk add /tmp/cronie.apk && rm /tmp/cronie.apk
 COPY ./src/cron/cronjob /etc/elabftw-cronjob
 COPY ./src/cron/cron.allow /etc/cron.d/cron.allow
 # END CRONIE
+
+# this is unique to the build and is better than the previously used elabftw version for asset cache busting
+RUN sed -i -e "s/%ELABIMG_BUILD_ID%/$(openssl rand -hex 4)/" /etc/php81/php-fpm.d/elabpool.conf
+# this file contains secrets
+RUN chmod 400 /etc/php81/php-fpm.d/elabpool.conf
 
 # start s6
 CMD ["/init"]
