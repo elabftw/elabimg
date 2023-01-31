@@ -1,6 +1,15 @@
 # Container image version
 # Note: the version here is from Dockerfile:ELABIMG_VERSION not the tagged one
 
+# 4.0.0
+
+* Add env vars directly in php, don't create config.php anymore
+* Require ELABFTW_VERSION build argument
+
+# 3.9.0
+
+* Use a random string as BUILD_ID to use for the v query string parameter for loading assets
+
 # 3.8.0
 
 * Fix issue with ARM build. Fix #30 via #31 by @nilssta

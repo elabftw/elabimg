@@ -4,16 +4,18 @@ This Docker image is for [eLabFTW](https://www.elabftw.net). It runs nginx + php
 
 # Tags and branches
 
-The `hypernext` (dev) and `next` (unstable) branches are rebuilt and pushed to Docker Hub on a "push" event as well as on a daily schedule.
+The `hypernext` (dev) branch is built and pushed to Docker Hub on a "push" event as well as on a daily schedule.
 
-The `master` branch is built for the `latest` tag on Docker Hub and contains the stable eLabFTW version.
+The `master` branch is built for the `latest` tag on Docker Hub and contains the latest eLabFTW version.
 
-A tag with the latest released eLabFTW version is also pushed. Example: elabftw/elabimg:4.0.11
+A tag with the latest released eLabFTW version is also pushed. Example: elabftw/elabimg:4.0.11.
 
 # Building this image
 
+Set the `ELABFTW_VERSION` to a tagged release or a branch. The latest stable version can be found [here](https://github.com/elabftw/elabftw/releases/latest).
+
 ~~~bash
-docker buildx build -t elabftw/elabimg .
+DOCKER_BUILDKIT=1 docker build --build-arg ELABFTW_VERSION=X.Y.Z -t elabftw/elabimg:X.Y.Z .
 ~~~
 
 # Usage
