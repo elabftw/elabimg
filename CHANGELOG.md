@@ -1,6 +1,12 @@
 # Container image version
 # Note: the version here is from Dockerfile:ELABIMG_VERSION not the tagged one
 
+# 4.0.1
+
+* Remove s6-overlay tarballs from /tmp
+* Don't use deprecated ENV without =
+* Add BUILD_ALL ENV to skip build in dev
+
 # 4.0.0
 
 * Add env vars directly in php, don't create config.php anymore
