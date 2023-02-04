@@ -18,6 +18,8 @@ Set the `ELABFTW_VERSION` to a tagged release or a branch. The latest stable ver
 DOCKER_BUILDKIT=1 docker build --build-arg ELABFTW_VERSION=X.Y.Z -t elabftw/elabimg:X.Y.Z .
 ~~~
 
+For dev, add `--build-arg BUILD_ALL=0` to skip the installation of dependencies and building of assets, because the folder will be bind-mounted to your host anyway.
+
 # Usage
 
 An example configuration file for docker-compose can be fetched like this:
