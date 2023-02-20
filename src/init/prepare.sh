@@ -26,6 +26,8 @@ getEnv() {
     db_cert_path=${DB_CERT_PATH:-}
     unset DB_CERT_PATH
     site_url=${SITE_URL:-}
+    # remove trailing slash for site_url
+    site_url=$(echo "${site_url}" | sed 's:/$::')
     server_name=${SERVER_NAME:-localhost}
     disable_https=${DISABLE_HTTPS:-false}
     enable_letsencrypt=${ENABLE_LETSENCRYPT:-false}
@@ -297,8 +299,6 @@ ldapConf() {
 }
 
 populatePhpEnv() {
-    # remove trailing slash for site_url
-    site_url=$(echo "${site_url}" | sed 's:/$::')
 
     sed -i -e "s/%DB_HOST%/${db_host}/" /etc/php81/php-fpm.d/elabpool.conf
     sed -i -e "s/%DB_PORT%/${db_port}/" /etc/php81/php-fpm.d/elabpool.conf
@@ -324,6 +324,25 @@ populatePhpEnv() {
         sed -i -e "/%ELAB_AWS_ACCESS_KEY%/d" /etc/php81/php-fpm.d/elabpool.conf
         sed -i -e "/%ELAB_AWS_SECRET_KEY%/d" /etc/php81/php-fpm.d/elabpool.conf
     fi
+}
+
+# create a file to hold the env so bash phpwithenv can read it
+populateBashEnv() {
+    # cron will forget all env, so we use a bash profile to set it for our user
+    filepath="/etc/elabftw_env"
+    content="export DB_HOST=${db_host}
+    export DB_PORT=${db_port}
+    export DB_NAME=${db_name}
+    export DB_USER=${db_user}
+    export DB_PASSWORD=${db_password}
+    export DB_CERT_PATH=${db_cert_path}
+    export SECRET_KEY=${secret_key}
+    export SITE_URL=${site_url}
+    export ELAB_AWS_ACCESS_KEY=${aws_ak}
+    export ELAB_AWS_SECRET_KEY=${aws_sk}"
+    echo "$content" > "$filepath"
+    chown "${elabftw_user}":"${elabftw_group}" "$filepath"
+    chmod 400 "$filepath"
 }
 
 # display a friendly message with running versions
@@ -368,6 +387,7 @@ phpConf
 elabftwConf
 ldapConf
 populatePhpEnv
+populateBashEnv
 dbInit
 dbUpdate
 startupMessage

@@ -1,0 +1,6 @@
+#!/bin/bash
+# this file exists because cron will strip all env, and thus php running from cron won't have the correct env and scripts will fail
+# this is a better option than defining the env in the crontab file itself
+# having in cronfile: BASH_ENV=/etc/elabftw_env /bin/bash -c 'php ...' didn't work.
+source /etc/elabftw_env
+/usr/bin/php "$@"
