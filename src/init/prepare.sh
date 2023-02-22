@@ -326,7 +326,7 @@ populatePhpEnv() {
     fi
 }
 
-# create a file to hold the env so bash phpwithenv can read it
+# create a file to hold the env so bash phpwithenv aka php can read it
 populateBashEnv() {
     # cron will forget all env, so we use a bash profile to set it for our user
     filepath="/etc/elabftw_env"
