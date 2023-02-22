@@ -108,7 +108,7 @@ RUN abuild-keygen -n -a && abuild && find /home/builder/packages -type f -name '
 FROM alpine:3.16
 
 # this is versioning for the container image
-ENV ELABIMG_VERSION=4.0.2
+ENV ELABIMG_VERSION=4.0.3
 
 # the target elabftw version is passed with --build-arg
 # it is a mandatory ARG
@@ -180,7 +180,7 @@ RUN apk upgrade -U -a && apk add --no-cache \
     zopfli
 
 # add a symlink to php8
-RUN ln -s /usr/bin/php81 /usr/bin/php
+COPY ./src/php/phpwithenv /usr/bin/php
 
 # S6-OVERLAY
 # install s6-overlay, our init system. Workaround for different versions using TARGETPLATFORM
@@ -288,7 +288,6 @@ COPY --from=cronie-builder --chown=root:root /build/apk /tmp/cronie.apk
 COPY --from=cronie-builder --chown=root:root /home/builder/.abuild/*.pub /etc/apk/keys
 RUN apk add /tmp/cronie.apk && rm /tmp/cronie.apk
 COPY ./src/cron/cronjob /etc/elabftw-cronjob
-COPY ./src/cron/phpwithenv /usr/bin/phpwithenv
 COPY ./src/cron/cron.allow /etc/cron.d/cron.allow
 # END CRONIE
 

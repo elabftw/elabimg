@@ -1,6 +1,10 @@
 # Container image version
 # Note: the version here is from Dockerfile:ELABIMG_VERSION not the tagged one
 
+# 4.0.3
+
+* Use php with env for all php operations
+
 # 4.0.2
 
 * Fix cronjobs not working
