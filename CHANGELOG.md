@@ -1,6 +1,12 @@
 # Container image version
 # Note: the version here is from Dockerfile:ELABIMG_VERSION not the tagged one
 
+# 4.0.4
+
+* Use single quotes in /etc/elabftw_env to allow special characters such as ";" in values
+
+Note: having a single quote (') a password will fail. The recommandation is to use long passwords with only alpha numeric characters, or have "nice" special characters, that would not cause issues in different contexts (+ and - are pretty safe).
+
 # 4.0.3
 
 * Use php with env for all php operations

@@ -330,16 +330,16 @@ populatePhpEnv() {
 populateBashEnv() {
     # cron will forget all env, so we use a bash profile to set it for our user
     filepath="/etc/elabftw_env"
-    content="export DB_HOST=${db_host}
-    export DB_PORT=${db_port}
-    export DB_NAME=${db_name}
-    export DB_USER=${db_user}
-    export DB_PASSWORD=${db_password}
-    export DB_CERT_PATH=${db_cert_path}
-    export SECRET_KEY=${secret_key}
-    export SITE_URL=${site_url}
-    export ELAB_AWS_ACCESS_KEY=${aws_ak}
-    export ELAB_AWS_SECRET_KEY=${aws_sk}"
+    content="export DB_HOST='${db_host}'
+    export DB_PORT='${db_port}'
+    export DB_NAME='${db_name}'
+    export DB_USER='${db_user}'
+    export DB_PASSWORD='${db_password}'
+    export DB_CERT_PATH='${db_cert_path}'
+    export SECRET_KEY='${secret_key}'
+    export SITE_URL='${site_url}'
+    export ELAB_AWS_ACCESS_KEY='${aws_ak}'
+    export ELAB_AWS_SECRET_KEY='${aws_sk}'"
     echo "$content" > "$filepath"
     chown "${elabftw_user}":"${elabftw_group}" "$filepath"
     chmod 400 "$filepath"
