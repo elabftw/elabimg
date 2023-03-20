@@ -276,6 +276,8 @@ phpConf() {
         sed -i -e "s/opcache\.enable=1/opcache\.enable=0/" $f
         # /proc/version is for symfony, and the rest for composer
         open_basedir="${open_basedir}:/proc/version:/usr/bin/composer:/composer"
+        # rector needs tmpfile, so allow it in dev mode
+        sed -i -e "s/tmpfile, //" $f
     fi
     # now set value for open_basedir
     sed -i -e "s|%OPEN_BASEDIR%|${open_basedir}|" $f

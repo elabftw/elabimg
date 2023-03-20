@@ -1,6 +1,10 @@
 # Container image version
 # Note: the version here is from Dockerfile:ELABIMG_VERSION not the tagged one
 
+# 4.0.5
+
+* nginx config: Allow underscores in headers. See elabftw/elabftw#4059.
+
 # 4.0.4
 
 * Use single quotes in /etc/elabftw_env to allow special characters such as ";" in values
