@@ -4,6 +4,7 @@
 # 4.0.5
 
 * nginx config: Allow underscores in headers. See elabftw/elabftw#4059.
+* cache woff2 files
 
 # 4.0.4
 
