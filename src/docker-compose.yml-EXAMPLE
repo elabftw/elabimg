@@ -350,6 +350,20 @@ services:
   #  networks:
   #    - elabftw-net
 
+  # example of a keeex container (experimental!)
+  #keeex:
+  #  image: repo.keeex.me/fkeeex_daemon:latest
+  #  container_name: keeex
+  #  environment:
+  #    - FKEEEX_CONFIG_USER=user@example.org
+  #    - FKEEEX_CONFIG_PASSWORD=
+  #    # Set a random passphrase here
+  #    - FKEEEX_CONFIG_PASSPHRASE=
+  #  expose:
+  #    - 8080
+  #  networks:
+  #    - elabftw-net
+
   ###############################################################
   # EVERYTHING BELOW THIS LINE IS FOR DEVELOPMENT PURPOSES ONLY #
   ###############################################################
