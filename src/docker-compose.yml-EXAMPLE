@@ -357,7 +357,7 @@ services:
   #  environment:
   #    - FKEEEX_CONFIG_USER=user@example.org
   #    - FKEEEX_CONFIG_PASSWORD=
-  #    # Set a random passphrase here
+  #    # Set a random passphrase here. You can generate one with "openssl rand -base64 32".
   #    - FKEEEX_CONFIG_PASSPHRASE=
   #  expose:
   #    - 8080
