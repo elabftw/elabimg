@@ -1,6 +1,11 @@
 # Container image version
 # Note: the version here is from Dockerfile:ELABIMG_VERSION not the tagged one
 
+# 4.1.0
+
+* Add `keepalive_timeout` as ENV so we can modify the nginx value in nginx.conf. Note that the default is changed from `5` to `100s`. Might help to prevent 499 errors.
+* Add keeex container example in yml file.
+
 # 4.0.5
 
 * nginx config: Allow underscores in headers. See elabftw/elabftw#4059.
@@ -8,7 +13,7 @@
 
 # 4.0.4
 
-* Use single quotes in /etc/elabftw_env to allow special characters such as ";" in values
+* Use single quotes in `/etc/elabftw_env` to allow special characters such as ";" in values
 
 Note: having a single quote (') a password will fail. The recommandation is to use long passwords with only alpha numeric characters, or have "nice" special characters, that would not cause issues in different contexts (+ and - are pretty safe).
 
@@ -24,16 +29,16 @@ Note: having a single quote (') a password will fail. The recommandation is to u
 
 * Remove s6-overlay tarballs from /tmp
 * Don't use deprecated ENV without =
-* Add BUILD_ALL ENV to skip build in dev
+* Add `BUILD_ALL` ENV to skip build in dev
 
 # 4.0.0
 
 * Add env vars directly in php, don't create config.php anymore
-* Require ELABFTW_VERSION build argument
+* Require `ELABFTW_VERSION` build argument
 
 # 3.9.0
 
-* Use a random string as BUILD_ID to use for the v query string parameter for loading assets
+* Use a random string as `BUILD_ID` to use for the v query string parameter for loading assets
 
 # 3.8.0
 

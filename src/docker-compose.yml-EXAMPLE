@@ -201,6 +201,12 @@ services:
         # example value: Content-Type, Authorization
         #- ALLOW_HEADERS=
 
+        # optional: modify the keepalive_timeout value
+        # nginx doc: http://nginx.org/en/docs/http/ngx_http_core_module.html#keepalive_timeout
+        # default: 100s
+        # example value: 120s
+        #- KEEPALIVE_TIMEOUT=100s
+
         #######################
         # REDIS CONFIGURATION #
         #######################

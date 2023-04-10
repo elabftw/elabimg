@@ -35,6 +35,7 @@ getEnv() {
     unset SECRET_KEY
     max_php_memory=${MAX_PHP_MEMORY:-256M}
     max_upload_size=${MAX_UPLOAD_SIZE:-100M}
+    keepalive_timeout=${KEEPALIVE_TIMEOUT:-100s}
     php_timezone=${PHP_TIMEZONE:-Europe/Paris}
     set_real_ip=${SET_REAL_IP:-false}
     set_real_ip_from=${SET_REAL_IP_FROM:-192.168.31.48}
@@ -140,6 +141,9 @@ nginxConf() {
     # works also for the ssl config if ssl is enabled
     # here elabftw.conf is a symbolic link to either http.conf or https.conf
     sed -i -e "s/%SERVER_NAME%/${server_name}/" /etc/nginx/conf.d/elabftw.conf
+
+    # adjust keepalive_timeout
+    sed -i -e "s/%KEEPALIVE_TIMEOUT%/${keepalive_timeout}/" /etc/nginx/nginx.conf
 
     # adjust client_max_body_size
     sed -i -e "s/%CLIENT_MAX_BODY_SIZE%/${max_upload_size}/" /etc/nginx/nginx.conf
