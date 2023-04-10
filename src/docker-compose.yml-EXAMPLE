@@ -354,6 +354,7 @@ services:
   #keeex:
   #  image: repo.keeex.me/fkeeex_daemon:latest
   #  container_name: keeex
+  #  restart: always
   #  environment:
   #    - FKEEEX_CONFIG_USER=user@example.org
   #    - FKEEEX_CONFIG_PASSWORD=
