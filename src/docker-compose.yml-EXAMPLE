@@ -373,6 +373,7 @@ services:
 
   ###############################################################
   # EVERYTHING BELOW THIS LINE IS FOR DEVELOPMENT PURPOSES ONLY #
+  # Except for the networks lines, so don't delete them!         #
   ###############################################################
 
   # PHPMYADMIN
