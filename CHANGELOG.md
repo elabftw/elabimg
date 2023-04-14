@@ -1,8 +1,10 @@
 # Container image version
-# Note: the version here is from Dockerfile:ELABIMG_VERSION not the tagged one
+# Note: the version here is from `ELABIMG_VERSION` present in Dockerfile, not the tagged one
 
 # 4.1.0
 
+* Add /php-status to get metrics about php-fpm process. This endpoint is password protected by `PHP_STATUS_PASSWORD`. If this variable is not set, a random password is generated, effectively disabling access to this endpoint.
+* Add /php-ping to check if php is alive and well. Will reply with status code 200.
 * Add `keepalive_timeout` as ENV so we can modify the nginx value in nginx.conf. Note that the default is changed from `5` to `100s`. Might help to prevent 499 errors.
 * Add keeex container example in yml file.
 

@@ -61,7 +61,6 @@ RUN ./configure \
         --add-module=/build/ngx_brotli \
         --add-module=/build/headers-more-nginx-module \
         --without-http_autoindex_module \
-        --without-http_auth_basic_module \
         --without-http_browser_module \
         --without-http_empty_gif_module \
         --without-http_geo_module \
