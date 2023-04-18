@@ -105,11 +105,12 @@ services:
         #- MAX_PHP_MEMORY=256M
 
         # optional: set a password to get access to /php-status, which will display various metrics about the php-fpm processes
+        # also works for /nginx-status, for metrics about nginx process
         # if this is not set, a random password will be generated but never displayed, effectively disabling access to this endpoint
         # the enpdoint can be accessed with the "elabftw" user, and the password you set below
         # example value: my-cool-password
         # default value: not set
-        #- PHP_STATUS_PASSWORD=
+        #- STATUS_PASSWORD=
 
         #########################
         # ELABFTW CONFIGURATION #

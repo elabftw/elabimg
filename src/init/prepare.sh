@@ -67,7 +67,7 @@ getEnv() {
     allow_origin=${ALLOW_ORIGIN:-}
     allow_methods=${ALLOW_METHODS:-}
     allow_headers=${ALLOW_HEADERS:-}
-    php_status_password=${PHP_STATUS_PASSWORD:-}
+    status_password=${STATUS_PASSWORD:-}
 }
 
 # Create the user that will run nginx/php/cronjobs
@@ -209,12 +209,12 @@ nginxConf() {
     sed -i -e "s/%ACAH_HEADER%/${acah_header}/" /etc/nginx/common.conf
 
     # create a password file for /php-status endpoint
-    if [ -z "$php_status_password" ]; then
+    if [ -z "$status_password" ]; then
         # if no password is provided, instead of harcoding a default password, we generate one
-        php_status_password=$(echo $RANDOM | sha1sum)
+        status_password=$(echo $RANDOM | sha1sum)
     fi
     # instead of installing htpasswd, use openssl that is already here
-    printf "elabftw:%s\n" "$(openssl passwd -apr1 "$php_status_password")" > /etc/nginx/passwords
+    printf "elabftw:%s\n" "$(openssl passwd -apr1 "$status_password")" > /etc/nginx/passwords
     chown "${elabftw_user}":"${elabftw_group}" /etc/nginx/passwords
     chmod 400 /etc/nginx/passwords
 }

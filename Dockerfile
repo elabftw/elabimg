@@ -58,6 +58,7 @@ RUN ./configure \
         --with-http_v2_module \
         --with-http_realip_module \
         --with-http_gzip_static_module \
+        --with-http_stub_status_module \
         --add-module=/build/ngx_brotli \
         --add-module=/build/headers-more-nginx-module \
         --without-http_autoindex_module \
