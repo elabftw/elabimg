@@ -4,7 +4,7 @@ This Docker image is for [eLabFTW](https://www.elabftw.net). It runs three servi
 
 * Nginx webserver
 * PHP-FPM service
-* Cron daemon to execute recurrent tasks
+* Cron daemon to execute recurrent tasks (sending notifications)
 
 These services are managed by s6-overlay and are all customized for running eLabFTW.
 
