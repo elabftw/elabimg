@@ -1,6 +1,12 @@
 # Description
 
-This Docker image is for [eLabFTW](https://www.elabftw.net). It runs nginx + php + elabftw.
+This Docker image is for [eLabFTW](https://www.elabftw.net). It runs three services:
+
+* Nginx webserver
+* PHP-FPM service
+* Cron daemon to execute recurrent tasks (sending notifications)
+
+These services are managed by s6-overlay and are all customized for running eLabFTW.
 
 # Tags and branches
 
@@ -8,7 +14,7 @@ The `hypernext` (dev) branch is built and pushed to Docker Hub on a "push" event
 
 The `master` branch is built for the `latest` tag on Docker Hub and contains the latest eLabFTW version.
 
-A tag with the latest released eLabFTW version is also pushed. Example: elabftw/elabimg:4.0.11.
+A tag with the latest released eLabFTW version is also pushed. Example: elabftw/elabimg:4.6.0.
 
 # Building this image
 

@@ -58,10 +58,10 @@ RUN ./configure \
         --with-http_v2_module \
         --with-http_realip_module \
         --with-http_gzip_static_module \
+        --with-http_stub_status_module \
         --add-module=/build/ngx_brotli \
         --add-module=/build/headers-more-nginx-module \
         --without-http_autoindex_module \
-        --without-http_auth_basic_module \
         --without-http_browser_module \
         --without-http_empty_gif_module \
         --without-http_geo_module \
@@ -108,7 +108,7 @@ RUN abuild-keygen -n -a && abuild && find /home/builder/packages -type f -name '
 FROM alpine:3.16
 
 # this is versioning for the container image
-ENV ELABIMG_VERSION=4.0.5
+ENV ELABIMG_VERSION=4.1.0
 
 # the target elabftw version is passed with --build-arg
 # it is a mandatory ARG

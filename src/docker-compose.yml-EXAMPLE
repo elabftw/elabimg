@@ -104,6 +104,14 @@ services:
         # default value: 256M
         #- MAX_PHP_MEMORY=256M
 
+        # optional: set a password to get access to /php-status, which will display various metrics about the php-fpm processes
+        # also works for /nginx-status, for metrics about nginx process
+        # if this is not set, a random password will be generated but never displayed, effectively disabling access to this endpoint
+        # the enpdoint can be accessed with the "elabftw" user, and the password you set below
+        # example value: my-cool-password
+        # default value: not set
+        #- STATUS_PASSWORD=
+
         #########################
         # ELABFTW CONFIGURATION #
         #########################
@@ -200,6 +208,12 @@ services:
         # default: header not set (empty value)
         # example value: Content-Type, Authorization
         #- ALLOW_HEADERS=
+
+        # optional: modify the keepalive_timeout value
+        # nginx doc: http://nginx.org/en/docs/http/ngx_http_core_module.html#keepalive_timeout
+        # default: 100s
+        # example value: 120s
+        #- KEEPALIVE_TIMEOUT=100s
 
         #######################
         # REDIS CONFIGURATION #
@@ -350,8 +364,24 @@ services:
   #  networks:
   #    - elabftw-net
 
+  # example of a keeex container (experimental!)
+  #keeex:
+  #  image: repo.keeex.me/fkeeex_daemon:latest
+  #  container_name: keeex
+  #  restart: always
+  #  environment:
+  #    - FKEEEX_CONFIG_USER=user@example.org
+  #    - FKEEEX_CONFIG_PASSWORD=
+  #    # Set a random passphrase here. You can generate one with "openssl rand -base64 32".
+  #    - FKEEEX_CONFIG_PASSPHRASE=
+  #  expose:
+  #    - 8080
+  #  networks:
+  #    - elabftw-net
+
   ###############################################################
   # EVERYTHING BELOW THIS LINE IS FOR DEVELOPMENT PURPOSES ONLY #
+  # Except for the networks lines, so don't delete them!         #
   ###############################################################
 
   # PHPMYADMIN

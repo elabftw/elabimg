@@ -35,6 +35,7 @@ getEnv() {
     unset SECRET_KEY
     max_php_memory=${MAX_PHP_MEMORY:-256M}
     max_upload_size=${MAX_UPLOAD_SIZE:-100M}
+    keepalive_timeout=${KEEPALIVE_TIMEOUT:-100s}
     php_timezone=${PHP_TIMEZONE:-Europe/Paris}
     set_real_ip=${SET_REAL_IP:-false}
     set_real_ip_from=${SET_REAL_IP_FROM:-192.168.31.48}
@@ -66,6 +67,7 @@ getEnv() {
     allow_origin=${ALLOW_ORIGIN:-}
     allow_methods=${ALLOW_METHODS:-}
     allow_headers=${ALLOW_HEADERS:-}
+    status_password=${STATUS_PASSWORD:-}
 }
 
 # Create the user that will run nginx/php/cronjobs
@@ -141,6 +143,9 @@ nginxConf() {
     # here elabftw.conf is a symbolic link to either http.conf or https.conf
     sed -i -e "s/%SERVER_NAME%/${server_name}/" /etc/nginx/conf.d/elabftw.conf
 
+    # adjust keepalive_timeout
+    sed -i -e "s/%KEEPALIVE_TIMEOUT%/${keepalive_timeout}/" /etc/nginx/nginx.conf
+
     # adjust client_max_body_size
     sed -i -e "s/%CLIENT_MAX_BODY_SIZE%/${max_upload_size}/" /etc/nginx/nginx.conf
 
@@ -202,6 +207,16 @@ nginxConf() {
         acah_header="more_set_headers 'Access-Control-Allow-Headers: ${allow_headers}';"
     fi
     sed -i -e "s/%ACAH_HEADER%/${acah_header}/" /etc/nginx/common.conf
+
+    # create a password file for /php-status endpoint
+    if [ -z "$status_password" ]; then
+        # if no password is provided, instead of harcoding a default password, we generate one
+        status_password=$(echo $RANDOM | sha1sum)
+    fi
+    # instead of installing htpasswd, use openssl that is already here
+    printf "elabftw:%s\n" "$(openssl passwd -apr1 "$status_password")" > /etc/nginx/passwords
+    chown "${elabftw_user}":"${elabftw_group}" /etc/nginx/passwords
+    chmod 400 /etc/nginx/passwords
 }
 
 # PHP-FPM CONFIG
