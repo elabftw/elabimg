@@ -211,9 +211,9 @@ services:
 
         # optional: modify the keepalive_timeout value
         # nginx doc: http://nginx.org/en/docs/http/ngx_http_core_module.html#keepalive_timeout
-        # default: 100s
-        # example value: 120s
-        #- KEEPALIVE_TIMEOUT=100s
+        # default: 10s
+        # example value: 5s
+        #- KEEPALIVE_TIMEOUT=10s
 
         #######################
         # REDIS CONFIGURATION #

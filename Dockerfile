@@ -6,7 +6,7 @@
 # Note: no need to chain the RUN commands here as it's a builder image and nothing will be kept
 FROM alpine:3.16 as nginx-builder
 
-ENV NGINX_VERSION=1.23.1
+ENV NGINX_VERSION=1.23.4
 # releases can be signed by any key on this page https://nginx.org/en/pgp_keys.html
 # so this might need to be updated for a new release
 # available keys: mdounin, maxim, sb, thresh
@@ -108,7 +108,7 @@ RUN abuild-keygen -n -a && abuild && find /home/builder/packages -type f -name '
 FROM alpine:3.16
 
 # this is versioning for the container image
-ENV ELABIMG_VERSION=4.1.0
+ENV ELABIMG_VERSION=4.2.0
 
 # the target elabftw version is passed with --build-arg
 # it is a mandatory ARG
