@@ -4,6 +4,7 @@
 # 4.2.0
 
 * Update nginx from 1.23.1 to 1.23.4
+* Set `keepalive_timeout` default value to 10s (see 2.4.3 of nginx cis benchmark)
 
 # 4.1.0
 

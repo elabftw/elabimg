@@ -35,7 +35,8 @@ getEnv() {
     unset SECRET_KEY
     max_php_memory=${MAX_PHP_MEMORY:-256M}
     max_upload_size=${MAX_UPLOAD_SIZE:-100M}
-    keepalive_timeout=${KEEPALIVE_TIMEOUT:-100s}
+    # CIS benchmark nginx 2.0.0 2.4.3
+    keepalive_timeout=${KEEPALIVE_TIMEOUT:-10s}
     php_timezone=${PHP_TIMEZONE:-Europe/Paris}
     set_real_ip=${SET_REAL_IP:-false}
     set_real_ip_from=${SET_REAL_IP_FROM:-192.168.31.48}
