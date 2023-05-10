@@ -5,6 +5,8 @@
 
 * Update nginx from 1.23.1 to 1.23.4
 * Set `keepalive_timeout` default value to 10s (see 2.4.3 of nginx cis benchmark)
+* Add more nginx timeout settings
+* Only use TLS1.3 in nginx in TLS mode
 
 # 4.1.0
 
