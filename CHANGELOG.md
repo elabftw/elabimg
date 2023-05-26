@@ -1,6 +1,10 @@
 # Container image version
 # Note: the version here is from `ELABIMG_VERSION` present in Dockerfile, not the tagged one
 
+# 4.2.1
+
+* Make 404 page lighter
+
 # 4.2.0
 
 * Update nginx from 1.23.1 to 1.23.4
