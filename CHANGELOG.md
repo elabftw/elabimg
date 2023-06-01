@@ -1,6 +1,10 @@
 # Container image version
 # Note: the version here is from `ELABIMG_VERSION` present in Dockerfile, not the tagged one
 
+# 4.3.0
+
+* Add php81-iconv package required by LdapRecord dependency
+
 # 4.2.1
 
 * Make 404 page lighter
