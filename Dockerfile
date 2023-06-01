@@ -137,6 +137,7 @@ RUN mkdir -p /var/log/nginx \
 # php8-bcmath is required to send emails via Exchange (NTLM authenticator)
 # php8-gd is required by mpdf for transparent png
 # php8-tokenizer and php8-xmlwriter are for dev only
+# php8-iconv is required by LdapRecord php library
 # don't put line comments inside this instruction
 RUN apk upgrade -U -a && apk add --no-cache \
     bash \
@@ -156,6 +157,7 @@ RUN apk upgrade -U -a && apk add --no-cache \
     php81-gettext \
     php81-fileinfo \
     php81-fpm \
+    php81-iconv \
     php81-json \
     php81-intl \
     php81-ldap \
