@@ -108,7 +108,7 @@ RUN abuild-keygen -n -a && abuild && find /home/builder/packages -type f -name '
 FROM alpine:3.16
 
 # this is versioning for the container image
-ENV ELABIMG_VERSION=4.2.1
+ENV ELABIMG_VERSION=4.3.0
 
 # the target elabftw version is passed with --build-arg
 # it is a mandatory ARG
@@ -137,6 +137,7 @@ RUN mkdir -p /var/log/nginx \
 # php8-bcmath is required to send emails via Exchange (NTLM authenticator)
 # php8-gd is required by mpdf for transparent png
 # php8-tokenizer and php8-xmlwriter are for dev only
+# php8-iconv is required by LdapRecord php library
 # don't put line comments inside this instruction
 RUN apk upgrade -U -a && apk add --no-cache \
     bash \
@@ -156,6 +157,7 @@ RUN apk upgrade -U -a && apk add --no-cache \
     php81-gettext \
     php81-fileinfo \
     php81-fpm \
+    php81-iconv \
     php81-json \
     php81-intl \
     php81-ldap \
