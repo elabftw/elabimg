@@ -74,7 +74,7 @@ jobs:
                 scan-type: 'fs'
                 format: 'github'
                 output: 'dependency-results.sbom.json'
-                image-ref: '.'
+                scan-ref: elabftw/elabimg:${{ github.ref_name }}
                 github-pat: ${{ secrets.GITHUB_TOKEN }}
 
               # This ugly bit is necessary if you don't want your cache to grow forever
