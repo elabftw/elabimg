@@ -4,6 +4,8 @@
 # 4.4.0
 
 * Configure nginx to serve only to whitelisted paths for php
+* Add more security related compilation flags for nginx
+* Pin the two nginx modules to known versions
 
 # 4.3.0
 
