@@ -43,6 +43,13 @@ jobs:
                 username: ${{ secrets.DOCKER_HUB_USERNAME }}
                 password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
+            # https://github.com/CycodeLabs/cimon-action
+            - name: Cimon supply chain attack protection
+              uses: cycodelabs/cimon-action@v0
+              with:
+                client-id: ${{ secrets.CIMON_CLIENT_ID }}
+                secret: ${{ secrets.CIMON_SECRET }}
+
             # https://github.com/docker/build-push-action#multi-platform-image
             - name: Build latest release for all platforms and push to Docker Hub
               uses: docker/build-push-action@v3
@@ -80,13 +87,3 @@ jobs:
                 output: 'dependency-results.sbom.json'
                 scan-ref: '.'
                 github-pat: ${{ secrets.GITHUB_TOKEN }}
-
-              # This ugly bit is necessary if you don't want your cache to grow forever
-              # till it hits GitHub's limit of 5GB.
-              # Temp fix
-              # https://github.com/docker/build-push-action/issues/252
-              # https://github.com/moby/buildkit/issues/1896
-            - name: Move cache
-              run: |
-                rm -rf /tmp/.buildx-cache-yep
-                mv /tmp/.buildx-cache-blih /tmp/.buildx-cache-blah
