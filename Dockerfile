@@ -127,7 +127,7 @@ RUN abuild-keygen -n -a && abuild && find /home/builder/packages -type f -name '
 FROM alpine:3.16
 
 # this is versioning for the container image
-ENV ELABIMG_VERSION=4.3.0
+ENV ELABIMG_VERSION=4.4.0
 
 # the target elabftw version is passed with --build-arg
 # it is a mandatory ARG
