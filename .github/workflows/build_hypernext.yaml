@@ -17,6 +17,22 @@ jobs:
         runs-on: ubuntu-latest
         name: Build images and push to Docker Hub
         steps:
+            # https://github.com/CycodeLabs/cimon-action
+            - name: Cimon supply chain attack protection
+              uses: cycodelabs/cimon-action@v0
+              with:
+                client-id: ${{ secrets.CIMON_CLIENT_ID }}
+                secret: ${{ secrets.CIMON_SECRET }}
+                prevent: true
+                allowed-hosts: >
+                  github.com
+                  api.github.com
+                  vstoken.actions.githubusercontent.com
+                  pipelines.actions.githubusercontent.com
+                  artifactcache.actions.githubusercontent.com
+                  objects.githubusercontent.com
+                  *.blob.core.windows.net
+
             - name: Checkout elabimg repo
               uses: actions/checkout@v3
 
@@ -43,13 +59,6 @@ jobs:
                 username: ${{ secrets.DOCKER_HUB_USERNAME }}
                 password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
-            # https://github.com/CycodeLabs/cimon-action
-            - name: Cimon supply chain attack protection
-              uses: cycodelabs/cimon-action@v0
-              with:
-                client-id: ${{ secrets.CIMON_CLIENT_ID }}
-                secret: ${{ secrets.CIMON_SECRET }}
-
             # https://github.com/docker/build-push-action#multi-platform-image
             - name: Build latest release for all platforms and push to Docker Hub
               uses: docker/build-push-action@v3
@@ -75,10 +84,7 @@ jobs:
                 vuln-type: 'os,library'
                 severity: 'CRITICAL,HIGH'
 
-            - name: List files in the repository
-              run: |
-                ls ${{ github.workspace }}
-
+            # SBOM
             - name: Run Trivy in GitHub SBOM mode and submit results to Dependency Graph
               uses: aquasecurity/trivy-action@master
               with:
