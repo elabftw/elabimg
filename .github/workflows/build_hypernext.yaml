@@ -68,13 +68,17 @@ jobs:
                 vuln-type: 'os,library'
                 severity: 'CRITICAL,HIGH'
 
+            - name: List files in the repository
+              run: |
+                ls ${{ github.workspace }}
+
             - name: Run Trivy in GitHub SBOM mode and submit results to Dependency Graph
               uses: aquasecurity/trivy-action@master
               with:
                 scan-type: 'fs'
                 format: 'github'
                 output: 'dependency-results.sbom.json'
-                scan-ref: elabftw/elabimg:${{ github.ref_name }}
+                scan-ref: '.'
                 github-pat: ${{ secrets.GITHUB_TOKEN }}
 
               # This ugly bit is necessary if you don't want your cache to grow forever
