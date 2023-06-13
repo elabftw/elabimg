@@ -7,6 +7,11 @@
 FROM alpine:3.16 as nginx-builder
 
 ENV NGINX_VERSION=1.23.4
+# pin nginx modules versions
+# see https://github.com/google/ngx_brotli/issues/120 for the lack of tags
+ENV NGX_BROTLI_COMMIT_HASH=6e975bcb015f62e1f303054897783355e2a877dc
+# https://github.com/openresty/headers-more-nginx-module/tags
+ENV HEADERS_MORE_VERSION=v0.34
 # releases can be signed by any key on this page https://nginx.org/en/pgp_keys.html
 # so this might need to be updated for a new release
 # available keys: mdounin, maxim, sb, thresh
@@ -23,8 +28,8 @@ WORKDIR /build
 USER builder
 
 # clone the nginx modules
-RUN git clone --depth 1 https://github.com/google/ngx_brotli
-RUN git clone --depth 1 https://github.com/openresty/headers-more-nginx-module
+RUN git clone --depth 1 https://github.com/google/ngx_brotli && cd ngx_brotli && git reset --hard $NGX_BROTLI_COMMIT_HASH && cd ..
+RUN git clone --depth 1 -b $HEADERS_MORE_VERSION https://github.com/openresty/headers-more-nginx-module
 
 # now start the build
 # get nginx source
@@ -39,10 +44,24 @@ RUN gpg --verify nginx.tgz.asc
 # all good now untar and build!
 RUN tar xzf nginx.tgz
 WORKDIR /build/nginx-$NGINX_VERSION
+# Compilation flags
+# -g0: Disable debugging symbols generation (decreases binary size)
+# -O3: Enable aggressive optimization level 3 (improves code execution speed)
+# -fstack-protector-strong: Enable stack protection mechanisms (prevents stack-based buffer overflows)
+# -flto: Enable Link Time Optimization (LTO) (allows cross-source-file optimization)
+# -pie: Generate position-independent executables (PIE) (enhances security)
+# --param=ssp-buffer-size=4: Set the size of the stack buffer for stack smashing protection to 4 bytes
+# -Wformat -Werror=format-security: Enable warnings for potentially insecure usage of format strings (treats them as errors)
+# -D_FORTIFY_SOURCE=2: Enable additional security features provided by fortified library functions
+# -Wl,-z,relro,-z,now: Enforce memory protections at runtime:
+#    - Mark the Global Offset Table (GOT) as read-only after relocation
+#    - Resolve all symbols at load time, making them harder to manipulate
+# -Wl,-z,noexecstack: Mark the stack as non-executable (prevents execution of code placed on the stack)
+# -fPIC: Generate position-independent code (PIC) (suitable for building shared libraries)
 RUN ./configure \
         --prefix=/var/lib/nginx \
         --sbin-path=/usr/sbin/nginx \
-        --with-cc-opt='-g0 -O3 -fstack-protector -flto --param=ssp-buffer-size=4 -Wformat -Werror=format-security'\
+        --with-cc-opt='-g0 -O3 -fstack-protector-strong -flto -pie --param=ssp-buffer-size=4 -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2 -Wl,-z,relro,-z,now -Wl,-z,noexecstack -fPIC'\
         --modules-path=/usr/lib/nginx/modules \
         --conf-path=/etc/nginx/nginx.conf \
         --pid-path=/run/nginx.pid \
