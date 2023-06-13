@@ -25,13 +25,10 @@ jobs:
                 secret: ${{ secrets.CIMON_SECRET }}
                 prevent: true
                 allowed-hosts: >
-                  github.com
-                  api.github.com
-                  vstoken.actions.githubusercontent.com
-                  pipelines.actions.githubusercontent.com
-                  artifactcache.actions.githubusercontent.com
-                  objects.githubusercontent.com
-                  *.blob.core.windows.net
+                  ghcr.io
+                  index.docker.io
+                  pkg-containers.githubusercontent.com
+                  production.cloudflare.docker.com
 
             - name: Checkout elabimg repo
               uses: actions/checkout@v3
