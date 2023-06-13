@@ -23,12 +23,14 @@ jobs:
               with:
                 client-id: ${{ secrets.CIMON_CLIENT_ID }}
                 secret: ${{ secrets.CIMON_SECRET }}
-                prevent: true
+                prevent: false
                 allowed-hosts: >
                   ghcr.io
                   index.docker.io
                   pkg-containers.githubusercontent.com
                   production.cloudflare.docker.com
+                  nginx.org
+                  github.com
 
             - name: Checkout elabimg repo
               uses: actions/checkout@v3
@@ -40,14 +42,6 @@ jobs:
             # https://github.com/marketplace/actions/docker-setup-buildx
             - name: Set up Docker Buildx
               uses: docker/setup-buildx-action@v2
-
-            - name: Cache Docker layers
-              uses: actions/cache@v3
-              with:
-                path: /tmp/.buildx-cache-yep
-                key: ${{ runner.os }}-buildxL-${{ github.sha }}
-                restore-keys: |
-                  ${{ runner.os }}-buildxL-
 
             # https://github.com/docker/login-action#docker-hub
             - name: Login to Docker Hub
@@ -61,8 +55,8 @@ jobs:
               uses: docker/build-push-action@v3
               with:
                 context: .
-                cache-from: type=local,src=/tmp/.buildx-cache-blah
-                cache-to: type=local,dest=/tmp/.buildx-cache-blih
+                cache-from: type=gha
+                cache-to: type=gha,mode=max
                 platforms: linux/arm64,linux/amd64
                 push: true
                 build-args: |
