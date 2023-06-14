@@ -6,6 +6,7 @@
 * Configure nginx to serve only to whitelisted paths for php
 * Add more security related compilation flags for nginx
 * Pin the two nginx modules to known versions
+* Add ci/mon to enforce outgoing connections during build
 
 # 4.3.0
 
