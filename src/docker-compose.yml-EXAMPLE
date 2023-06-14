@@ -90,7 +90,7 @@ services:
         # again
         - TZ=Europe/Paris
 
-        # optional: set the limit of simultaneous request that will be server
+        # optional: set the limit of simultaneous request that will be served
         # see http://php.net/manual/en/install.fpm.configuration.php
         # default value: 50
         #- PHP_MAX_CHILDREN=50

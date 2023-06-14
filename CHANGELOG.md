@@ -40,7 +40,7 @@
 
 * Use single quotes in `/etc/elabftw_env` to allow special characters such as ";" in values
 
-Note: having a single quote (') a password will fail. The recommandation is to use long passwords with only alpha numeric characters, or have "nice" special characters, that would not cause issues in different contexts (+ and - are pretty safe).
+Note: having a single quote (') a password will fail. The recommendation is to use long passwords with only alpha numeric characters, or have "nice" special characters, that would not cause issues in different contexts (+ and - are pretty safe).
 
 # 4.0.3
 
@@ -215,7 +215,7 @@ Note: having a single quote (') a password will fail. The recommandation is to u
 
 ## 2.0.1
 
-* Fix supervisord waring on start about user root
+* Fix supervisord warning on start about user root
 * Fix ELABIMG_VERSION getting added at each restart
 * Fix ln command producing warning on restart
 

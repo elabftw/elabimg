@@ -211,7 +211,7 @@ nginxConf() {
 
     # create a password file for /php-status endpoint
     if [ -z "$status_password" ]; then
-        # if no password is provided, instead of harcoding a default password, we generate one
+        # if no password is provided, instead of hardcoding a default password, we generate one
         status_password=$(echo $RANDOM | sha1sum)
     fi
     # instead of installing htpasswd, use openssl that is already here
@@ -288,7 +288,7 @@ phpConf() {
     open_basedir="/.dockerenv:/elabftw/:/tmp/:/usr/bin/unzip"
     # DEV MODE
     if ($dev_mode); then
-        # we don't want to use opcache as we want our changes to be immediatly visible
+        # we don't want to use opcache as we want our changes to be immediately visible
         sed -i -e "s/opcache\.enable=1/opcache\.enable=0/" $f
         # /proc/version is for symfony, and the rest for composer
         open_basedir="${open_basedir}:/proc/version:/usr/bin/composer:/composer"
@@ -302,7 +302,7 @@ phpConf() {
 elabftwConf() {
     mkdir -p /elabftw/uploads /elabftw/cache/purifier/CSS /elabftw/cache/purifier/HTML /elabftw/cache/purifier/URI
     chown -R "${elabftw_userid}":"${elabftw_groupid}" /elabftw/cache
-    # no recursive flage for uploads
+    # no recursive flag for uploads
     chown "${elabftw_userid}":"${elabftw_groupid}" /elabftw/uploads
     chmod 700 /elabftw/uploads /elabftw/cache
 }
