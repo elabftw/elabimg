@@ -36,15 +36,17 @@ services:
     security_opt:
       - no-new-privileges:true
 
-    # drop some capabilities not needed by the app
+    # restrict capabilities of the root user to the strict minimum
+    # see CIS Docker Benchmark v1.5 5.3
+    # see ANSSI-FT-082 23/09/2020 R8
     cap_drop:
-        - SYS_ADMIN
-        - AUDIT_WRITE
-        - MKNOD
-        - SYS_CHROOT
-        - SETFCAP
-        - NET_RAW
-        - SYS_PTRACE
+        - ALL
+    cap_add:
+        - CHOWN
+        - SETGID
+        - SETUID
+        - FOWNER
+        - DAC_OVERRIDE
 
     # environment variables passed to the container to configure options at run time (when container is started)
     # commented variables are optional

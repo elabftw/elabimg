@@ -7,6 +7,7 @@
 * Add more security related compilation flags for nginx
 * Pin the two nginx modules to known versions
 * Add ci/mon to enforce outgoing connections during build
+* Changes in the example docker-compose file for `cap_drop` and `cap_add`: drop all and add only required capabilities
 
 # 4.3.0
 
