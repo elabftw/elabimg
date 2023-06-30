@@ -144,6 +144,11 @@ nginxConf() {
     # here elabftw.conf is a symbolic link to either http.conf or https.conf
     sed -i -e "s/%SERVER_NAME%/${server_name}/" /etc/nginx/conf.d/elabftw.conf
 
+    # set the list of php files that can be processed by php-fpm
+    php_files_nginx_allowlist=$(find /elabftw/web -type f -name '*.php' | sed 's:/elabftw/web/::' | tr '\n' '|' | sed 's/|$//')
+    # use : because of the / in the list of files
+    sed -i -e "s:%PHP_FILES_NGINX_ALLOWLIST%:${php_files_nginx_allowlist}:" /etc/nginx/common.conf
+
     # adjust keepalive_timeout
     sed -i -e "s/%KEEPALIVE_TIMEOUT%/${keepalive_timeout}/" /etc/nginx/nginx.conf
 
