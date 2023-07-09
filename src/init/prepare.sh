@@ -164,7 +164,8 @@ nginxConf() {
         do
             conf_string+="set_real_ip_from ${element};"
         done
-        sed -i -e "s/#%REAL_IP_CONF%/${conf_string}/" /etc/nginx/common.conf
+        # use pipe for sed separation because CIDR might have a /
+        sed -i -e "s|#%REAL_IP_CONF%|${conf_string}|" /etc/nginx/common.conf
         # enable real_ip_header config
         sed -i -e "s/#real_ip_header X-Forwarded-For;/real_ip_header X-Forwarded-For;/" /etc/nginx/common.conf
     fi

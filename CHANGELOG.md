@@ -1,6 +1,10 @@
 # Container image version
 # Note: the version here is from `ELABIMG_VERSION` present in Dockerfile, not the tagged one
 
+# 4.4.1
+
+* Fix `set_real_ip` nginx module not working with CIDR notation
+
 # 4.4.0
 
 * Configure nginx to serve only to whitelisted paths for php
