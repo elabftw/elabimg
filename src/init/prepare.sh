@@ -342,8 +342,8 @@ populatePhpEnv() {
     sed -i -e "s#%SITE_URL%#${site_url}#" /etc/php81/php-fpm.d/elabpool.conf
     # assume that if ak is set, then sk is too
     if [ -n "$aws_ak" ]; then
-        sed -i -e "s/%ELAB_AWS_ACCESS_KEY%/${aws_ak}/" /etc/php81/php-fpm.d/elabpool.conf
-        sed -i -e "s/%ELAB_AWS_SECRET_KEY%/${aws_sk}/" /etc/php81/php-fpm.d/elabpool.conf
+        sed -i -e "s|%ELAB_AWS_ACCESS_KEY%|${aws_ak}|" /etc/php81/php-fpm.d/elabpool.conf
+        sed -i -e "s|%ELAB_AWS_SECRET_KEY%|${aws_sk}|" /etc/php81/php-fpm.d/elabpool.conf
     else
         sed -i -e "/%ELAB_AWS_ACCESS_KEY%/d" /etc/php81/php-fpm.d/elabpool.conf
         sed -i -e "/%ELAB_AWS_SECRET_KEY%/d" /etc/php81/php-fpm.d/elabpool.conf

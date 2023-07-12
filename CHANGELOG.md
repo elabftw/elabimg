@@ -3,6 +3,7 @@
 
 # 4.4.1
 
+* Fix issue with AWS Secret Key containing a slash (fix elabftw/elabftw#4471)
 * Fix `set_real_ip` nginx module not working with CIDR notation
 
 # 4.4.0
