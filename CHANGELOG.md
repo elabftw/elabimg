@@ -1,6 +1,10 @@
 # Container image version
 # Note: the version here is from `ELABIMG_VERSION` present in Dockerfile, not the tagged one
 
+# 4.5.0
+
+* Update to alpine:3.18
+
 # 4.4.1
 
 * Fix issue with AWS Secret Key containing a slash (fix elabftw/elabftw#4471)
