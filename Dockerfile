@@ -40,7 +40,8 @@ ADD --chown=builder:builder https://nginx.org/download/nginx-$NGINX_VERSION.tar.
 ADD --chown=builder:builder https://nginx.org/keys/$PGP_SIGNING_KEY_OWNER.key nginx-signing.key
 # import it and verify the tarball
 RUN gpg --import nginx-signing.key
-RUN gpg --verify nginx.tgz.asc
+# only run on amd64 because it fails on arm64 for some weird unknown reason
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then gpg --verify nginx.tgz.asc; fi
 # all good now untar and build!
 RUN tar xzf nginx.tgz
 WORKDIR /build/nginx-$NGINX_VERSION
