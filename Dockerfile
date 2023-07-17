@@ -38,6 +38,8 @@ ADD --chown=builder:builder https://nginx.org/download/nginx-$NGINX_VERSION.tar.
 ADD --chown=builder:builder https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz.asc nginx.tgz.asc
 # get the corresponding public key
 ADD --chown=builder:builder https://nginx.org/keys/$PGP_SIGNING_KEY_OWNER.key nginx-signing.key
+# TRY TMP
+RUN rm -rfv /home/builder/.gnupg
 # import it and verify the tarball
 RUN gpg --import nginx-signing.key
 RUN gpg --verify nginx.tgz.asc
