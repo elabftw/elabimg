@@ -6,7 +6,7 @@
 # Note: no need to chain the RUN commands here as it's a builder image and nothing will be kept
 FROM alpine:3.18 as nginx-builder
 
-ENV NGINX_VERSION=1.23.4
+ENV NGINX_VERSION=1.24.0
 # pin nginx modules versions
 # see https://github.com/google/ngx_brotli/issues/120 for the lack of tags
 ENV NGX_BROTLI_COMMIT_HASH=6e975bcb015f62e1f303054897783355e2a877dc
@@ -38,8 +38,6 @@ ADD --chown=builder:builder https://nginx.org/download/nginx-$NGINX_VERSION.tar.
 ADD --chown=builder:builder https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz.asc nginx.tgz.asc
 # get the corresponding public key
 ADD --chown=builder:builder https://nginx.org/keys/$PGP_SIGNING_KEY_OWNER.key nginx-signing.key
-# TRY TMP
-RUN rm -rfv /home/builder/.gnupg
 # import it and verify the tarball
 RUN gpg --import nginx-signing.key
 RUN gpg --verify nginx.tgz.asc
