@@ -1,6 +1,10 @@
 # Container image version
 # Note: the version here is from `ELABIMG_VERSION` present in Dockerfile, not the tagged one
 
+# 4.5.1
+
+* Send a 404 status code for 404 page (was 200)
+
 # 4.5.0
 
 * Update to alpine:3.18
