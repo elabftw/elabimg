@@ -383,7 +383,7 @@ startupMessage() {
 dbInit() {
     if ($auto_db_init); then
         say "elabimg: info: initializing database structure"
-        /elabftw/bin/install start
+        /elabftw/bin/init db:install
     fi
 }
 
