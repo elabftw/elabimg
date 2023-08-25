@@ -27,6 +27,7 @@ jobs:
                 allowed-hosts: >
                   codeload.github.com
                   dl-cdn.alpinelinux.org
+                  docker.io
                   ghcr.io
                   index.docker.io
                   nginx.org
