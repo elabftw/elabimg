@@ -1,6 +1,10 @@
 # Container image version
 # Note: the version here is from `ELABIMG_VERSION` present in Dockerfile, not the tagged one
 
+# 4.6.1
+
+* Revert latest brotli code because new one makes nginx crash
+
 # 4.6.0
 
 * Run latest brotli code (nginx module)

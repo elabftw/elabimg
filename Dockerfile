@@ -9,7 +9,8 @@ FROM alpine:3.18 as nginx-builder
 ENV NGINX_VERSION=1.24.0
 # pin nginx modules versions
 # see https://github.com/google/ngx_brotli/issues/120 for the lack of tags
-ENV NGX_BROTLI_COMMIT_HASH=63ca02abdcf79c9e788d2eedcc388d2335902e52
+# BROKEN HASH: ENV NGX_BROTLI_COMMIT_HASH=63ca02abdcf79c9e788d2eedcc388d2335902e52
+ENV NGX_BROTLI_COMMIT_HASH=6e975bcb015f62e1f303054897783355e2a877dc
 # https://github.com/openresty/headers-more-nginx-module/tags
 ENV HEADERS_MORE_VERSION=v0.34
 # releases can be signed by any key on this page https://nginx.org/en/pgp_keys.html
@@ -18,8 +19,8 @@ ENV HEADERS_MORE_VERSION=v0.34
 # the "signing key" is used for linux packages, see https://trac.nginx.org/nginx/ticket/205
 ENV PGP_SIGNING_KEY_OWNER=thresh
 
-# install dependencies
-RUN apk add --no-cache git libc-dev pcre2-dev make gcc zlib-dev openssl-dev binutils gnupg cmake
+# install dependencies: here we use brotli-dev, newer brotli versions we can remove that and build it
+RUN apk add --no-cache git libc-dev pcre2-dev make gcc zlib-dev openssl-dev binutils gnupg cmake brotli-dev
 
 # create a builder user and group
 RUN addgroup -S -g 3148 builder && adduser -D -S -G builder -u 3148 builder
@@ -28,9 +29,13 @@ WORKDIR /build
 USER builder
 
 # clone the nginx modules
-RUN git clone --recurse-submodules  --depth 25 https://github.com/google/ngx_brotli && cd ngx_brotli && git reset --hard $NGX_BROTLI_COMMIT_HASH && cd deps/brotli && mkdir out && cd out && \
-    cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS="-Ofast -march=native -mtune=native -flto -funroll-loops -ffunction-sections -fdata-sections -Wl,--gc-sections" -DCMAKE_CXX_FLAGS="-Ofast -m64 -march=native -mtune=native -flto -funroll-loops -ffunction-sections -fdata-sections -Wl,--gc-sections" -DCMAKE_INSTALL_PREFIX=./installed .. && \
-    cmake --build . --config Release --target brotlienc
+# NEW broken brotli code
+#RUN git clone --recurse-submodules  --depth 25 https://github.com/google/ngx_brotli && cd ngx_brotli && git reset --hard $NGX_BROTLI_COMMIT_HASH && cd deps/brotli && mkdir out && cd out && \
+#    cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS="-Ofast -march=native -mtune=native -flto -funroll-loops -ffunction-sections -fdata-sections -Wl,--gc-sections" -DCMAKE_CXX_FLAGS="-Ofast -m64 -march=native -mtune=native -flto -funroll-loops -ffunction-sections -fdata-sections -Wl,--gc-sections" -DCMAKE_INSTALL_PREFIX=./installed .. && \
+#    cmake --build . --config Release --target brotlienc
+# OLD working brotli stuff
+# removed the depth param
+RUN git clone https://github.com/google/ngx_brotli && cd ngx_brotli && git reset --hard $NGX_BROTLI_COMMIT_HASH && cd ..
 RUN git clone --depth 1 -b $HEADERS_MORE_VERSION https://github.com/openresty/headers-more-nginx-module
 
 # now start the build
@@ -130,7 +135,7 @@ RUN abuild-keygen -n -a && abuild && find /home/builder/packages -type f -name '
 FROM alpine:3.18
 
 # this is versioning for the container image
-ENV ELABIMG_VERSION=4.6.0
+ENV ELABIMG_VERSION=4.6.1
 
 # the target elabftw version is passed with --build-arg
 # it is a mandatory ARG
