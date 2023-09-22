@@ -311,8 +311,9 @@ services:
   mysql:
     image: mysql:8.0
     restart: always
-     # fix issue with "The server requested authentication method unknown to the client [caching_sha2_password]"
-    command: --default-authentication-plugin=mysql_native_password
+    # fix issue with "The server requested authentication method unknown to the client [caching_sha2_password]"
+    # now commented out because no longer necessary
+    #command: --default-authentication-plugin=mysql_native_password
     container_name: mysql
     # add an healthcheck block so the web container knows when it is ready to accept connections
     # use double $ here so env vars are correctly found
