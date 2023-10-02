@@ -39,6 +39,7 @@ services:
     # restrict capabilities of the root user to the strict minimum
     # see CIS Docker Benchmark v1.5 5.3
     # see ANSSI-FT-082 23/09/2020 R8
+    # Warning: for Centos7/8, comment out these lines (cap_drop and cap_add)
     cap_drop:
         - ALL
     cap_add:
