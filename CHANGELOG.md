@@ -1,6 +1,10 @@
 # Container image version
 # Note: the version here is from `ELABIMG_VERSION` present in Dockerfile, not the tagged one
 
+# 4.6.2
+
+* Redirect all php-fpm error log to stderr
+
 # 4.6.1
 
 * Revert latest brotli code because new one makes nginx crash
