@@ -35,6 +35,7 @@ jobs:
                   pkg-containers.githubusercontent.com
                   production.cloudflare.docker.com
                   registry.yarnpkg.com
+                  repo.yarnpkg.com
 
             - name: Checkout elabimg repo
               uses: actions/checkout@v3
