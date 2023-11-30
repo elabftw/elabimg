@@ -1,6 +1,10 @@
 # Container image version
 # Note: the version here is from `ELABIMG_VERSION` present in Dockerfile, not the tagged one
 
+# 4.7.0
+
+* Add a GH Action to push a `stable` image tag (https://github.com/elabftw/elabftw/discussions/4779)
+
 # 4.6.2
 
 * Redirect all php-fpm error log to stderr
