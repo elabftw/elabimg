@@ -1,6 +1,10 @@
 # Container image version
 # Note: the version here is from `ELABIMG_VERSION` present in Dockerfile, not the tagged one
 
+# 4.8.0
+
+* Change the default value of ``PHP_MAX_MEMORY`` from 256M (256 Mb) to 2G (2 Gb).
+
 # 4.7.0
 
 * Add a GH Action to push a `stable` image tag (https://github.com/elabftw/elabftw/discussions/4779)

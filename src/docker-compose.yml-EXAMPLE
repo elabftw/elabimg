@@ -106,9 +106,16 @@ services:
         #- PHP_MAX_EXECUTION_TIME=120
 
         # optional: adjust the amount of memory available to PHP, increase it if you run into issues
-        # example value: 512M
-        # default value: 256M
-        #- MAX_PHP_MEMORY=256M
+        # information: 2G of memory available to PHP might seem a lot. But realize this: it's not 2003 anymore. PHP is not just a few "if" and "foreach" in some html page.
+        # We use it to generate huge PDF files and archives, to manipulate potentially big images, and do complicated operations on thousands of objects fast.
+        # So yeah, the conservative 128 Mb default is obsolete when a simple photo taken with a phone can be 10 Mb.
+        # Most of the servers that run eLabFTW will run ONLY eLab and will easily have at least 4 Gb of RAM dedicated to this task.
+        # What is the point of having 4 Gb of RAM and let the main application use only a few percents of it...
+        # This doesn't mean that eLabFTW will consume that much memory all the time. 99% of the time it will have very low memory footprint.
+        # But from time to time, users will export many entries at once in PDF with big images in them and that's when you want to have some headroom!
+        # example value: 4G
+        # default value: 2G
+        #- MAX_PHP_MEMORY=2G
 
         # optional: set a password to get access to /php-status, which will display various metrics about the php-fpm processes
         # also works for /nginx-status, for metrics about nginx process

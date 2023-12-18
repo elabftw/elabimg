@@ -33,7 +33,7 @@ getEnv() {
     enable_letsencrypt=${ENABLE_LETSENCRYPT:-false}
     secret_key=${SECRET_KEY:-}
     unset SECRET_KEY
-    max_php_memory=${MAX_PHP_MEMORY:-256M}
+    max_php_memory=${MAX_PHP_MEMORY:-2G}
     max_upload_size=${MAX_UPLOAD_SIZE:-100M}
     # CIS benchmark nginx 2.0.0 2.4.3
     keepalive_timeout=${KEEPALIVE_TIMEOUT:-10s}
