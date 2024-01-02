@@ -46,3 +46,13 @@ For usage of eLabFTW, see [documentation](https://doc.elabftw.net).
 /package/admin/s6/command/s6-svc -r /run/service/php
 /package/admin/s6/command/s6-svc -r /run/service/nginx
 ~~~
+
+## Deleting cache
+
+If there is a CVE fixed upstream, delete build cache with:
+
+~~~bash
+gh cache delete --all
+~~~
+
+Requires GitHub CLI: https://cli.github.com/
