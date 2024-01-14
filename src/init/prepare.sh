@@ -291,7 +291,8 @@ phpConf() {
     sed -i -e "s/%PHP_MAX_EXECUTION_TIME%/${php_max_execution_time}/" $f
 
     # production open_basedir conf value
-    open_basedir="/.dockerenv:/elabftw/:/tmp/:/usr/bin/unzip"
+    # /etc/ssl/cert.pem is for openssl and timestamp related functions
+    open_basedir="/.dockerenv:/elabftw/:/tmp/:/usr/bin/unzip:/etc/ssl/cert.pem"
     # DEV MODE
     if ($dev_mode); then
         # we don't want to use opcache as we want our changes to be immediately visible
