@@ -34,6 +34,7 @@ jobs:
                   production.cloudflare.docker.com
                   registry.yarnpkg.com
                   repo.yarnpkg.com
+                  registry.npmjs.org
 
             - name: Checkout elabimg repo
               uses: actions/checkout@v3
