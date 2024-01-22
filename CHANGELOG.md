@@ -5,6 +5,7 @@
 
 * Change the default value of ``PHP_MAX_MEMORY`` from 256M (256 Mb) to 2G (2 Gb).
 * Fix `/etc/ssl/cert.pem` not in `open_basedir`
+* Update composer to 2.6.6
 
 # 4.7.0
 
