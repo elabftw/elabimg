@@ -297,8 +297,13 @@ phpConf() {
     if ($dev_mode); then
         # we don't want to use opcache as we want our changes to be immediately visible
         sed -i -e "s/opcache\.enable=1/opcache\.enable=0/" $f
+        # extend open_basedir
+        # //autoload.php, /root/.cache/ are for psalm
+        # /proc/cpuinfo is for phpstan, https://github.com/phpstan/phpstan/issues/4427 https://github.com/phpstan/phpstan/issues/2965
         # /proc/version is for symfony, and the rest for composer
-        open_basedir="${open_basedir}:/proc/version:/usr/bin/composer:/composer"
+        #open_basedir="${open_basedir}:/proc/version:/usr/bin/composer:/composer://autoload\.php:/root/\.cache/:/proc/cpuinfo:/usr/share"
+        # completely remove open_basedir in dev because it's a pita with phpstan for instance
+        open_basedir=""
         # rector needs tmpfile, so allow it in dev mode
         sed -i -e "s/tmpfile, //" $f
     fi
