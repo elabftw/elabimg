@@ -7,6 +7,7 @@
 * Fix `/etc/ssl/cert.pem` not in `open_basedir`
 * Update composer to 2.6.6
 * Disable ``open_basedir`` in dev mode
+* Replace Feature-Policy response header with Permissions-Policy and allow self for camera and microphone See https://github.com/elabftw/elabftw/issues/4881
 
 # 4.7.0
 
