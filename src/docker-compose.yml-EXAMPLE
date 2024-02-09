@@ -314,6 +314,13 @@ services:
         # MYSQL cert path
         #- /path/to/cert/folder:/mysql-cert
 
+    # This part is just an example for having a custom DNS entry in /etc/hosts of the container
+    # Use it if DNS resolution cannot work for some reason
+    # The "extra_hosts" key must be aligned at the same indentation level as "ports" or "volumes" or "networks" blocks.
+    #
+    # extra_hosts:
+    #   - internal.s3.example.org:10.12.34.56
+
     networks:
       - elabftw-net
 
