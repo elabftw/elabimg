@@ -19,8 +19,6 @@ jobs:
             - name: Cimon supply chain attack protection
               uses: cycodelabs/cimon-action@v0
               with:
-                client-id: ${{ secrets.CIMON_CLIENT_ID }}
-                secret: ${{ secrets.CIMON_SECRET }}
                 prevent: true
                 allowed-hosts: >
                   codeload.github.com
