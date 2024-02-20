@@ -8,13 +8,16 @@ This Docker image is for [eLabFTW](https://www.elabftw.net). It runs three servi
 
 These services are managed by s6-overlay and are all customized for running eLabFTW.
 
-# Tags and branches
+# Tags
 
-The `hypernext` (dev) branch is built and pushed to Docker Hub on a "push" event as well as on a daily schedule.
+Tags, in the context of Docker images, are what comes after the image name (`elabftw/elabimg`), separated by a colon. If you leave it empty, it defaults to `latest`. But it is recommended to explicitely define the version you wish to run, e.g.: `elabftw/elabimg:5.0.3`.
 
-The `master` branch is built for the `latest` tag on Docker Hub and contains the latest eLabFTW version.
+When defining which image version to use, you can use different tags:
 
-A tag with the latest released eLabFTW version is also pushed. Example: elabftw/elabimg:4.6.0.
+* `x.y.z`: the actual explicit version: recommended
+* `stable`: the latest stable version
+* `latest`: the latest version, can be a stable version or an alpha or beta, whatever is present on `master` branch of eLabFTW
+* `hypernext`: this is the dev version, built on a "push" event as well as on a daily schedule.
 
 # Building this image
 
