@@ -10,7 +10,7 @@ These services are managed by s6-overlay and are all customized for running eLab
 
 # Tags
 
-Tags, in the context of Docker images, are what comes after the image name (`elabftw/elabimg`), separated by a colon. If you leave it empty, it defaults to `latest`. But it is recommended to explicitely define the version you wish to run, e.g.: `elabftw/elabimg:5.0.3`.
+Tags, in the context of Docker images, are what comes after the image name (`elabftw/elabimg`), separated by a colon. If you leave it empty, it defaults to `latest`. But it is recommended to explicitly define the version you wish to run, e.g.: `elabftw/elabimg:5.0.3`.
 
 When defining which image version to use, you can use different tags:
 
