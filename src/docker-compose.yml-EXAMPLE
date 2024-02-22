@@ -340,7 +340,7 @@ services:
       test: "/usr/bin/mysql --user=$$MYSQL_USER --password=$$MYSQL_PASSWORD --execute 'SHOW DATABASES;'"
       interval: 5s
       timeout: 5s
-      retries: 20
+      retries: 42
     # drop some capabilities
     cap_drop:
         - AUDIT_WRITE
