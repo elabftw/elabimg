@@ -1,9 +1,13 @@
 # Container image version
 # Note: the version here is from `ELABIMG_VERSION` present in Dockerfile, not the tagged one
 
-# 5.0.1
+# 5.0.2
 
 * Fix issue with messages being logged two times (error log)
+
+# 5.0.1
+
+* Increase MySQL retries number
 
 # 5.0.0
 
