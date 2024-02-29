@@ -135,7 +135,7 @@ RUN abuild-keygen -n -a && abuild && find /home/builder/packages -type f -name '
 FROM alpine:3.18
 
 # this is versioning for the container image
-ENV ELABIMG_VERSION=5.0.0
+ENV ELABIMG_VERSION=5.0.1
 
 # the target elabftw version is passed with --build-arg
 # it is a mandatory ARG
@@ -213,9 +213,6 @@ RUN apk upgrade -U -a && apk add --no-cache \
 # add a symlink to php8
 RUN mv /usr/bin/php81 /usr/bin/php81-real
 COPY ./src/php/phpwithenv /usr/bin/php81
-
-# redirect all the php-fpm errors to stderr
-RUN ln -sf /dev/stderr /var/log/php81/error.log
 
 # S6-OVERLAY
 # install s6-overlay, our init system. Workaround for different versions using TARGETPLATFORM

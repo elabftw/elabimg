@@ -1,6 +1,10 @@
 # Container image version
 # Note: the version here is from `ELABIMG_VERSION` present in Dockerfile, not the tagged one
 
+# 5.0.1
+
+* Fix issue with messages being logged two times (error log)
+
 # 5.0.0
 
 * Change the default value of ``PHP_MAX_MEMORY`` from 256M (256 Mb) to 2G (2 Gb).
