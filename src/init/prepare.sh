@@ -168,6 +168,7 @@ nginxConf() {
         sed -i -e "s|#%REAL_IP_CONF%|${conf_string}|" /etc/nginx/common.conf
         # enable real_ip_header config
         sed -i -e "s/#real_ip_header X-Forwarded-For;/real_ip_header X-Forwarded-For;/" /etc/nginx/common.conf
+        sed -i -e "s/#real_ip_recursive on;/real_ip_recursive on;/" /etc/nginx/common.conf
     fi
 
     # IPV6 CONFIG
