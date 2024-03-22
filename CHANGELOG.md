@@ -1,6 +1,10 @@
 # Container image version
 # Note: the version here is from `ELABIMG_VERSION` present in Dockerfile, not the tagged one
 
+# 5.1.0
+
+* Add Access-Control-Expose-Headers with Location, Content-Disposition, Cache-Control and Content-Encoding
+
 # 5.0.2
 
 * Fix issue with messages being logged two times (error log)
