@@ -4,6 +4,7 @@
 # 5.1.0
 
 * Add Access-Control-Expose-Headers with Location, Content-Disposition, Cache-Control and Content-Encoding
+* Add `real_ip_recursive` to nginx config
 
 # 5.0.2
 
