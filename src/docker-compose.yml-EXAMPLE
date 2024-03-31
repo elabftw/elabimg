@@ -3,7 +3,6 @@
 # this config file contains all the possible configuration options, shown with default values
 # https://hub.docker.com/r/elabftw/elabimg/
 # https://www.elabftw.net
-version: '3'
 
 # our first container is nginx + php-fpm + elabftw
 services:
