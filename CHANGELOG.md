@@ -3,6 +3,8 @@
 
 # 5.1.0
 
+* Update base image to Alpine 3.19
+* Update PHP version to 8.3
 * Add Access-Control-Expose-Headers with Location, Content-Disposition, Cache-Control and Content-Encoding
 * Add `real_ip_recursive` to nginx config
 
