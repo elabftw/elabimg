@@ -166,6 +166,7 @@ RUN mkdir -p /var/log/nginx \
 # php8-tokenizer and php8-xmlwriter are for dev only
 # php8-iconv is required by LdapRecord php library
 # git is required by yarn
+# imagemagick-svg is for mathjax support in pdfs
 # don't put line comments inside this instruction
 RUN apk upgrade -U -a && apk add --no-cache \
     bash \
@@ -174,6 +175,7 @@ RUN apk upgrade -U -a && apk add --no-cache \
     freetype \
     ghostscript \
     git \
+    imagemagick-svg \
     nodejs-current \
     openssl \
     php83 \
