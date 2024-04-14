@@ -5,4 +5,4 @@
 if [ -f /etc/elabftw_env ]; then
     source /etc/elabftw_env
 fi
-/usr/bin/php81-real "$@"
+/usr/bin/php-real "$@"

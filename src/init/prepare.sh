@@ -229,7 +229,7 @@ nginxConf() {
 
 # PHP-FPM CONFIG
 phpfpmConf() {
-    f="/etc/php81/php-fpm.d/elabpool.conf"
+    f="/etc/php83/php-fpm.d/elabpool.conf"
     # set nginx as user for php-fpm
     sed -i -e "s/%ELABFTW_USER%/${elabftw_user}/" $f
     sed -i -e "s/%ELABFTW_GROUP%/${elabftw_group}/" $f
@@ -262,7 +262,7 @@ getRedisUri() {
 
 # PHP CONFIG
 phpConf() {
-    f="/etc/php81/php.ini"
+    f="/etc/php83/php.ini"
     # allow using more memory for php
     sed -i -e "s/%PHP_MEMORY_LIMIT%/${max_php_memory}/" $f
     # change upload_max_filesize and post_max_size
@@ -331,29 +331,29 @@ ldapConf() {
 
 populatePhpEnv() {
 
-    sed -i -e "s/%DB_HOST%/${db_host}/" /etc/php81/php-fpm.d/elabpool.conf
-    sed -i -e "s/%DB_PORT%/${db_port}/" /etc/php81/php-fpm.d/elabpool.conf
-    sed -i -e "s/%DB_NAME%/${db_name}/" /etc/php81/php-fpm.d/elabpool.conf
-    sed -i -e "s/%DB_USER%/${db_user}/" /etc/php81/php-fpm.d/elabpool.conf
-    sed -i -e "s/%DB_PASSWORD%/${db_password}/" /etc/php81/php-fpm.d/elabpool.conf
+    sed -i -e "s/%DB_HOST%/${db_host}/" /etc/php83/php-fpm.d/elabpool.conf
+    sed -i -e "s/%DB_PORT%/${db_port}/" /etc/php83/php-fpm.d/elabpool.conf
+    sed -i -e "s/%DB_NAME%/${db_name}/" /etc/php83/php-fpm.d/elabpool.conf
+    sed -i -e "s/%DB_USER%/${db_user}/" /etc/php83/php-fpm.d/elabpool.conf
+    sed -i -e "s/%DB_PASSWORD%/${db_password}/" /etc/php83/php-fpm.d/elabpool.conf
     # don't add empty stuff
     if [ -n "$db_cert_path" ]; then
         # use # as separator instead of slash
-        sed -i -e "s#%DB_CERT_PATH%#${db_cert_path}#" /etc/php81/php-fpm.d/elabpool.conf
+        sed -i -e "s#%DB_CERT_PATH%#${db_cert_path}#" /etc/php83/php-fpm.d/elabpool.conf
     else
         # remove this if not in use
-        sed -i -e "/%DB_CERT_PATH%/d" /etc/php81/php-fpm.d/elabpool.conf
+        sed -i -e "/%DB_CERT_PATH%/d" /etc/php83/php-fpm.d/elabpool.conf
     fi
-    sed -i -e "s/%SECRET_KEY%/${secret_key}/" /etc/php81/php-fpm.d/elabpool.conf
+    sed -i -e "s/%SECRET_KEY%/${secret_key}/" /etc/php83/php-fpm.d/elabpool.conf
     # use # as separator instead of slash
-    sed -i -e "s#%SITE_URL%#${site_url}#" /etc/php81/php-fpm.d/elabpool.conf
+    sed -i -e "s#%SITE_URL%#${site_url}#" /etc/php83/php-fpm.d/elabpool.conf
     # assume that if ak is set, then sk is too
     if [ -n "$aws_ak" ]; then
-        sed -i -e "s|%ELAB_AWS_ACCESS_KEY%|${aws_ak}|" /etc/php81/php-fpm.d/elabpool.conf
-        sed -i -e "s|%ELAB_AWS_SECRET_KEY%|${aws_sk}|" /etc/php81/php-fpm.d/elabpool.conf
+        sed -i -e "s|%ELAB_AWS_ACCESS_KEY%|${aws_ak}|" /etc/php83/php-fpm.d/elabpool.conf
+        sed -i -e "s|%ELAB_AWS_SECRET_KEY%|${aws_sk}|" /etc/php83/php-fpm.d/elabpool.conf
     else
-        sed -i -e "/%ELAB_AWS_ACCESS_KEY%/d" /etc/php81/php-fpm.d/elabpool.conf
-        sed -i -e "/%ELAB_AWS_SECRET_KEY%/d" /etc/php81/php-fpm.d/elabpool.conf
+        sed -i -e "/%ELAB_AWS_ACCESS_KEY%/d" /etc/php83/php-fpm.d/elabpool.conf
+        sed -i -e "/%ELAB_AWS_SECRET_KEY%/d" /etc/php83/php-fpm.d/elabpool.conf
     fi
 }
 

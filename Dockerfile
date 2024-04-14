@@ -4,7 +4,7 @@
 
 # build nginx with only the bare minimum of features or modules
 # Note: no need to chain the RUN commands here as it's a builder image and nothing will be kept
-FROM alpine:3.18 as nginx-builder
+FROM alpine:3.19 as nginx-builder
 
 ENV NGINX_VERSION=1.24.0
 # pin nginx modules versions
@@ -111,7 +111,7 @@ USER root
 RUN make install
 
 # CRONIE BUILDER
-FROM alpine:3.18 as cronie-builder
+FROM alpine:3.19 as cronie-builder
 ENV CRONIE_VERSION=1.5.7
 # install dependencies
 RUN apk add --no-cache build-base libc-dev make gcc autoconf automake abuild musl-obstack-dev
@@ -132,7 +132,7 @@ RUN abuild-keygen -n -a && abuild && find /home/builder/packages -type f -name '
 #############################
 # ELABFTW + NGINX + PHP-FPM #
 #############################
-FROM alpine:3.18
+FROM alpine:3.19
 
 # this is versioning for the container image
 ENV ELABIMG_VERSION=5.1.0
@@ -176,43 +176,44 @@ RUN apk upgrade -U -a && apk add --no-cache \
     git \
     nodejs-current \
     openssl \
-    php81 \
-    php81-bcmath \
-    php81-curl \
-    php81-ctype \
-    php81-dev \
-    php81-dom \
-    php81-exif \
-    php81-gd \
-    php81-gettext \
-    php81-fileinfo \
-    php81-fpm \
-    php81-iconv \
-    php81-json \
-    php81-intl \
-    php81-ldap \
-    php81-mbstring \
-    php81-opcache \
-    php81-openssl \
-    php81-pdo_mysql \
-    php81-pecl-imagick \
-    php81-phar \
-    php81-redis \
-    php81-simplexml \
-    php81-session \
-    php81-sodium \
-    php81-tokenizer \
-    php81-xml \
-    php81-xmlwriter \
-    php81-zip \
-    php81-zlib \
+    php83 \
+    php83-bcmath \
+    php83-curl \
+    php83-ctype \
+    php83-dev \
+    php83-dom \
+    php83-exif \
+    php83-gd \
+    php83-gettext \
+    php83-fileinfo \
+    php83-fpm \
+    php83-iconv \
+    php83-json \
+    php83-intl \
+    php83-ldap \
+    php83-mbstring \
+    php83-opcache \
+    php83-openssl \
+    php83-pdo_mysql \
+    php83-pecl-imagick \
+    php83-phar \
+    php83-redis \
+    php83-simplexml \
+    php83-session \
+    php83-sodium \
+    php83-tokenizer \
+    php83-xml \
+    php83-xmlwriter \
+    php83-zip \
+    php83-zlib \
     tzdata \
     unzip \
     zopfli
 
 # add a symlink to php8
-RUN mv /usr/bin/php81 /usr/bin/php81-real
-COPY ./src/php/phpwithenv /usr/bin/php81
+RUN mv /usr/bin/php83 /usr/bin/php-real
+COPY ./src/php/phpwithenv /usr/bin/php83
+RUN ln /usr/bin/php83 /usr/bin/php
 
 # S6-OVERLAY
 # install s6-overlay, our init system. Workaround for different versions using TARGETPLATFORM
@@ -244,9 +245,9 @@ RUN touch /etc/s6-overlay/s6-rc.d/user/contents.d/cron
 # END S6-OVERLAY
 
 # PHP
-COPY ./src/php/php.ini /etc/php81/php.ini
-COPY ./src/php/php-fpm.conf /etc/php81/php-fpm.conf
-COPY ./src/php/elabpool.conf /etc/php81/php-fpm.d/elabpool.conf
+COPY ./src/php/php.ini /etc/php83/php.ini
+COPY ./src/php/php-fpm.conf /etc/php83/php-fpm.conf
+COPY ./src/php/elabpool.conf /etc/php83/php-fpm.d/elabpool.conf
 # END PHP
 
 # ELABFTW
@@ -287,7 +288,7 @@ RUN corepack enable
 # so in order for composer to take it into account, it must exist before we call the install command of composer.
 RUN if [ "$BUILD_ALL" = "1" ]; then yarn install \
     && yarn run buildall:prod \
-    && /usr/bin/php81 -d memory_limit=256M -d open_basedir='' /usr/bin/composer install --prefer-dist --no-cache --no-progress --no-dev -a \
+    && /usr/bin/php83 -d memory_limit=256M -d open_basedir='' /usr/bin/composer install --prefer-dist --no-cache --no-progress --no-dev -a \
     && yarn cache clean && rm -r /root/.cache /root/.yarn; fi
 # END ELABFTW
 
@@ -328,9 +329,9 @@ COPY ./src/cron/cron.allow /etc/cron.d/cron.allow
 # END CRONIE
 
 # this is unique to the build and is better than the previously used elabftw version for asset cache busting
-RUN sed -i -e "s/%ELABIMG_BUILD_ID%/$(openssl rand -hex 4)/" /etc/php81/php-fpm.d/elabpool.conf
+RUN sed -i -e "s/%ELABIMG_BUILD_ID%/$(openssl rand -hex 4)/" /etc/php83/php-fpm.d/elabpool.conf
 # this file contains secrets
-RUN chmod 400 /etc/php81/php-fpm.d/elabpool.conf
+RUN chmod 400 /etc/php83/php-fpm.d/elabpool.conf
 
 # start s6
 CMD ["/init"]
