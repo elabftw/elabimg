@@ -330,6 +330,10 @@ COPY ./src/cron/cronjob /etc/elabftw-cronjob
 COPY ./src/cron/cron.allow /etc/cron.d/cron.allow
 # END CRONIE
 
+# add a helper script to reload services easily
+COPY ./src/init/reload.sh /usr/bin/reload
+RUN chmod 700 /usr/bin/reload
+
 # this is unique to the build and is better than the previously used elabftw version for asset cache busting
 RUN sed -i -e "s/%ELABIMG_BUILD_ID%/$(openssl rand -hex 4)/" /etc/php83/php-fpm.d/elabpool.conf
 # this file contains secrets
