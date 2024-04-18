@@ -43,14 +43,20 @@ You can then edit this file where all the possible settings are explained in the
 
 For usage of eLabFTW, see [documentation](https://doc.elabftw.net).
 
-## Reloading a service
+## Reloading services
+
+If for some reason you wish to reload a service without restarting the container (for instance when trying configuration changes), you can use ``reload``:
 
 ~~~bash
-/package/admin/s6/command/s6-svc -r /run/service/php
-/package/admin/s6/command/s6-svc -r /run/service/nginx
+# reload php and nginx
+reload
+# reload only php
+reload php
+# reload only nginx
+reload nginx
 ~~~
 
-## Deleting cache
+## Deleting GitHub build cache
 
 If there is a CVE fixed upstream, delete build cache with:
 
