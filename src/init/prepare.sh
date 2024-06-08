@@ -74,12 +74,21 @@ getEnv() {
 # Create the user that will run nginx/php/cronjobs
 createUser() {
     getent group "${elabftw_group}" 2>&1 > /dev/null || /usr/sbin/addgroup -g "${elabftw_groupid}" "${elabftw_group}"
-    getent shadow "${elabftw_user}" 2>&1 > /dev/null || /usr/sbin/adduser -S -u "${elabftw_userid}" -G "${elabftw_group}" "${elabftw_user}"
+    getent shadow "${elabftw_user}" 2>&1 > /dev/null || /usr/sbin/adduser -u "${elabftw_userid}" -G "${elabftw_group}" "${elabftw_user}"
     # crontab
     /bin/echo "${elabftw_user}" > /etc/cron.d/cron.allow
     if [ -f /etc/elabftw-cronjob ]; then
         /bin/mv /etc/elabftw-cronjob "/etc/crontabs/${elabftw_user}"
     fi
+    # run invoker with the specific user
+    mkdir -p /run/invoker
+    chown "${elabftw_user}":"${elabftw_group}" /run/invoker
+    # TODO send logs to stdout
+    INVOKER_PSK=$(openssl rand -base64 42)
+    export INVOKER_PSK
+    # allow php to read it. use | separator as / is in base64
+    sed -i -e "s|^env\[INVOKER_PSK\] = .*|env[INVOKER_PSK] = ${INVOKER_PSK}|" /etc/php83/php-fpm.d/elabpool.conf
+    su -p -c "/usr/bin/invoker > /run/invoker/log 2>&1 &" -s /bin/sh "${elabftw_user}"
 }
 
 checkSiteUrl() {

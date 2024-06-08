@@ -2,11 +2,21 @@
 # nginx custom + php-fpm + elabftw complete production files
 # https://github.com/elabftw/elabimg
 
+FROM golang:1.22-alpine3.20 AS invoker-builder
+# using an explicit default argument for TARGETPLATFORM will override the buildx implicit value
+ARG TARGETPLATFORM
+ENV TARGETPLATFORM=${TARGETPLATFORM:-linux/amd64}
+WORKDIR /app
+COPY src/invoker .
+# allow building for ARM, disable CGO to have full static build, target linux, add -s and -w ldflags to remove debug symbols
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then ARCH=amd64; elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then ARCH=arm; elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then ARCH=arm64; else ARCH=amd64; fi \
+    && CGO_ENABLED=0 GOOS=linux GOARCH=$ARCH go build -ldflags="-s -w" -o invoker
+
 # build nginx with only the bare minimum of features or modules
 # Note: no need to chain the RUN commands here as it's a builder image and nothing will be kept
 FROM alpine:3.19 as nginx-builder
 
-ENV NGINX_VERSION=1.26.0
+ENV NGINX_VERSION=1.26.1
 # pin nginx modules versions
 # see https://github.com/google/ngx_brotli/issues/120 for the lack of tags
 # BROKEN HASH: ENV NGX_BROTLI_COMMIT_HASH=63ca02abdcf79c9e788d2eedcc388d2335902e52
@@ -329,6 +339,10 @@ RUN apk add /tmp/cronie.apk && rm /tmp/cronie.apk
 COPY ./src/cron/cronjob /etc/elabftw-cronjob
 COPY ./src/cron/cron.allow /etc/cron.d/cron.allow
 # END CRONIE
+
+# INVOKER
+COPY --from=invoker-builder /app/invoker /usr/bin/invoker
+RUN chmod +x /usr/bin/invoker
 
 # add a helper script to reload services easily
 COPY ./src/init/reload.sh /usr/bin/reload
