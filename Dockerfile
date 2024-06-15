@@ -293,6 +293,8 @@ ARG BUILD_ALL=1
 # install php and js dependencies and build assets
 # avoid installing cypress
 ENV CYPRESS_INSTALL_BINARY=0
+# avoid download prompt
+ENV COREPACK_ENABLE_DOWNLOAD_PROMPT = 0
 # enable new yarn
 RUN corepack enable
 # some ini settings are set on the command line to override the restrictive production ones already set
