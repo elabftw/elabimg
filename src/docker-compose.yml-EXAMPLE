@@ -104,7 +104,7 @@ services:
         # default value: 50
         #- PHP_MAX_CHILDREN=50
 
-        # optional: adjust the max execution time of PHP scripts. Allows for bigger ZIP exports.
+        # optional: adjust the max execution time of PHP scripts, in seconds
         # default value: 120
         #- PHP_MAX_EXECUTION_TIME=120
 
@@ -149,6 +149,10 @@ services:
         # optional: adjust maximum size of uploaded files
         # default value: 100M
         #- MAX_UPLOAD_SIZE=100M
+
+        # optional: adjust maximum time for uploading files, in milliseconds
+        # default value: 900000
+        #- MAX_UPLOAD_TIME=900000
 
         # optional: s3 storage credentials
         #- ELAB_AWS_ACCESS_KEY=
