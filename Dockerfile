@@ -131,12 +131,17 @@ RUN mkdir /build && chown builder:abuild /build
 WORKDIR /build
 USER builder
 COPY ./src/cron/APKBUILD .
-# generate a RSA key, non-interactive and append to config file, and then build package
+# generate a RSA key, non-interactive and append to config file
+RUN abuild-keygen -n -a
+# move the key in that folder so it is trusted
+USER root
+RUN cp /home/builder/.abuild/*.pub /etc/apk/keys
+USER builder
 # we use find because the package will end up in an arch specific dir (x86_64, arm, ...)
 # and this way it'll work every time
 # we move it to /build so it's easier to find from the other image
 # use cronie-1 to avoid copying cronie-doc
-RUN abuild-keygen -n -a && abuild && find /home/builder/packages -type f -name 'cronie-1*.apk' -exec mv {} /build/apk \;
+RUN abuild && find /home/builder/packages -type f -name 'cronie-1*.apk' -exec mv {} /build/apk \;
 # END CRONIE BUILDER
 
 #############################
