@@ -37,9 +37,7 @@ An example configuration file for docker-compose can be fetched like this:
 curl -so docker-compose.yml "https://get.elabftw.net/?config"
 ~~~
 
-This will download a pre-filled configuration file.
-
-You can then edit this file where all the possible settings are explained in the comments.
+After downloading the configuration file, open it in your preferred text editor to modify settings as necessary.
 
 For usage of eLabFTW, see [documentation](https://doc.elabftw.net).
 
