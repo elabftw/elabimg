@@ -2,5 +2,7 @@
 01 45 * * 0 /usr/bin/php /elabftw/bin/console notifications:send-expiration
 # check for timestamp balance daily
 37 13 * * * /usr/bin/php /elabftw/bin/console notifications:tsbalance
+# update refreshable idps daily
+37 03 * * * /usr/bin/php /elabftw/bin/console idps:refresh
 # send elabftw notifications emails every minute
 */1 * * * * /usr/bin/php /elabftw/bin/console notifications:send
