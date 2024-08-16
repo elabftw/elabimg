@@ -62,4 +62,4 @@ jobs:
                     elabftw/elabimg:demo
 
             - name: Send request to webhook to trigger update of demo
-              run: curl -H 'X-Hook-Secret: ${{ secrets.HOOK_SECRET }}' ${{ secrets.HOOK_URL }}'
+              run: curl -H 'X-Hook-Secret: ${{ secrets.HOOK_SECRET }}' ${{ secrets.HOOK_URL }}
