@@ -2,8 +2,8 @@ name: Build and publish demo image
 
 on:
   push:
-#    tags:
-#   - '*'
+    tags:
+      - '*'
 
 ## GITHUB_TOKEN authentication
 permissions:

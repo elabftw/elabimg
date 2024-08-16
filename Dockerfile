@@ -14,7 +14,7 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then ARCH=amd64; elif [ "$TARGETPL
 
 # build nginx with only the bare minimum of features or modules
 # Note: no need to chain the RUN commands here as it's a builder image and nothing will be kept
-FROM alpine:3.19 as nginx-builder
+FROM alpine:3.19 AS nginx-builder
 
 ENV NGINX_VERSION=1.26.1
 # pin nginx modules versions
@@ -121,7 +121,7 @@ USER root
 RUN make install
 
 # CRONIE BUILDER
-FROM alpine:3.19 as cronie-builder
+FROM alpine:3.19 AS cronie-builder
 ENV CRONIE_VERSION=1.5.7
 # install dependencies
 RUN apk add --no-cache build-base libc-dev make gcc autoconf automake abuild musl-obstack-dev
