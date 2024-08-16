@@ -2,6 +2,8 @@ name: Build and publish demo image
 
 on:
   push:
+#    tags:
+#   - '*'
 
 ## GITHUB_TOKEN authentication
 permissions:
@@ -37,10 +39,6 @@ jobs:
             - name: Set up Docker Buildx
               uses: docker/setup-buildx-action@v3
 
-            # https://github.com/docker/setup-qemu-action#usage
-            - name: Set up QEMU
-              uses: docker/setup-qemu-action@v3
-
             # https://github.com/docker/login-action#docker-hub
             - name: Login to Docker Hub
               uses: docker/login-action@v3
@@ -62,3 +60,6 @@ jobs:
                     ELABFTW_VERSION=demo
                 tags: |
                     elabftw/elabimg:demo
+
+            - name: Send request to webhook to trigger update of demo
+              run: curl -H 'X-Hook-Secret: ${{ secrets.HOOK_SECRET }}' ${{ secrets.HOOK_URL }}'
