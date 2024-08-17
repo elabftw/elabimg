@@ -27,7 +27,8 @@ ENV HEADERS_MORE_VERSION=v0.37
 # so this might need to be updated for a new release
 # available keys: mdounin, maxim, sb, thresh
 # the "signing key" is used for linux packages, see https://trac.nginx.org/nginx/ticket/205
-ENV PGP_SIGNING_KEY_OWNER=thresh
+# do not use KEY in the env name to avoid warning by getSecretsRegex() from buildkit
+ENV PGP_SIGNING_PUBK_OWNER=thresh
 
 # install dependencies: here we use brotli-dev, newer brotli versions we can remove that and build it
 RUN apk add --no-cache git libc-dev pcre2-dev make gcc zlib-dev openssl-dev binutils gnupg cmake brotli-dev
@@ -54,7 +55,7 @@ ADD --chown=builder:builder https://nginx.org/download/nginx-$NGINX_VERSION.tar.
 # get nginx signature file
 ADD --chown=builder:builder https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz.asc nginx.tgz.asc
 # get the corresponding public key
-ADD --chown=builder:builder https://nginx.org/keys/$PGP_SIGNING_KEY_OWNER.key nginx-signing.key
+ADD --chown=builder:builder https://nginx.org/keys/$PGP_SIGNING_PUBK_OWNER.key nginx-signing.key
 # import it and verify the tarball
 RUN gpg --import nginx-signing.key
 # only run on amd64 because it fails on arm64 for some weird unknown reason
