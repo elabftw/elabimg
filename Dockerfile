@@ -323,23 +323,23 @@ HEALTHCHECK --interval=2m --timeout=5s --retries=3 CMD sh /etc/nginx/healthcheck
 EXPOSE 443
 # END NGINX PART 2
 
-# PREPARE.SH
+# ENTRYPOINT
 # create a oneshot service
-RUN mkdir -p /etc/s6-overlay/s6-rc.d/init && echo "oneshot" > /etc/s6-overlay/s6-rc.d/init/type
-COPY ./src/init/up /etc/s6-overlay/s6-rc.d/init/
-RUN touch /etc/s6-overlay/s6-rc.d/user/contents.d/init
+RUN mkdir -p /etc/s6-overlay/s6-rc.d/entrypoint && echo "oneshot" > /etc/s6-overlay/s6-rc.d/entrypoint/type
+COPY ./src/entrypoint/up /etc/s6-overlay/s6-rc.d/entrypoint/
+RUN touch /etc/s6-overlay/s6-rc.d/user/contents.d/entrypoint
 
-# prepare.sh must run before nginx and php are started
-RUN echo "init" > /etc/s6-overlay/s6-rc.d/nginx/dependencies
-RUN echo "init" > /etc/s6-overlay/s6-rc.d/php/dependencies
-RUN echo "init" > /etc/s6-overlay/s6-rc.d/cron/dependencies
+# docker-entrypoint.sh must run before nginx, php and cron are started
+RUN echo "entrypoint" > /etc/s6-overlay/s6-rc.d/nginx/dependencies
+RUN echo "entrypoint" > /etc/s6-overlay/s6-rc.d/php/dependencies
+RUN echo "entrypoint" > /etc/s6-overlay/s6-rc.d/cron/dependencies
 
-COPY ./src/init/prepare.sh /usr/sbin/prepare.sh
+COPY ./src/entrypoint/docker-entrypoint.sh /usr/sbin/docker-entrypoint.sh
 # these values are not in env and cannot be accessed by script so modify them here
 RUN sed -i -e "s/%ELABIMG_VERSION%/$ELABIMG_VERSION/" \
     -e "s/%ELABFTW_VERSION%/$ELABFTW_VERSION/" \
-    -e "s/%S6_OVERLAY_VERSION%/$S6_OVERLAY_VERSION/" /usr/sbin/prepare.sh
-# END PREPARE.SH
+    -e "s/%S6_OVERLAY_VERSION%/$S6_OVERLAY_VERSION/" /usr/sbin/docker-entrypoint.sh
+# END DOCKER-ENTRYPOINT.SH
 
 # CRONIE
 COPY --from=cronie-builder --chown=root:root /build/apk /tmp/cronie.apk
@@ -354,7 +354,7 @@ COPY --from=invoker-builder /app/invoker /usr/bin/invoker
 RUN chmod +x /usr/bin/invoker
 
 # add a helper script to reload services easily
-COPY ./src/init/reload.sh /usr/bin/reload
+COPY ./src/entrypoint/reload.sh /usr/bin/reload
 RUN chmod 700 /usr/bin/reload
 
 # this is unique to the build and is better than the previously used elabftw version for asset cache busting
@@ -363,4 +363,4 @@ RUN sed -i -e "s/%ELABIMG_BUILD_ID%/$(openssl rand -hex 4)/" /etc/php83/php-fpm.
 RUN chmod 400 /etc/php83/php-fpm.d/elabpool.conf
 
 # start s6
-CMD ["/init"]
+ENTRYPOINT ["/init"]

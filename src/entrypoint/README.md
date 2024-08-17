@@ -1,4 +1,4 @@
-# Prepare script
+# docker-entrypoint.sh
 
 ## Description
 
