@@ -8,15 +8,21 @@
 # see: https://docs.docker.com/compose/compose-file/04-version-and-name/
 name: elabftw
 
-# our first container is nginx + php-fpm + elabftw
+# the internal elabftw network on which both containers will run
+networks:
+  elabftw-net:
+
+# the services are the elabftw container (webservice) and MySQL (database)
 services:
+  # our first container is nginx + php-fpm + elabftw
   web:
-    # the latest tag points to the latest stable version
-    # use the next tag to use alpha/beta version
-    # use a specific version to pin the image
+    # About tags (the part after the :)
+    # stable points to the latest stable version
+    # latest points to the latest version, including alpha/beta
+    # use a specific version tag to pin the image
     # example: elabftw/elabimg:4.0.5
-    # default value: elabftw/elabimg:latest
-    image: elabftw/elabimg:latest
+    # default value: elabftw/elabimg:stable
+    image: elabftw/elabimg:stable
     # this ensures the container will be restarted after a reboot of the server
     # default value: always
     restart: always
@@ -337,9 +343,6 @@ services:
   mysql:
     image: mysql:8.0
     restart: always
-    # fix issue with "The server requested authentication method unknown to the client [caching_sha2_password]"
-    # now commented out because no longer necessary
-    #command: --default-authentication-plugin=mysql_native_password
     container_name: mysql
     # add an healthcheck block so the web container knows when it is ready to accept connections
     # use double $ here so env vars are correctly found
@@ -387,7 +390,7 @@ services:
   # example of a redis container
   # uncomment if you want to spawn a redis container to manage sessions
   #redis:
-  #  image: redis:6.0-alpine
+  #  image: redis:7-alpine
   #  restart: always
   #  container_name: redis
   #  networks:
@@ -410,7 +413,7 @@ services:
 
   ###############################################################
   # EVERYTHING BELOW THIS LINE IS FOR DEVELOPMENT PURPOSES ONLY #
-  # Except for the networks lines, so don't delete them!         #
+  # You can safely delete everything below                      #
   ###############################################################
 
   # PHPMYADMIN
@@ -475,7 +478,3 @@ services:
   #      - "6443:443"
   #    networks:
   #        - elabftw-net
-
-# the internal elabftw network
-networks:
-  elabftw-net:
