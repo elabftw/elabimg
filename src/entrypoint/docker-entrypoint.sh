@@ -35,6 +35,7 @@ getEnv() {
     unset SECRET_KEY
     max_php_memory=${MAX_PHP_MEMORY:-2G}
     max_upload_size=${MAX_UPLOAD_SIZE:-100M}
+    max_upload_time=${MAX_UPLOAD_TIME:-900000}
     # CIS benchmark nginx 2.0.0 2.4.3
     keepalive_timeout=${KEEPALIVE_TIMEOUT:-10s}
     php_timezone=${PHP_TIMEZONE:-Europe/Paris}
@@ -354,6 +355,8 @@ populatePhpEnv() {
         sed -i -e "/%DB_CERT_PATH%/d" /etc/php83/php-fpm.d/elabpool.conf
     fi
     sed -i -e "s/%SECRET_KEY%/${secret_key}/" /etc/php83/php-fpm.d/elabpool.conf
+    sed -i -e "s/%MAX_UPLOAD_SIZE%/${max_upload_size}/" /etc/php83/php-fpm.d/elabpool.conf
+    sed -i -e "s/%MAX_UPLOAD_TIME%/${max_upload_time}/" /etc/php83/php-fpm.d/elabpool.conf
     # use # as separator instead of slash
     sed -i -e "s#%SITE_URL%#${site_url}#" /etc/php83/php-fpm.d/elabpool.conf
     # assume that if ak is set, then sk is too
@@ -376,6 +379,8 @@ populateBashEnv() {
     export DB_USER='${db_user}'
     export DB_PASSWORD='${db_password}'
     export DB_CERT_PATH='${db_cert_path}'
+    export MAX_UPLOAD_SIZE='${max_upload_size}'
+    export MAX_UPLOAD_TIME='${max_upload_time}'
     export SECRET_KEY='${secret_key}'
     export SITE_URL='${site_url}'
     export ELAB_AWS_ACCESS_KEY='${aws_ak}'
