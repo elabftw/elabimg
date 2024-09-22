@@ -107,7 +107,6 @@ RUN ./configure \
         --without-http_limit_req_module \
         --without-http_map_module \
         --without-http_memcached_module \
-        --without-http_proxy_module \
         --without-http_referer_module \
         --without-http_scgi_module \
         --without-http_split_clients_module \
@@ -117,6 +116,8 @@ RUN ./configure \
         --without-http_uwsgi_module \
     && make -j$(getconf _NPROCESSORS_ONLN) \
     && strip -s objs/nginx
+
+        #--without-http_proxy_module \
 
 USER root
 RUN make install
