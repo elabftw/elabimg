@@ -1,6 +1,11 @@
 # Container image version
 # Note: the version here is from `ELABIMG_VERSION` present in Dockerfile, not the tagged one
 
+# 5.3.0
+
+* Update s6-overlay to 3.2.0.0
+* Move `MAX_UPLOAD_SIZE` and `MAX_UPLOAD_TIME` into PHP env instead of build args
+
 # 5.2.0
 
 * Update base image to Alpine 3.19
