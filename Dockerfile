@@ -151,7 +151,7 @@ RUN abuild && find /home/builder/packages -type f -name 'cronie-1*.apk' -exec mv
 FROM alpine:3.19
 
 # this is versioning for the container image
-ENV ELABIMG_VERSION=5.3.0
+ENV ELABIMG_VERSION=5.3.1
 
 # the target elabftw version is passed with --build-arg
 # it is a mandatory ARG

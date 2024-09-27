@@ -1,6 +1,10 @@
 # Container image version
 # Note: the version here is from `ELABIMG_VERSION` present in Dockerfile, not the tagged one
 
+# 5.3.1
+
+* bug/medium: php.ini: extend `open_basedir` to /run/s6-rc. fix elabftw/elabftw#5249
+
 # 5.3.0
 
 * Update s6-overlay to 3.2.0.0
