@@ -28,6 +28,7 @@ jobs:
                   packagist.org
                   pkg-containers.githubusercontent.com
                   production.cloudflare.docker.com
+                  raw.githubusercontent.com
                   registry.yarnpkg.com
                   repo.yarnpkg.com
                   registry.npmjs.org

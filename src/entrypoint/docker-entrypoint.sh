@@ -303,7 +303,8 @@ phpConf() {
 
     # production open_basedir conf value
     # /etc/ssl/cert.pem is for openssl and timestamp related functions
-    open_basedir="/.dockerenv:/elabftw/:/tmp/:/usr/bin/unzip:/etc/ssl/cert.pem"
+    # for /run/s6-rc... see elabftw/elabftw#5249
+    open_basedir="/.dockerenv:/elabftw/:/tmp/:/usr/bin/unzip:/etc/ssl/cert.pem:/run/s6-rc/servicedirs/s6rc-oneshot-runner"
     # DEV MODE
     if ($dev_mode); then
         # we don't want to use opcache as we want our changes to be immediately visible
