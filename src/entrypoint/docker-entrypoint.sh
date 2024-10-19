@@ -70,6 +70,10 @@ getEnv() {
     allow_methods=${ALLOW_METHODS:-}
     allow_headers=${ALLOW_HEADERS:-}
     status_password=${STATUS_PASSWORD:-}
+    use_chem_plugin=${USE_CHEM_PLUGIN:-false}
+    chem_plugin_url=${CHEM_PLUGIN_URL:-https://chem-plugin.elabftw.net/}
+    fingerprinter_url=${FINGERPRINTER_URL:-https://chem-plugin.elabftw.net:8000/}
+    syc_plugin_url=${SYC_PLUGIN_URL:-https://chem-plugin.elabftw.net:9000/}
 }
 
 # Create the user that will run nginx/php/cronjobs
@@ -164,6 +168,14 @@ nginxConf() {
 
     # adjust client_max_body_size
     sed -i -e "s/%CLIENT_MAX_BODY_SIZE%/${max_upload_size}/" /etc/nginx/nginx.conf
+
+    # adjust chem plugin url
+    if ($use_chem_plugin); then
+        sed -i -e "s|^#\s*include /etc/nginx/indigo.conf|include /etc/nginx/indigo.conf|" /etc/nginx/common.conf
+        sed -i -e "s|%CHEM_PLUGIN_URL%|${chem_plugin_url}|" /etc/nginx/indigo.conf
+        sed -i -e "s|%FINGERPRINTER_URL%|${fingerprinter_url}|" /etc/nginx/indigo.conf
+        sed -i -e "s|%SYC_PLUGIN_URL%|${syc_plugin_url}|" /etc/nginx/indigo.conf
+    fi
 
     # SET REAL IP CONFIG
     if ($set_real_ip); then

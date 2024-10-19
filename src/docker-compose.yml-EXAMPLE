@@ -283,6 +283,17 @@ services:
         # default value: false
         #- AUTO_DB_UPDATE=false
 
+        # optional: use chemistry plugin
+        # set to true if you are running the elabftw/chem-plugin service
+        # default value: false
+        #- USE_CHEM_PLUGIN=false
+
+        # optional: define chemistry plugin service domain name + port
+        # IMPORTANT: end with trailing slash!
+        # default value: https://chem-plugin.elabftw.net/
+        # example value: http://chem-plugin/
+        #- CHEM_PLUGIN_URL=https://chem-plugin.elabftw.net/
+
         #######
         # DEV #
         #######
