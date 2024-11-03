@@ -70,10 +70,9 @@ getEnv() {
     allow_methods=${ALLOW_METHODS:-}
     allow_headers=${ALLOW_HEADERS:-}
     status_password=${STATUS_PASSWORD:-}
-    use_chem_plugin=${USE_CHEM_PLUGIN:-false}
-    chem_plugin_url=${CHEM_PLUGIN_URL:-https://chem-plugin.elabftw.net/}
+    indigo_url=${INDIGO_URL:-https://chem-plugin.elabftw.net/}
     fingerprinter_url=${FINGERPRINTER_URL:-https://chem-plugin.elabftw.net:8000/}
-    syc_plugin_url=${SYC_PLUGIN_URL:-https://chem-plugin.elabftw.net:9000/}
+    shareyourcloning_url=${SHAREYOURCLONING_URL:-https://syc.elabftw.net/}
 }
 
 # Create the user that will run nginx/php/cronjobs
@@ -169,12 +168,18 @@ nginxConf() {
     # adjust client_max_body_size
     sed -i -e "s/%CLIENT_MAX_BODY_SIZE%/${max_upload_size}/" /etc/nginx/nginx.conf
 
-    # adjust chem plugin url
-    if ($use_chem_plugin); then
+    # ADJUST PLUGINS
+    if [ -n "$indigo_url" ]; then
         sed -i -e "s|^#\s*include /etc/nginx/indigo.conf|include /etc/nginx/indigo.conf|" /etc/nginx/common.conf
-        sed -i -e "s|%CHEM_PLUGIN_URL%|${chem_plugin_url}|" /etc/nginx/indigo.conf
-        sed -i -e "s|%FINGERPRINTER_URL%|${fingerprinter_url}|" /etc/nginx/indigo.conf
-        sed -i -e "s|%SYC_PLUGIN_URL%|${syc_plugin_url}|" /etc/nginx/indigo.conf
+        sed -i -e "s|%INDIGO_URL%|${indigo_url}|" /etc/nginx/indigo.conf
+    fi
+    if [ -n "$fingerprinter_url" ]; then
+        sed -i -e "s|^#\s*include /etc/nginx/fingerprinter.conf|include /etc/nginx/fingerprinter.conf|" /etc/nginx/common.conf
+        sed -i -e "s|%FINGERPRINTER_URL%|${fingerprinter_url}|" /etc/nginx/fingerprinter.conf
+    fi
+    if [ -n "$shareyourcloning_url"]; then
+        sed -i -e "s|^#\s*include /etc/nginx/shareyourcloning.conf|include /etc/nginx/shareyourcloning.conf|" /etc/nginx/common.conf
+        sed -i -e "s|%SHAREYOURCLONING_URL%|${shareyourcloning_url}|" /etc/nginx/shareyourcloning.conf
     fi
 
     # SET REAL IP CONFIG
