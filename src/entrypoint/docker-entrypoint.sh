@@ -177,9 +177,11 @@ nginxConf() {
         sed -i -e "s|^#\s*include /etc/nginx/fingerprinter.conf|include /etc/nginx/fingerprinter.conf|" /etc/nginx/common.conf
         sed -i -e "s|%FINGERPRINTER_URL%|${fingerprinter_url}|" /etc/nginx/fingerprinter.conf
     fi
-    if [ -n "$shareyourcloning_url"]; then
+    if [ -n "$shareyourcloning_url" ]; then
+        # remove the trailing / if it exists, or it doesn't work
+        syc_url=${shareyourcloning_url%/}
         sed -i -e "s|^#\s*include /etc/nginx/shareyourcloning.conf|include /etc/nginx/shareyourcloning.conf|" /etc/nginx/common.conf
-        sed -i -e "s|%SHAREYOURCLONING_URL%|${shareyourcloning_url}|" /etc/nginx/shareyourcloning.conf
+        sed -i -e "s|%SHAREYOURCLONING_URL%|${syc_url}|" /etc/nginx/shareyourcloning.conf
     fi
 
     # SET REAL IP CONFIG
