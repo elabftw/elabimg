@@ -26,6 +26,7 @@ jobs:
                   docker.io
                   ghcr.io
                   index.docker.io
+                  mirror.gcr.io
                   nginx.org
                   packagist.org
                   pkg-containers.githubusercontent.com
