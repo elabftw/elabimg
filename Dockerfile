@@ -117,8 +117,6 @@ RUN ./configure \
     && make -j$(getconf _NPROCESSORS_ONLN) \
     && strip -s objs/nginx
 
-        #--without-http_proxy_module \
-
 USER root
 RUN make install
 
