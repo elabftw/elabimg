@@ -343,11 +343,11 @@ phpConf() {
 }
 
 elabftwConf() {
-    mkdir -p /elabftw/uploads /elabftw/cache/elab /elabftw/cache/mpdf /elabftw/cache/twig /elabftw/cache/purifier/CSS /elabftw/cache/purifier/HTML /elabftw/cache/purifier/URI
-    chown -R "${elabftw_userid}":"${elabftw_groupid}" /elabftw/cache
+    mkdir -p /elabftw/uploads /elabftw/cache/elab /elabftw/cache/mpdf /elabftw/cache/twig /elabftw/cache/purifier/CSS /elabftw/cache/purifier/HTML /elabftw/cache/purifier/URI /elabftw/exports
+    chown -R "${elabftw_userid}":"${elabftw_groupid}" /elabftw/cache /elabftw/exports
     # no recursive flag for uploads
     chown "${elabftw_userid}":"${elabftw_groupid}" /elabftw/uploads
-    chmod 700 /elabftw/uploads /elabftw/cache
+    chmod 700 /elabftw/uploads /elabftw/cache /elabftw/exports
 }
 
 ldapConf() {

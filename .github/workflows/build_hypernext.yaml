@@ -30,6 +30,7 @@ jobs:
                   docker.io
                   ghcr.io
                   index.docker.io
+                  mirror.gcr.io
                   nginx.org
                   packagist.org
                   pkg-containers.githubusercontent.com
@@ -82,6 +83,7 @@ jobs:
                 ignore-unfixed: true
                 vuln-type: 'os,library'
                 severity: 'CRITICAL,HIGH'
+                db-repository: 'public.ecr.aws/aquasecurity/trivy-db:2'
 
             # SBOM
             - name: Run Trivy in GitHub SBOM mode and submit results to Dependency Graph
@@ -92,6 +94,7 @@ jobs:
                 output: 'dependency-results.sbom.json'
                 scan-ref: '.'
                 github-pat: ${{ secrets.GITHUB_TOKEN }}
+                db-repository: 'public.ecr.aws/aquasecurity/trivy-db:2'
 
             # ATTESTATION
             - name: Create build provenance attestation
