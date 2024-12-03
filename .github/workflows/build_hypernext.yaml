@@ -92,3 +92,11 @@ jobs:
                 scan-ref: '.'
                 github-pat: ${{ secrets.GITHUB_TOKEN }}
                 db-repository: 'public.ecr.aws/aquasecurity/trivy-db:2'
+
+            # ATTESTATION
+            - name: Create build provenance attestation
+              uses: actions/attest-build-provenance@v1
+              with:
+                subject-name: index.docker.io/elabftw/elabimg
+                subject-digest: ${{ steps.push.outputs.digest }}
+                push-to-registry: true
