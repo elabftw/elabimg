@@ -28,7 +28,6 @@ jobs:
                   codeload.github.com
                   dl-cdn.alpinelinux.org
                   docker.io
-                  fulcio.sigstore.dev
                   ghcr.io
                   index.docker.io
                   mirror.gcr.io
@@ -40,6 +39,7 @@ jobs:
                   registry.yarnpkg.com
                   repo.yarnpkg.com
                   registry.npmjs.org
+                  sigstore.dev
 
             - name: Checkout elabimg repo
               uses: actions/checkout@v4
