@@ -39,6 +39,7 @@ jobs:
                   registry.yarnpkg.com
                   repo.yarnpkg.com
                   registry.npmjs.org
+                  *.sigstore.dev
 
             - name: Checkout elabimg repo
               uses: actions/checkout@v4
@@ -83,7 +84,6 @@ jobs:
                 ignore-unfixed: true
                 vuln-type: 'os,library'
                 severity: 'CRITICAL,HIGH'
-                db-repository: 'public.ecr.aws/aquasecurity/trivy-db:2'
 
             # SBOM
             - name: Run Trivy in GitHub SBOM mode and submit results to Dependency Graph
