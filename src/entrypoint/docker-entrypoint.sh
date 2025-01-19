@@ -70,6 +70,7 @@ getEnv() {
     allow_methods=${ALLOW_METHODS:-}
     allow_headers=${ALLOW_HEADERS:-}
     status_password=${STATUS_PASSWORD:-}
+    use_persistent_mysql_conn=${USE_PERSISTENT_MYSQL_CONN:-true}
 }
 
 # Create the user that will run nginx/php/cronjobs
@@ -249,6 +250,8 @@ phpfpmConf() {
     sed -i -e "s/%PHP_MAX_MEMORY%/${max_php_memory}/" $f
     # add container version in env (named env or it will get replaced by Docker build instruction
     sed -i -e "s/%ELABIMG_VERSION_ENV%/${elabimg_version}/" $f
+    # persistent mysql connection setting
+    sed -i -e "s/%USE_PERSISTENT_MYSQL_CONN%/${use_persistent_mysql_conn}/" $f
 }
 
 getRedisUri() {

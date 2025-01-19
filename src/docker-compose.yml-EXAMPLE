@@ -208,6 +208,12 @@ services:
         # this does nothing if SET_REAL_IP is set to false
         #- SET_REAL_IP_FROM=192.168.31.48, 192.168.0.42, 10.10.13.37
 
+        # optional: modify connection persistence for MySQL
+        # pdo doc: https://www.php.net/manual/en/pdo.connections.php
+        # default: true
+        # example value: false
+        #- USE_PERSISTENT_MYSQL_CONN=true
+
         # optional: adjust the number of worker processes nginx will spawn
         # default value: auto
         # if auto doesn't work for you, use the number of cores available on the server (or less)
