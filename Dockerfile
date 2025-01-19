@@ -150,7 +150,7 @@ RUN abuild && find /home/builder/packages -type f -name 'cronie-1*.apk' -exec mv
 FROM alpine:3.19
 
 # this is versioning for the container image
-ENV ELABIMG_VERSION=5.3.1
+ENV ELABIMG_VERSION=5.4.0
 
 # the target elabftw version is passed with --build-arg
 # it is a mandatory ARG
@@ -275,7 +275,6 @@ ADD https://github.com/elabftw/elabftw/tarball/$ELABFTW_VERSION src.tgz
 RUN tar xzf src.tgz && mv elabftw-* src \
     && mkdir /elabftw \
     && mv src/bin /elabftw \
-    && mv src/.babelrc /elabftw \
     && mv src/builder.js /elabftw \
     && mv src/composer.json /elabftw \
     && mv src/composer.lock /elabftw \
