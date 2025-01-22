@@ -70,6 +70,12 @@ getEnv() {
     allow_methods=${ALLOW_METHODS:-}
     allow_headers=${ALLOW_HEADERS:-}
     status_password=${STATUS_PASSWORD:-}
+    use_indigo=${USE_INDIGO:-false}
+    indigo_url=${INDIGO_URL:-https://chem-plugin.elabftw.net/}
+    use_fingerprinter=${USE_FINGERPRINTER:-false}
+    fingerprinter_url=${FINGERPRINTER_URL:-https://chem-plugin.elabftw.net:8000/}
+    use_shareyourcloning=${USE_SHAREYOURCLONING:-false}
+    shareyourcloning_url=${SHAREYOURCLONING_URL:-https://syc.elabftw.net/}
     use_persistent_mysql_conn=${USE_PERSISTENT_MYSQL_CONN:-true}
 }
 
@@ -166,6 +172,22 @@ nginxConf() {
     # adjust client_max_body_size
     sed -i -e "s/%CLIENT_MAX_BODY_SIZE%/${max_upload_size}/" /etc/nginx/nginx.conf
 
+    # ADJUST PLUGINS
+    if [ -n "$indigo_url" ] && [ -n "$use_indigo" ]; then
+        sed -i -e "s|^#\s*include /etc/nginx/indigo.conf|include /etc/nginx/indigo.conf|" /etc/nginx/common.conf
+        sed -i -e "s|%INDIGO_URL%|${indigo_url}|" /etc/nginx/indigo.conf
+    fi
+    if [ -n "$fingerprinter_url" ] && [ -n "$use_fingerprinter" ]; then
+        sed -i -e "s|^#\s*include /etc/nginx/fingerprinter.conf|include /etc/nginx/fingerprinter.conf|" /etc/nginx/common.conf
+        sed -i -e "s|%FINGERPRINTER_URL%|${fingerprinter_url}|" /etc/nginx/fingerprinter.conf
+    fi
+    if [ -n "$shareyourcloning_url" ] && [ -n "$use_shareyourcloning" ]; then
+        # remove the trailing / if it exists, or it doesn't work
+        syc_url=${shareyourcloning_url%/}
+        sed -i -e "s|^#\s*include /etc/nginx/shareyourcloning.conf|include /etc/nginx/shareyourcloning.conf|" /etc/nginx/common.conf
+        sed -i -e "s|%SHAREYOURCLONING_URL%|${syc_url}|" /etc/nginx/shareyourcloning.conf
+    fi
+
     # SET REAL IP CONFIG
     if ($set_real_ip); then
         # read the IP addresses from env
@@ -250,6 +272,10 @@ phpfpmConf() {
     sed -i -e "s/%PHP_MAX_MEMORY%/${max_php_memory}/" $f
     # add container version in env (named env or it will get replaced by Docker build instruction
     sed -i -e "s/%ELABIMG_VERSION_ENV%/${elabimg_version}/" $f
+    # external services, we want to easily know from php app if they are available
+    sed -i -e "s/%USE_INDIGO%/${use_indigo}/" $f
+    sed -i -e "s/%USE_FINGERPRINTER%/${use_fingerprinter}/" $f
+    sed -i -e "s/%USE_SHAREYOURCLONING%/${use_shareyourcloning}/" $f
     # persistent mysql connection setting
     sed -i -e "s/%USE_PERSISTENT_MYSQL_CONN%/${use_persistent_mysql_conn}/" $f
 }
