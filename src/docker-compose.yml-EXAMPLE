@@ -299,13 +299,13 @@ services:
         #
         # This service is necessary for the Chemical structure editor (Ketcher)
         #- USE_INDIGO=false
-        #- INDIGO_URL=https://chem-plugin/
+        #- INDIGO_URL=http://chem-plugin/
         # The fingerprinter is necessary to create a fingerprint of chemical compounds so we can do sub-structure search
         #- USE_FINGERPRINTER=false
-        #- FINGERPRINTER_URL=https://chem-plugin:8000/
+        #- FINGERPRINTER_URL=http://chem-plugin:8000/
         # This is for the integration of the DNA Cloning tool
         #- USE_SHAREYOURCLONING=false
-        #- SHAREYOURCLONING_URL=https://syc-plugin/
+        #- SHAREYOURCLONING_URL=http://syc-plugin/
 
         #######
         # DEV #
