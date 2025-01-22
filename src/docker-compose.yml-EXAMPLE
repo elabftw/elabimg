@@ -289,12 +289,23 @@ services:
         # default value: false
         #- AUTO_DB_UPDATE=false
 
+        ###########
+        # PLUGINS #
+        ###########
+        # Activating these plugins is highly recommended for all labs
+        # See below the configuration necessary to deploy them.
         # optional: define chemistry/biology plugin services domain name + port
-        # THIS IS IN BETA AND SUBJECT TO CHANGE!
-        # IMPORTANT: end with trailing slash!
-        #- INDIGO_URL=https://chem-plugin.elabftw.net/
-        #- FINGERPRINTER_URL=https://chem-plugin.elabftw.net:8000/
-        #- SHAREYOURCLONING_URL=https://syc.elabftw.net/
+        # IMPORTANT: end url values with trailing slash!
+        #
+        # This service is necessary for the Chemical structure editor (Ketcher)
+        #- USE_INDIGO=false
+        #- INDIGO_URL=https://chem-plugin/
+        # The fingerprinter is necessary to create a fingerprint of chemical compounds so we can do sub-structure search
+        #- USE_FINGERPRINTER=false
+        #- FINGERPRINTER_URL=https://chem-plugin:8000/
+        # This is for the integration of the DNA Cloning tool
+        #- USE_SHAREYOURCLONING=false
+        #- SHAREYOURCLONING_URL=https://syc-plugin/
 
         #######
         # DEV #
