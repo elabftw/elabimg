@@ -194,6 +194,7 @@ RUN apk upgrade -U -a && apk add --no-cache \
     nodejs-current \
     openssl \
     php83 \
+    php83-pecl-apcu \
     php83-bcmath \
     php83-curl \
     php83-ctype \
