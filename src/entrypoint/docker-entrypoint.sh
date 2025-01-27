@@ -173,15 +173,15 @@ nginxConf() {
     sed -i -e "s/%CLIENT_MAX_BODY_SIZE%/${max_upload_size}/" /etc/nginx/nginx.conf
 
     # ADJUST PLUGINS
-    if [ -n "$indigo_url" ] && [ -n "$use_indigo" ]; then
+    if [ "$indigo_url" != "false" ] && [ -n "$indigo_url" ] && [ "$use_indigo" != "false" ] && [ -n "$use_indigo" ]; then
         sed -i -e "s|^#\s*include /etc/nginx/indigo.conf|include /etc/nginx/indigo.conf|" /etc/nginx/common.conf
         sed -i -e "s|%INDIGO_URL%|${indigo_url}|" /etc/nginx/indigo.conf
     fi
-    if [ -n "$fingerprinter_url" ] && [ -n "$use_fingerprinter" ]; then
+    if [ "$fingerprinter_url" != "false" ] && [ -n "$fingerprinter_url" ] && [ "$use_fingerprinter" != "false" ] && [ -n "$use_fingerprinter" ]; then
         sed -i -e "s|^#\s*include /etc/nginx/fingerprinter.conf|include /etc/nginx/fingerprinter.conf|" /etc/nginx/common.conf
         sed -i -e "s|%FINGERPRINTER_URL%|${fingerprinter_url}|" /etc/nginx/fingerprinter.conf
     fi
-    if [ -n "$shareyourcloning_url" ] && [ -n "$use_shareyourcloning" ]; then
+    if [ "$shareyourcloning_url" != "false" ] && [ -n "$shareyourcloning_url" ] && [ "$use_shareyourcloning" != "false" ] && [ -n "$use_shareyourcloning" ]; then
         # remove the trailing / if it exists, or it doesn't work
         syc_url=${shareyourcloning_url%/}
         sed -i -e "s|^#\s*include /etc/nginx/shareyourcloning.conf|include /etc/nginx/shareyourcloning.conf|" /etc/nginx/common.conf
