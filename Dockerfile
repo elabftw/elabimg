@@ -276,6 +276,7 @@ ADD https://github.com/elabftw/elabftw/tarball/$ELABFTW_VERSION src.tgz
 RUN tar xzf src.tgz && mv elabftw-* src \
     && mkdir /elabftw \
     && mv src/bin /elabftw \
+    && mv src/.babelrc /elabftw \
     && mv src/builder.js /elabftw \
     && mv src/composer.json /elabftw \
     && mv src/composer.lock /elabftw \
