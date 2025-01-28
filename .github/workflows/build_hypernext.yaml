@@ -94,7 +94,6 @@ jobs:
                 output: 'dependency-results.sbom.json'
                 scan-ref: '.'
                 github-pat: ${{ secrets.GITHUB_TOKEN }}
-                db-repository: 'public.ecr.aws/aquasecurity/trivy-db:2'
 
             # ATTESTATION
             - name: Create build provenance attestation
