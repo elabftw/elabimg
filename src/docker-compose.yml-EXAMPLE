@@ -288,7 +288,7 @@ services:
         # IMPORTANT: end with trailing slash!
         #- INDIGO_URL=https://chem-plugin.elabftw.net/
         #- FINGERPRINTER_URL=https://chem-plugin.elabftw.net:8000/
-        #- SHAREYOURCLONING_URL=https://syc.elabftw.net/
+        #- OPENCLONING_URL=https://opencloning.elabftw.net/
 
         #######
         # DEV #
@@ -401,16 +401,16 @@ services:
   #  networks:
   #    - elabftw-net
 
-  #syc-plugin:
-  #  image: manulera/shareyourcloning:latest-syc-base
-  #  container_name: syc-plugin
+  #opencloning-plugin:
+  #  image: manulera/opencloning:latest-opencloning-base
+  #  container_name: opencloning-plugin
   #  restart: always
   #  networks:
   #    - elabftw-net
   #  environment:
   #    - ALLOWED_ORIGINS=*
-  #    - ROOT_PATH=/shareyourcloning
-  #    - BACKEND_URL=/shareyourcloning/
+  #    - ROOT_PATH=/opencloning
+  #    - BACKEND_URL=/opencloning/
 
 
   # example of a redis container

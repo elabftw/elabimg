@@ -72,7 +72,7 @@ getEnv() {
     status_password=${STATUS_PASSWORD:-}
     indigo_url=${INDIGO_URL:-https://chem-plugin.elabftw.net/}
     fingerprinter_url=${FINGERPRINTER_URL:-https://chem-plugin.elabftw.net:8000/}
-    shareyourcloning_url=${SHAREYOURCLONING_URL:-https://syc.elabftw.net/}
+    opencloning_url=${OPENCLONING_URL:-https://opencloning.elabftw.net/}
 }
 
 # Create the user that will run nginx/php/cronjobs
@@ -177,11 +177,11 @@ nginxConf() {
         sed -i -e "s|^#\s*include /etc/nginx/fingerprinter.conf|include /etc/nginx/fingerprinter.conf|" /etc/nginx/common.conf
         sed -i -e "s|%FINGERPRINTER_URL%|${fingerprinter_url}|" /etc/nginx/fingerprinter.conf
     fi
-    if [ -n "$shareyourcloning_url" ]; then
+    if [ -n "$opencloning_url" ]; then
         # remove the trailing / if it exists, or it doesn't work
-        syc_url=${shareyourcloning_url%/}
-        sed -i -e "s|^#\s*include /etc/nginx/shareyourcloning.conf|include /etc/nginx/shareyourcloning.conf|" /etc/nginx/common.conf
-        sed -i -e "s|%SHAREYOURCLONING_URL%|${syc_url}|" /etc/nginx/shareyourcloning.conf
+        opencloning_url=${opencloning_url%/}
+        sed -i -e "s|^#\s*include /etc/nginx/opencloning.conf|include /etc/nginx/opencloning.conf|" /etc/nginx/common.conf
+        sed -i -e "s|%OPENCLONING_URL%|${opencloning_url}|" /etc/nginx/opencloning.conf
     fi
 
     # SET REAL IP CONFIG
