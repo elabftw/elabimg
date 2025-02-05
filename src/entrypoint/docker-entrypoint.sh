@@ -74,8 +74,8 @@ getEnv() {
     indigo_url=${INDIGO_URL:-https://chem-plugin.elabftw.net/}
     use_fingerprinter=${USE_FINGERPRINTER:-false}
     fingerprinter_url=${FINGERPRINTER_URL:-https://chem-plugin.elabftw.net:8000/}
-    use_shareyourcloning=${USE_SHAREYOURCLONING:-false}
-    shareyourcloning_url=${SHAREYOURCLONING_URL:-https://syc.elabftw.net/}
+    use_opencloning=${USE_OPENCLONING:-false}
+    opencloning_url=${OPENCLONING_URL:-https://opencloning.elabftw.net/}
     use_persistent_mysql_conn=${USE_PERSISTENT_MYSQL_CONN:-true}
 }
 
@@ -181,11 +181,11 @@ nginxConf() {
         sed -i -e "s|^#\s*include /etc/nginx/fingerprinter.conf|include /etc/nginx/fingerprinter.conf|" /etc/nginx/common.conf
         sed -i -e "s|%FINGERPRINTER_URL%|${fingerprinter_url}|" /etc/nginx/fingerprinter.conf
     fi
-    if [ "$shareyourcloning_url" != "false" ] && [ -n "$shareyourcloning_url" ] && [ "$use_shareyourcloning" != "false" ] && [ -n "$use_shareyourcloning" ]; then
+    if [ "$opencloning_url" != "false" ] && [ -n "$opencloning_url" ] && [ "$use_opencloning" != "false" ] && [ -n "$use_opencloning" ]; then
         # remove the trailing / if it exists, or it doesn't work
-        syc_url=${shareyourcloning_url%/}
-        sed -i -e "s|^#\s*include /etc/nginx/shareyourcloning.conf|include /etc/nginx/shareyourcloning.conf|" /etc/nginx/common.conf
-        sed -i -e "s|%SHAREYOURCLONING_URL%|${syc_url}|" /etc/nginx/shareyourcloning.conf
+        oc_url=${opencloning_url%/}
+        sed -i -e "s|^#\s*include /etc/nginx/opencloning.conf|include /etc/nginx/opencloning.conf|" /etc/nginx/common.conf
+        sed -i -e "s|%OPENCLONING_URL%|${oc_url}|" /etc/nginx/opencloning.conf
     fi
 
     # SET REAL IP CONFIG
@@ -275,7 +275,7 @@ phpfpmConf() {
     # external services, we want to easily know from php app if they are available
     sed -i -e "s/%USE_INDIGO%/${use_indigo}/" $f
     sed -i -e "s/%USE_FINGERPRINTER%/${use_fingerprinter}/" $f
-    sed -i -e "s/%USE_SHAREYOURCLONING%/${use_shareyourcloning}/" $f
+    sed -i -e "s/%USE_OPENCLONING%/${use_opencloning}/" $f
     # persistent mysql connection setting
     sed -i -e "s/%USE_PERSISTENT_MYSQL_CONN%/${use_persistent_mysql_conn}/" $f
 }
