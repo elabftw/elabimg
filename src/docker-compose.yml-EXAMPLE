@@ -419,7 +419,7 @@ services:
   #    - elabftw-net
 
   #opencloning-plugin:
-  #  image: manulera/opencloning:latest-oc-base
+  #  image: manulera/opencloning:prod-oc-base
   #  container_name: opencloning-plugin
   #  restart: always
   #  networks:
