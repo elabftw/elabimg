@@ -304,8 +304,8 @@ services:
         #- USE_FINGERPRINTER=false
         #- FINGERPRINTER_URL=http://chem-plugin:8000/
         # This is for the integration of the DNA Cloning tool
-        #- USE_SHAREYOURCLONING=false
-        #- SHAREYOURCLONING_URL=http://syc-plugin/
+        #- USE_OPENCLONING=false
+        #- OPENCLONING_URL=http://opencloning-plugin/
 
         #######
         # DEV #
@@ -418,16 +418,16 @@ services:
   #  networks:
   #    - elabftw-net
 
-  #syc-plugin:
-  #  image: manulera/shareyourcloning:latest-syc-base
-  #  container_name: syc-plugin
+  #opencloning-plugin:
+  #  image: manulera/opencloning:prod-oc-base
+  #  container_name: opencloning-plugin
   #  restart: always
   #  networks:
   #    - elabftw-net
   #  environment:
   #    - ALLOWED_ORIGINS=*
-  #    - ROOT_PATH=/shareyourcloning
-  #    - BACKEND_URL=/shareyourcloning/
+  #    - ROOT_PATH=/opencloning
+  #    - BACKEND_URL=/opencloning/
 
 
   # example of a redis container
