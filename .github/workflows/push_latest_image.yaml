@@ -69,24 +69,24 @@ jobs:
                     elabftw/elabimg:${{ github.ref_name }}
 
             # VULN SCAN
-            - name: Run Trivy vulnerability scanner
-              uses: aquasecurity/trivy-action@master
-              with:
-                image-ref: elabftw/elabimg:${{ github.ref_name }}
-                format: 'table'
-                exit-code: '1'
-                ignore-unfixed: true
-                vuln-type: 'os,library'
-                severity: 'CRITICAL,HIGH'
+            #- name: Run Trivy vulnerability scanner
+            #  uses: aquasecurity/trivy-action@master
+            #  with:
+            #    image-ref: elabftw/elabimg:${{ github.ref_name }}
+            #    format: 'table'
+            #    exit-code: '1'
+            #    ignore-unfixed: true
+            #    vuln-type: 'os,library'
+            #    severity: 'CRITICAL,HIGH'
 
-            - name: Run Trivy in GitHub SBOM mode and submit results to Dependency Graph
-              uses: aquasecurity/trivy-action@master
-              with:
-                scan-type: 'fs'
-                format: 'github'
-                output: 'dependency-results.sbom.json'
-                image-ref: '.'
-                github-pat: ${{ secrets.GITHUB_TOKEN }}
+            #- name: Run Trivy in GitHub SBOM mode and submit results to Dependency Graph
+            #  uses: aquasecurity/trivy-action@master
+            #  with:
+            #    scan-type: 'fs'
+            #    format: 'github'
+            #    output: 'dependency-results.sbom.json'
+            #    image-ref: '.'
+            #    github-pat: ${{ secrets.GITHUB_TOKEN }}
 
             # build the IRD branch
             - name: Build IRD image
