@@ -1,12 +1,12 @@
 name: Push images of hypernext to Docker Hub
 
 on:
-    push:
-        branches:
-          - hypernext
-     # also run every day at 1:00
-    schedule:
-      - cron: "42 01 * * *"
+  push:
+    branches:
+      - hypernext
+  # also run every day at 1:00
+  schedule:
+    - cron: "42 01 * * *"
 
 ## GITHUB_TOKEN authentication
 permissions:
@@ -15,95 +15,97 @@ permissions:
   attestations: write
 
 jobs:
-    buildandpush:
-        runs-on: ubuntu-latest
-        name: Build images and push to Docker Hub
-        steps:
-            # https://github.com/CycodeLabs/cimon-action
-            - name: Cimon supply chain attack protection
-              uses: cycodelabs/cimon-action@v0
-              with:
-                prevent: true
-                allowed-hosts: >
-                  codeload.github.com
-                  dl-cdn.alpinelinux.org
-                  docker.io
-                  ghcr.io
-                  index.docker.io
-                  mirror.gcr.io
-                  nginx.org
-                  packagist.org
-                  pkg-containers.githubusercontent.com
-                  production.cloudflare.docker.com
-                  raw.githubusercontent.com
-                  registry.yarnpkg.com
-                  repo.yarnpkg.com
-                  registry.npmjs.org
-                  *.sigstore.dev
+  buildandpush:
+    #runs-on: ubuntu-latest
+    # temporary revert for arm build
+    runs-on: ubuntu-22.04
+    name: Build images and push to Docker Hub
+    steps:
+      # https://github.com/CycodeLabs/cimon-action
+      - name: Cimon supply chain attack protection
+        uses: cycodelabs/cimon-action@v0
+        with:
+          prevent: true
+          allowed-hosts: >
+            codeload.github.com
+            dl-cdn.alpinelinux.org
+            docker.io
+            ghcr.io
+            index.docker.io
+            mirror.gcr.io
+            nginx.org
+            packagist.org
+            pkg-containers.githubusercontent.com
+            production.cloudflare.docker.com
+            raw.githubusercontent.com
+            registry.yarnpkg.com
+            repo.yarnpkg.com
+            registry.npmjs.org
+            *.sigstore.dev
 
-            - name: Checkout elabimg repo
-              uses: actions/checkout@v4
+      - name: Checkout elabimg repo
+        uses: actions/checkout@v4
 
-            # https://github.com/marketplace/actions/docker-setup-buildx
-            - name: Set up Docker Buildx
-              uses: docker/setup-buildx-action@v3
+      # https://github.com/marketplace/actions/docker-setup-buildx
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-            # https://github.com/docker/setup-qemu-action#usage
-            - name: Set up QEMU
-              uses: docker/setup-qemu-action@v3
-              with:
-                image: tonistiigi/binfmt:qemu-v9.2.0
+      # https://github.com/docker/setup-qemu-action#usage
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          image: tonistiigi/binfmt:qemu-v9.2.0
 
-            # https://github.com/docker/login-action#docker-hub
-            - name: Login to Docker Hub
-              uses: docker/login-action@v3
-              with:
-                username: ${{ secrets.DOCKER_HUB_USERNAME }}
-                password: ${{ secrets.DOCKER_HUB_TOKEN }}
+      # https://github.com/docker/login-action#docker-hub
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
-            # https://github.com/docker/build-push-action#multi-platform-image
-            - name: Build latest release for all platforms and push to Docker Hub
-              uses: docker/build-push-action@v6
-              id: push
-              with:
-                context: .
-                cache-from: type=gha
-                cache-to: type=gha,mode=max
-                # disable arm64 for now because of https://github.com/tonistiigi/binfmt/issues/215 https://github.com/docker/setup-qemu-action/issues/188
-                # maybe we can use native arm64 runners instead of qemu if that doesn't get fixed
-                #platforms: linux/arm64,linux/amd64
-                platforms: linux/amd64
-                push: true
-                build-args: |
-                    ELABFTW_VERSION=${{ github.ref_name }}
-                tags: |
-                    elabftw/elabimg:${{ github.ref_name }}
+      # https://github.com/docker/build-push-action#multi-platform-image
+      - name: Build latest release for all platforms and push to Docker Hub
+        uses: docker/build-push-action@v6
+        id: push
+        with:
+          context: .
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          # disable arm64 for now because of https://github.com/tonistiigi/binfmt/issues/215 https://github.com/docker/setup-qemu-action/issues/188
+          # maybe we can use native arm64 runners instead of qemu if that doesn't get fixed
+          platforms: linux/arm64,linux/amd64
+          #platforms: linux/amd64
+          push: true
+          build-args: |
+              ELABFTW_VERSION=${{ github.ref_name }}
+          tags: |
+              elabftw/elabimg:${{ github.ref_name }}
 
-            # VULN SCAN
-            - name: Run Trivy vulnerability scanner
-              uses: aquasecurity/trivy-action@master
-              with:
-                image-ref: elabftw/elabimg:${{ github.ref_name }}
-                format: 'table'
-                exit-code: '1'
-                ignore-unfixed: true
-                vuln-type: 'os,library'
-                severity: 'CRITICAL,HIGH'
+      # VULN SCAN
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: elabftw/elabimg:${{ github.ref_name }}
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
 
-            # SBOM
-            - name: Run Trivy in GitHub SBOM mode and submit results to Dependency Graph
-              uses: aquasecurity/trivy-action@master
-              with:
-                scan-type: 'fs'
-                format: 'github'
-                output: 'dependency-results.sbom.json'
-                scan-ref: '.'
-                github-pat: ${{ secrets.GITHUB_TOKEN }}
+      # SBOM
+      - name: Run Trivy in GitHub SBOM mode and submit results to Dependency Graph
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          format: 'github'
+          output: 'dependency-results.sbom.json'
+          scan-ref: '.'
+          github-pat: ${{ secrets.GITHUB_TOKEN }}
 
-            # ATTESTATION
-            - name: Create build provenance attestation
-              uses: actions/attest-build-provenance@v1
-              with:
-                subject-name: index.docker.io/elabftw/elabimg
-                subject-digest: ${{ steps.push.outputs.digest }}
-                push-to-registry: true
+      # ATTESTATION
+      - name: Create build provenance attestation
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-name: index.docker.io/elabftw/elabimg
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
