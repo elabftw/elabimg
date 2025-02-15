@@ -81,12 +81,6 @@ jobs:
           tags: |
               elabftw/elabimg:${{ github.ref_name }}
 
-      - name: Manual Trivy Setup
-        uses: aquasecurity/setup-trivy@0.2.2
-        with:
-          cache: true
-          version: v0.59.1
-
       # VULN SCAN
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
@@ -96,6 +90,7 @@ jobs:
           exit-code: '1'
           ignore-unfixed: true
           vuln-type: 'os,library'
+          # use only the vuln scanner to avoid OOM kill with secrets scanning
           scanners: 'vuln'
           severity: 'CRITICAL,HIGH'
 
