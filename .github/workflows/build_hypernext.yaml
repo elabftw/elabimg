@@ -82,7 +82,7 @@ jobs:
               elabftw/elabimg:${{ github.ref_name }}
 
       - name: Manual Trivy Setup
-        uses: aquasecurity/setup-trivy@master
+        uses: aquasecurity/setup-trivy@0.2.2
         with:
           cache: true
           version: v0.59.1
@@ -96,6 +96,7 @@ jobs:
           exit-code: '1'
           ignore-unfixed: true
           vuln-type: 'os,library'
+          scanners: 'vuln'
           severity: 'CRITICAL,HIGH'
 
       # SBOM
