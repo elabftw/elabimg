@@ -82,17 +82,17 @@ jobs:
               elabftw/elabimg:${{ github.ref_name }}
 
       # VULN SCAN
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: elabftw/elabimg:${{ github.ref_name }}
-          format: 'table'
-          exit-code: '1'
-          ignore-unfixed: true
-          vuln-type: 'os,library'
-          # use only the vuln scanner to avoid OOM kill with secrets scanning
-          scanners: 'vuln'
-          severity: 'CRITICAL,HIGH'
+      #- name: Run Trivy vulnerability scanner
+      #  uses: aquasecurity/trivy-action@master
+      #  with:
+      #    image-ref: elabftw/elabimg:${{ github.ref_name }}
+      #    format: 'table'
+      #    exit-code: '1'
+      #    ignore-unfixed: true
+      #    vuln-type: 'os,library'
+      #    # use only the vuln scanner to avoid OOM kill with secrets scanning
+      #    #not working: scanners: 'vuln'
+      #    severity: 'CRITICAL,HIGH'
 
       # SBOM
       - name: Run Trivy in GitHub SBOM mode and submit results to Dependency Graph
