@@ -2,7 +2,7 @@
 # nginx custom + php-fpm + elabftw complete production files
 # https://github.com/elabftw/elabimg
 
-FROM golang:1.22-alpine3.20 AS invoker-builder
+FROM golang:1.22-alpine3.21 AS invoker-builder
 # using an explicit default argument for TARGETPLATFORM will override the buildx implicit value
 ARG TARGETPLATFORM
 ENV TARGETPLATFORM=${TARGETPLATFORM:-linux/amd64}
@@ -14,7 +14,7 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then ARCH=amd64; elif [ "$TARGETPL
 
 # build nginx with only the bare minimum of features or modules
 # Note: no need to chain the RUN commands here as it's a builder image and nothing will be kept
-FROM alpine:3.19 AS nginx-builder
+FROM alpine:3.21 AS nginx-builder
 
 ENV NGINX_VERSION=1.26.2
 # pin nginx modules versions
@@ -121,7 +121,7 @@ USER root
 RUN make install
 
 # CRONIE BUILDER
-FROM alpine:3.19 AS cronie-builder
+FROM alpine:3.21 AS cronie-builder
 ENV CRONIE_VERSION=1.5.7
 # install dependencies
 RUN apk add --no-cache build-base libc-dev make gcc autoconf automake abuild musl-obstack-dev
@@ -147,7 +147,7 @@ RUN abuild && find /home/builder/packages -type f -name 'cronie-1*.apk' -exec mv
 #############################
 # ELABFTW + NGINX + PHP-FPM #
 #############################
-FROM alpine:3.19
+FROM alpine:3.21
 
 # this is versioning for the container image
 ENV ELABIMG_VERSION=5.4.0
@@ -193,45 +193,45 @@ RUN apk upgrade -U -a && apk add --no-cache \
     imagemagick-svg \
     nodejs-current \
     openssl \
-    php83 \
-    php83-pecl-apcu \
-    php83-bcmath \
-    php83-curl \
-    php83-ctype \
-    php83-dev \
-    php83-dom \
-    php83-exif \
-    php83-gd \
-    php83-gettext \
-    php83-fileinfo \
-    php83-fpm \
-    php83-iconv \
-    php83-json \
-    php83-intl \
-    php83-ldap \
-    php83-mbstring \
-    php83-opcache \
-    php83-openssl \
-    php83-pdo_mysql \
-    php83-pecl-imagick \
-    php83-phar \
-    php83-redis \
-    php83-simplexml \
-    php83-session \
-    php83-sodium \
-    php83-tokenizer \
-    php83-xml \
-    php83-xmlwriter \
-    php83-zip \
-    php83-zlib \
+    php84 \
+    php84-pecl-apcu \
+    php84-bcmath \
+    php84-curl \
+    php84-ctype \
+    php84-dev \
+    php84-dom \
+    php84-exif \
+    php84-gd \
+    php84-gettext \
+    php84-fileinfo \
+    php84-fpm \
+    php84-iconv \
+    php84-json \
+    php84-intl \
+    php84-ldap \
+    php84-mbstring \
+    php84-opcache \
+    php84-openssl \
+    php84-pdo_mysql \
+    php84-pecl-imagick \
+    php84-phar \
+    php84-redis \
+    php84-simplexml \
+    php84-session \
+    php84-sodium \
+    php84-tokenizer \
+    php84-xml \
+    php84-xmlwriter \
+    php84-zip \
+    php84-zlib \
     tzdata \
     unzip \
     zopfli
 
 # add a symlink to php8
-RUN mv /usr/bin/php83 /usr/bin/php-real
-COPY ./src/php/phpwithenv /usr/bin/php83
-RUN ln /usr/bin/php83 /usr/bin/php
+RUN mv /usr/bin/php84 /usr/bin/php-real
+COPY ./src/php/phpwithenv /usr/bin/php84
+RUN ln -f /usr/bin/php84 /usr/bin/php
 
 # S6-OVERLAY
 # install s6-overlay, our init system. Workaround for different versions using TARGETPLATFORM
@@ -263,9 +263,9 @@ RUN touch /etc/s6-overlay/s6-rc.d/user/contents.d/cron
 # END S6-OVERLAY
 
 # PHP
-COPY ./src/php/php.ini /etc/php83/php.ini
-COPY ./src/php/php-fpm.conf /etc/php83/php-fpm.conf
-COPY ./src/php/elabpool.conf /etc/php83/php-fpm.d/elabpool.conf
+COPY ./src/php/php.ini /etc/php84/php.ini
+COPY ./src/php/php-fpm.conf /etc/php84/php-fpm.conf
+COPY ./src/php/elabpool.conf /etc/php84/php-fpm.d/elabpool.conf
 # END PHP
 
 # ELABFTW
@@ -309,7 +309,7 @@ RUN corepack enable
 # so in order for composer to take it into account, it must exist before we call the install command of composer.
 RUN if [ "$BUILD_ALL" = "1" ]; then yarn install \
     && yarn run buildall:prod \
-    && /usr/bin/php83 -d memory_limit=256M -d open_basedir='' /usr/bin/composer install --prefer-dist --no-cache --no-progress --no-dev -a \
+    && /usr/bin/php84 -d memory_limit=256M -d open_basedir='' /usr/bin/composer install --prefer-dist --no-cache --no-progress --no-dev -a \
     && yarn cache clean && rm -r /root/.cache /root/.yarn; fi
 # END ELABFTW
 
@@ -358,9 +358,9 @@ COPY ./src/entrypoint/reload.sh /usr/bin/reload
 RUN chmod 700 /usr/bin/reload
 
 # this is unique to the build and is better than the previously used elabftw version for asset cache busting
-RUN sed -i -e "s/%ELABIMG_BUILD_ID%/$(openssl rand -hex 4)/" /etc/php83/php-fpm.d/elabpool.conf
+RUN sed -i -e "s/%ELABIMG_BUILD_ID%/$(openssl rand -hex 4)/" /etc/php84/php-fpm.d/elabpool.conf
 # this file contains secrets
-RUN chmod 400 /etc/php83/php-fpm.d/elabpool.conf
+RUN chmod 400 /etc/php84/php-fpm.d/elabpool.conf
 
 # start s6
 ENTRYPOINT ["/init"]
