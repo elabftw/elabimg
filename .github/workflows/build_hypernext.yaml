@@ -81,6 +81,12 @@ jobs:
           tags: |
               elabftw/elabimg:${{ github.ref_name }}
 
+      - name: Manual Trivy Setup
+        uses: aquasecurity/setup-trivy@master
+        with:
+          cache: true
+          version: v0.59.1
+
       # VULN SCAN
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
