@@ -52,7 +52,7 @@ jobs:
             - name: Set up QEMU
               uses: docker/setup-qemu-action@v3
               with:
-                image: tonistiigi/binfmt:qemu-v8.1.5
+                image: tonistiigi/binfmt:qemu-v9.2.0
 
             # https://github.com/docker/login-action#docker-hub
             - name: Login to Docker Hub
@@ -69,7 +69,10 @@ jobs:
                 context: .
                 cache-from: type=gha
                 cache-to: type=gha,mode=max
-                platforms: linux/arm64,linux/amd64
+                # disable arm64 for now because of https://github.com/tonistiigi/binfmt/issues/215 https://github.com/docker/setup-qemu-action/issues/188
+                # maybe we can use native arm64 runners instead of qemu if that doesn't get fixed
+                #platforms: linux/arm64,linux/amd64
+                platforms: linux/amd64
                 push: true
                 build-args: |
                     ELABFTW_VERSION=${{ github.ref_name }}
