@@ -11,7 +11,9 @@ permissions:
 
 jobs:
     buildandpush:
-        runs-on: ubuntu-latest
+        #runs-on: ubuntu-latest
+        # temporary revert for arm build
+        runs-on: ubuntu-22.04
         # we only want to run this on stable releases
         if: github.event.release.prerelease == false
         steps:
@@ -38,6 +40,8 @@ jobs:
 
             - name: Checkout elabimg repo
               uses: actions/checkout@v3
+              with:
+                ref: ${{ github.ref_name }}
 
             # https://github.com/marketplace/actions/docker-setup-buildx
             - name: Set up Docker Buildx
