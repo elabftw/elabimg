@@ -70,6 +70,12 @@ getEnv() {
     allow_methods=${ALLOW_METHODS:-}
     allow_headers=${ALLOW_HEADERS:-}
     status_password=${STATUS_PASSWORD:-}
+    use_indigo=${USE_INDIGO:-false}
+    indigo_url=${INDIGO_URL:-https://chem-plugin.elabftw.net/}
+    use_fingerprinter=${USE_FINGERPRINTER:-false}
+    fingerprinter_url=${FINGERPRINTER_URL:-https://chem-plugin.elabftw.net:8000/}
+    use_opencloning=${USE_OPENCLONING:-false}
+    opencloning_url=${OPENCLONING_URL:-https://opencloning.elabftw.net/}
     use_persistent_mysql_conn=${USE_PERSISTENT_MYSQL_CONN:-true}
 }
 
@@ -89,7 +95,7 @@ createUser() {
     INVOKER_PSK=$(openssl rand -base64 42)
     export INVOKER_PSK
     # allow php to read it. use | separator as / is in base64
-    sed -i -e "s|^env\[INVOKER_PSK\] = .*|env[INVOKER_PSK] = ${INVOKER_PSK}|" /etc/php83/php-fpm.d/elabpool.conf
+    sed -i -e "s|^env\[INVOKER_PSK\] = .*|env[INVOKER_PSK] = ${INVOKER_PSK}|" /etc/php84/php-fpm.d/elabpool.conf
     su -p -c "/usr/bin/invoker > /run/invoker/log 2>&1 &" -s /bin/sh "${elabftw_user}"
 }
 
@@ -166,6 +172,22 @@ nginxConf() {
     # adjust client_max_body_size
     sed -i -e "s/%CLIENT_MAX_BODY_SIZE%/${max_upload_size}/" /etc/nginx/nginx.conf
 
+    # ADJUST PLUGINS
+    if [ "$indigo_url" != "false" ] && [ -n "$indigo_url" ] && [ "$use_indigo" != "false" ] && [ -n "$use_indigo" ]; then
+        sed -i -e "s|^#\s*include /etc/nginx/indigo.conf|include /etc/nginx/indigo.conf|" /etc/nginx/common.conf
+        sed -i -e "s|%INDIGO_URL%|${indigo_url}|" /etc/nginx/indigo.conf
+    fi
+    if [ "$fingerprinter_url" != "false" ] && [ -n "$fingerprinter_url" ] && [ "$use_fingerprinter" != "false" ] && [ -n "$use_fingerprinter" ]; then
+        sed -i -e "s|^#\s*include /etc/nginx/fingerprinter.conf|include /etc/nginx/fingerprinter.conf|" /etc/nginx/common.conf
+        sed -i -e "s|%FINGERPRINTER_URL%|${fingerprinter_url}|" /etc/nginx/fingerprinter.conf
+    fi
+    if [ "$opencloning_url" != "false" ] && [ -n "$opencloning_url" ] && [ "$use_opencloning" != "false" ] && [ -n "$use_opencloning" ]; then
+        # remove the trailing / if it exists, or it doesn't work
+        oc_url=${opencloning_url%/}
+        sed -i -e "s|^#\s*include /etc/nginx/opencloning.conf|include /etc/nginx/opencloning.conf|" /etc/nginx/common.conf
+        sed -i -e "s|%OPENCLONING_URL%|${oc_url}|" /etc/nginx/opencloning.conf
+    fi
+
     # SET REAL IP CONFIG
     if ($set_real_ip); then
         # read the IP addresses from env
@@ -240,7 +262,7 @@ nginxConf() {
 
 # PHP-FPM CONFIG
 phpfpmConf() {
-    f="/etc/php83/php-fpm.d/elabpool.conf"
+    f="/etc/php84/php-fpm.d/elabpool.conf"
     # set nginx as user for php-fpm
     sed -i -e "s/%ELABFTW_USER%/${elabftw_user}/" $f
     sed -i -e "s/%ELABFTW_GROUP%/${elabftw_group}/" $f
@@ -250,6 +272,10 @@ phpfpmConf() {
     sed -i -e "s/%PHP_MAX_MEMORY%/${max_php_memory}/" $f
     # add container version in env (named env or it will get replaced by Docker build instruction
     sed -i -e "s/%ELABIMG_VERSION_ENV%/${elabimg_version}/" $f
+    # external services, we want to easily know from php app if they are available
+    sed -i -e "s/%USE_INDIGO%/${use_indigo}/" $f
+    sed -i -e "s/%USE_FINGERPRINTER%/${use_fingerprinter}/" $f
+    sed -i -e "s/%USE_OPENCLONING%/${use_opencloning}/" $f
     # persistent mysql connection setting
     sed -i -e "s/%USE_PERSISTENT_MYSQL_CONN%/${use_persistent_mysql_conn}/" $f
 }
@@ -275,7 +301,7 @@ getRedisUri() {
 
 # PHP CONFIG
 phpConf() {
-    f="/etc/php83/php.ini"
+    f="/etc/php84/php.ini"
     # allow using more memory for php
     sed -i -e "s/%PHP_MEMORY_LIMIT%/${max_php_memory}/" $f
     # change upload_max_filesize and post_max_size
@@ -345,31 +371,31 @@ ldapConf() {
 
 populatePhpEnv() {
 
-    sed -i -e "s/%DB_HOST%/${db_host}/" /etc/php83/php-fpm.d/elabpool.conf
-    sed -i -e "s/%DB_PORT%/${db_port}/" /etc/php83/php-fpm.d/elabpool.conf
-    sed -i -e "s/%DB_NAME%/${db_name}/" /etc/php83/php-fpm.d/elabpool.conf
-    sed -i -e "s/%DB_USER%/${db_user}/" /etc/php83/php-fpm.d/elabpool.conf
-    sed -i -e "s/%DB_PASSWORD%/${db_password}/" /etc/php83/php-fpm.d/elabpool.conf
+    sed -i -e "s/%DB_HOST%/${db_host}/" /etc/php84/php-fpm.d/elabpool.conf
+    sed -i -e "s/%DB_PORT%/${db_port}/" /etc/php84/php-fpm.d/elabpool.conf
+    sed -i -e "s/%DB_NAME%/${db_name}/" /etc/php84/php-fpm.d/elabpool.conf
+    sed -i -e "s/%DB_USER%/${db_user}/" /etc/php84/php-fpm.d/elabpool.conf
+    sed -i -e "s/%DB_PASSWORD%/${db_password}/" /etc/php84/php-fpm.d/elabpool.conf
     # don't add empty stuff
     if [ -n "$db_cert_path" ]; then
         # use # as separator instead of slash
-        sed -i -e "s#%DB_CERT_PATH%#${db_cert_path}#" /etc/php83/php-fpm.d/elabpool.conf
+        sed -i -e "s#%DB_CERT_PATH%#${db_cert_path}#" /etc/php84/php-fpm.d/elabpool.conf
     else
         # remove this if not in use
-        sed -i -e "/%DB_CERT_PATH%/d" /etc/php83/php-fpm.d/elabpool.conf
+        sed -i -e "/%DB_CERT_PATH%/d" /etc/php84/php-fpm.d/elabpool.conf
     fi
-    sed -i -e "s/%SECRET_KEY%/${secret_key}/" /etc/php83/php-fpm.d/elabpool.conf
-    sed -i -e "s/%MAX_UPLOAD_SIZE%/${max_upload_size}/" /etc/php83/php-fpm.d/elabpool.conf
-    sed -i -e "s/%MAX_UPLOAD_TIME%/${max_upload_time}/" /etc/php83/php-fpm.d/elabpool.conf
+    sed -i -e "s/%SECRET_KEY%/${secret_key}/" /etc/php84/php-fpm.d/elabpool.conf
+    sed -i -e "s/%MAX_UPLOAD_SIZE%/${max_upload_size}/" /etc/php84/php-fpm.d/elabpool.conf
+    sed -i -e "s/%MAX_UPLOAD_TIME%/${max_upload_time}/" /etc/php84/php-fpm.d/elabpool.conf
     # use # as separator instead of slash
-    sed -i -e "s#%SITE_URL%#${site_url}#" /etc/php83/php-fpm.d/elabpool.conf
+    sed -i -e "s#%SITE_URL%#${site_url}#" /etc/php84/php-fpm.d/elabpool.conf
     # assume that if ak is set, then sk is too
     if [ -n "$aws_ak" ]; then
-        sed -i -e "s|%ELAB_AWS_ACCESS_KEY%|${aws_ak}|" /etc/php83/php-fpm.d/elabpool.conf
-        sed -i -e "s|%ELAB_AWS_SECRET_KEY%|${aws_sk}|" /etc/php83/php-fpm.d/elabpool.conf
+        sed -i -e "s|%ELAB_AWS_ACCESS_KEY%|${aws_ak}|" /etc/php84/php-fpm.d/elabpool.conf
+        sed -i -e "s|%ELAB_AWS_SECRET_KEY%|${aws_sk}|" /etc/php84/php-fpm.d/elabpool.conf
     else
-        sed -i -e "/%ELAB_AWS_ACCESS_KEY%/d" /etc/php83/php-fpm.d/elabpool.conf
-        sed -i -e "/%ELAB_AWS_SECRET_KEY%/d" /etc/php83/php-fpm.d/elabpool.conf
+        sed -i -e "/%ELAB_AWS_ACCESS_KEY%/d" /etc/php84/php-fpm.d/elabpool.conf
+        sed -i -e "/%ELAB_AWS_SECRET_KEY%/d" /etc/php84/php-fpm.d/elabpool.conf
     fi
 }
 
