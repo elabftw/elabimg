@@ -1,6 +1,14 @@
 # Container image version
 # Note: the version here is from `ELABIMG_VERSION` present in Dockerfile, not the tagged one
 
+# 5.5.0
+
+* Use Alpine Linux 3.21
+* Use PHP 8.4
+* php: remove deprecated session ini options
+* add php-apcu package for cache storage in memory (elabftw/elabftw#5434)
+* add support for ketcher service, fingerprinting service and open cloning service
+
 # 5.4.0
 
 * Add `USE_PERSISTENT_MYSQL_CONN` env var (defaults to `true`). This controls the value for `PDO::ATTR_PERSISTENT` mode in PHP's PDO library.
