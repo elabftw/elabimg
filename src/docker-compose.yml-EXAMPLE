@@ -419,7 +419,7 @@ services:
   #    - elabftw-net
 
   #opencloning-plugin:
-  #  image: manulera/opencloning:prod-oc-base
+  #  image: manulera/opencloning:v0.5.1-baseurl-opencloning
   #  container_name: opencloning-plugin
   #  restart: always
   #  networks:
@@ -428,6 +428,8 @@ services:
   #    - ALLOWED_ORIGINS=*
   #    - ROOT_PATH=/opencloning
   #    - BACKEND_URL=/opencloning/
+  #    - SHOW_APP_BAR=false
+  #    - DATABASE=elabftw
 
 
   # example of a redis container
