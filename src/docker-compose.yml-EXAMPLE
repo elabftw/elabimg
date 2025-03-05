@@ -305,7 +305,7 @@ services:
         #- FINGERPRINTER_URL=http://chem-plugin:8000/
         # This is for the integration of the DNA Cloning tool
         #- USE_OPENCLONING=false
-        #- OPENCLONING_URL=http://opencloning-plugin/
+        #- OPENCLONING_URL=http://opencloning-plugin:8000/
 
         #######
         # DEV #
