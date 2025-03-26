@@ -73,7 +73,7 @@ getEnv() {
     use_indigo=${USE_INDIGO:-false}
     indigo_url=${INDIGO_URL:-https://chem-plugin.elabftw.net/}
     use_fingerprinter=${USE_FINGERPRINTER:-false}
-    fingerprinter_url=${FINGERPRINTER_URL:-https://chem-plugin.elabftw.net:8000/}
+    fingerprinter_url=${FINGERPRINTER_URL:-https://example.com:8000/}
     use_opencloning=${USE_OPENCLONING:-false}
     opencloning_url=${OPENCLONING_URL:-https://opencloning.elabftw.net/}
     use_persistent_mysql_conn=${USE_PERSISTENT_MYSQL_CONN:-true}
@@ -177,10 +177,6 @@ nginxConf() {
         sed -i -e "s|^#\s*include /etc/nginx/indigo.conf|include /etc/nginx/indigo.conf|" /etc/nginx/common.conf
         sed -i -e "s|%INDIGO_URL%|${indigo_url}|" /etc/nginx/indigo.conf
     fi
-    if [ "$fingerprinter_url" != "false" ] && [ -n "$fingerprinter_url" ] && [ "$use_fingerprinter" != "false" ] && [ -n "$use_fingerprinter" ]; then
-        sed -i -e "s|^#\s*include /etc/nginx/fingerprinter.conf|include /etc/nginx/fingerprinter.conf|" /etc/nginx/common.conf
-        sed -i -e "s|%FINGERPRINTER_URL%|${fingerprinter_url}|" /etc/nginx/fingerprinter.conf
-    fi
     if [ "$opencloning_url" != "false" ] && [ -n "$opencloning_url" ] && [ "$use_opencloning" != "false" ] && [ -n "$use_opencloning" ]; then
         # remove the trailing / if it exists, or it doesn't work
         oc_url=${opencloning_url%/}
@@ -275,6 +271,8 @@ phpfpmConf() {
     # external services, we want to easily know from php app if they are available
     sed -i -e "s/%USE_INDIGO%/${use_indigo}/" $f
     sed -i -e "s/%USE_FINGERPRINTER%/${use_fingerprinter}/" $f
+    # use # because url has / in it
+    sed -i -e "s#%FINGERPRINTER_URL%#${fingerprinter_url}#" $f
     sed -i -e "s/%USE_OPENCLONING%/${use_opencloning}/" $f
     # persistent mysql connection setting
     sed -i -e "s/%USE_PERSISTENT_MYSQL_CONN%/${use_persistent_mysql_conn}/" $f
