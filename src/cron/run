@@ -1,2 +1,0 @@
-#!/command/execlineb -P
-/usr/sbin/crond -n -m off

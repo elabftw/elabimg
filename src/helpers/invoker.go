@@ -1,38 +1,60 @@
 // This program will listen on a socket and send commands to bin/console using the php with env
-// it is started by prepare.sh script with the user defined in container env
+// © 2025 Nicolas CARPi
+// License: AGPLv3
 package main
 
 import (
 	"bufio"
+	"context"
 	"fmt"
+	"log"
 	"net"
 	"os"
 	"os/exec"
+	"os/signal"
 	"strings"
 	"sync"
+	"syscall"
 	"time"
 )
 
 func main() {
+	log.SetPrefix("invoker: ")
+	log.Println("starting invoker...")
 	// this var lets us authenticate that messages come from the php app
 	psk := os.Getenv("INVOKER_PSK")
 	socketPath := "/run/invoker/invoker.sock"
 
 	// Remove the socket if it already exists
 	if err := os.RemoveAll(socketPath); err != nil {
-		fmt.Println("Error removing existing socket:", err)
+		fmt.Println("error removing existing socket:", err)
 		return
 	}
 
 	// Listen on the Unix socket
 	listener, err := net.Listen("unix", socketPath)
 	if err != nil {
-		fmt.Println("Error listening on Unix socket:", err)
+		fmt.Println("error listening on Unix socket:", err)
 		return
 	}
 	defer listener.Close()
 
-	log("info", "listening on "+socketPath)
+	log.Printf("listening on: %s", socketPath)
+
+	// Create a context that we cancel on SIGINT/SIGTERM
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	// Listen for shutdown signals
+	sigCh := make(chan os.Signal, 1)
+	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
+	go func() {
+		<-sigCh
+		log.Println("shutdown signal received, terminating…")
+		// this will make listener.Accept() unblock with an error
+		listener.Close()
+		cancel()
+	}()
 
 	var wg sync.WaitGroup
 	var mu sync.Mutex
@@ -40,8 +62,17 @@ func main() {
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
-			log("error", fmt.Sprint("Error accepting connection:", err))
-			continue
+			// If context is done, this error is expected
+			select {
+			case <-ctx.Done():
+				log.Println("stop accepting connections")
+				goto wait
+			default:
+				log.Printf("error accepting connection: %v", err)
+				// small sleep to avoid busy-loop on weird errors
+				time.Sleep(100 * time.Millisecond)
+				continue
+			}
 		}
 
 		wg.Add(1)
@@ -51,14 +82,11 @@ func main() {
 		}(conn)
 	}
 
+wait:
+	// Wait for all in-flight handlers to finish
 	wg.Wait()
-}
+	log.Println("all connections handled, exiting")
 
-// log prints a log message with the current timestamp in ISO 8601 format
-func log(level, message string) {
-	now := time.Now()
-	timestamp := now.Format(time.RFC3339)
-	fmt.Printf("[%s] invoker: %s: %s\n", timestamp, level, message)
 }
 
 func handleConnection(conn net.Conn, mu *sync.Mutex, psk string) {
@@ -71,13 +99,13 @@ func handleConnection(conn net.Conn, mu *sync.Mutex, psk string) {
 		// Extract the PSK from the message
 		parts := strings.SplitN(cmdStr, "|", 2)
 		if len(parts) != 2 || parts[0] != psk {
-			log("error", "invalid or missing PSK")
+			log.Println("invalid or missing PSK")
 			continue
 		}
 
 		// Extract the actual command
 		actualCmd := parts[1]
-		log("info", "received command: "+actualCmd)
+		log.Printf("received command: %s", actualCmd)
 
 		// track the time it takes to run the command, so start a timer
 		start := time.Now()
@@ -90,17 +118,17 @@ func handleConnection(conn net.Conn, mu *sync.Mutex, psk string) {
 		// stop timer
 		elapsed := time.Since(start)
 		elapsedFormatted := fmt.Sprintf("%dm%02ds", int(elapsed.Minutes()), int(elapsed.Seconds())%60)
-		log("info", fmt.Sprintf("finished processing: %s in %s", actualCmd, elapsedFormatted))
+		log.Printf("finished processing: %s in %s", actualCmd, elapsedFormatted)
 		mu.Unlock()
 
 		if err != nil {
-			fmt.Fprintf(conn, "Error executing command: %v\n", err)
+			fmt.Fprintf(conn, "error executing command: %v\n", err)
 		} else {
-			fmt.Fprintf(conn, "Output:\n%s\n", output)
+			fmt.Fprintf(conn, "output:\n%s\n", output)
 		}
 	}
 
 	if err := scanner.Err(); err != nil {
-		fmt.Println("Error reading from connection:", err)
+		fmt.Println("error reading from connection:", err)
 	}
 }

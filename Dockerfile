@@ -2,15 +2,16 @@
 # nginx custom + php-fpm + elabftw complete production files
 # https://github.com/elabftw/elabimg
 
-FROM golang:1.22-alpine3.21 AS invoker-builder
+FROM golang:1.24-alpine3.21 AS go-builder
 # using an explicit default argument for TARGETPLATFORM will override the buildx implicit value
 ARG TARGETPLATFORM
 ENV TARGETPLATFORM=${TARGETPLATFORM:-linux/amd64}
 WORKDIR /app
-COPY src/invoker .
+COPY src/helpers .
 # allow building for ARM, disable CGO to have full static build, target linux, add -s and -w ldflags to remove debug symbols
 RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then ARCH=amd64; elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then ARCH=arm; elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then ARCH=arm64; else ARCH=amd64; fi \
-    && CGO_ENABLED=0 GOOS=linux GOARCH=$ARCH go build -ldflags="-s -w" -o invoker
+    && CGO_ENABLED=0 GOOS=linux GOARCH=$ARCH go build -ldflags="-s -w" -o invoker invoker.go \
+    && go build -ldflags="-s -w" -o chronos chronos.go
 
 # build nginx with only the bare minimum of features or modules
 # Note: no need to chain the RUN commands here as it's a builder image and nothing will be kept
@@ -120,37 +121,13 @@ RUN ./configure \
 USER root
 RUN make install
 
-# CRONIE BUILDER
-FROM alpine:3.21 AS cronie-builder
-ENV CRONIE_VERSION=1.5.7
-# install dependencies
-RUN apk add --no-cache build-base libc-dev make gcc autoconf automake abuild musl-obstack-dev
-# create a builder user and add it to abuild group so it can build packages
-RUN adduser -D -G abuild builder
-RUN mkdir /build && chown builder:abuild /build
-WORKDIR /build
-USER builder
-COPY ./src/cron/APKBUILD .
-# generate a RSA key, non-interactive and append to config file
-RUN abuild-keygen -n -a
-# move the key in that folder so it is trusted
-USER root
-RUN cp /home/builder/.abuild/*.pub /etc/apk/keys
-USER builder
-# we use find because the package will end up in an arch specific dir (x86_64, arm, ...)
-# and this way it'll work every time
-# we move it to /build so it's easier to find from the other image
-# use cronie-1 to avoid copying cronie-doc
-RUN abuild && find /home/builder/packages -type f -name 'cronie-1*.apk' -exec mv {} /build/apk \;
-# END CRONIE BUILDER
-
 #############################
 # ELABFTW + NGINX + PHP-FPM #
 #############################
 FROM alpine:3.21
 
 # this is versioning for the container image
-ENV ELABIMG_VERSION=5.5.0
+ENV ELABIMG_VERSION=5.6.0
 
 # the target elabftw version is passed with --build-arg
 # it is a mandatory ARG
@@ -229,8 +206,6 @@ RUN apk upgrade -U -a && apk add --no-cache \
     zopfli
 
 # add a symlink to php8
-RUN mv /usr/bin/php84 /usr/bin/php-real
-COPY ./src/php/phpwithenv /usr/bin/php84
 RUN ln -f /usr/bin/php84 /usr/bin/php
 
 # S6-OVERLAY
@@ -256,10 +231,6 @@ RUN touch /etc/s6-overlay/s6-rc.d/user/contents.d/nginx
 RUN mkdir -p /etc/s6-overlay/s6-rc.d/php && echo "longrun" > /etc/s6-overlay/s6-rc.d/php/type
 COPY ./src/php/run /etc/s6-overlay/s6-rc.d/php/
 RUN touch /etc/s6-overlay/s6-rc.d/user/contents.d/php
-# create cron s6 service
-RUN mkdir -p /etc/s6-overlay/s6-rc.d/cron && echo "longrun" > /etc/s6-overlay/s6-rc.d/cron/type
-COPY ./src/cron/run /etc/s6-overlay/s6-rc.d/cron/
-RUN touch /etc/s6-overlay/s6-rc.d/user/contents.d/cron
 # END S6-OVERLAY
 
 # PHP
@@ -329,10 +300,9 @@ RUN mkdir -p /etc/s6-overlay/s6-rc.d/entrypoint && echo "oneshot" > /etc/s6-over
 COPY ./src/entrypoint/up /etc/s6-overlay/s6-rc.d/entrypoint/
 RUN touch /etc/s6-overlay/s6-rc.d/user/contents.d/entrypoint
 
-# docker-entrypoint.sh must run before nginx, php and cron are started
+# docker-entrypoint.sh must run before nginx and php are started
 RUN echo "entrypoint" > /etc/s6-overlay/s6-rc.d/nginx/dependencies
 RUN echo "entrypoint" > /etc/s6-overlay/s6-rc.d/php/dependencies
-RUN echo "entrypoint" > /etc/s6-overlay/s6-rc.d/cron/dependencies
 
 COPY ./src/entrypoint/docker-entrypoint.sh /usr/sbin/docker-entrypoint.sh
 # these values are not in env and cannot be accessed by script so modify them here
@@ -341,17 +311,13 @@ RUN sed -i -e "s/%ELABIMG_VERSION%/$ELABIMG_VERSION/" \
     -e "s/%S6_OVERLAY_VERSION%/$S6_OVERLAY_VERSION/" /usr/sbin/docker-entrypoint.sh
 # END DOCKER-ENTRYPOINT.SH
 
-# CRONIE
-COPY --from=cronie-builder --chown=root:root /build/apk /tmp/cronie.apk
-COPY --from=cronie-builder --chown=root:root /home/builder/.abuild/*.pub /etc/apk/keys
-RUN apk add /tmp/cronie.apk && rm /tmp/cronie.apk
-COPY ./src/cron/cronjob /etc/elabftw-cronjob
-COPY ./src/cron/cron.allow /etc/cron.d/cron.allow
-# END CRONIE
-
 # INVOKER
-COPY --from=invoker-builder /app/invoker /usr/bin/invoker
+COPY --from=go-builder /app/invoker /usr/bin/invoker
 RUN chmod +x /usr/bin/invoker
+
+# CHRONOS
+COPY --from=go-builder /app/chronos /usr/bin/chronos
+RUN chmod +x /usr/bin/chronos
 
 # add a helper script to reload services easily
 COPY ./src/entrypoint/reload.sh /usr/bin/reload

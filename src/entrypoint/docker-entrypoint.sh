@@ -13,18 +13,12 @@
 # and unset the sensitive ones so they cannot be accessed by a rogue process
 getEnv() {
     db_host=${DB_HOST:-localhost}
-    unset DB_HOST
     db_port=${DB_PORT:-3306}
-    unset DB_PORT
     db_name=${DB_NAME:-elabftw}
-    unset DB_NAME
     db_user=${DB_USER:-elabftw}
-    unset DB_USER
     # Note: no default value here
     db_password=${DB_PASSWORD:-}
-    unset DB_PASSWORD
     db_cert_path=${DB_CERT_PATH:-}
-    unset DB_CERT_PATH
     site_url=${SITE_URL:-}
     # remove trailing slash for site_url
     site_url=$(echo "${site_url}" | sed 's:/$::')
@@ -32,7 +26,6 @@ getEnv() {
     disable_https=${DISABLE_HTTPS:-false}
     enable_letsencrypt=${ENABLE_LETSENCRYPT:-false}
     secret_key=${SECRET_KEY:-}
-    unset SECRET_KEY
     max_php_memory=${MAX_PHP_MEMORY:-2G}
     max_upload_size=${MAX_UPLOAD_SIZE:-100M}
     max_upload_time=${MAX_UPLOAD_TIME:-900000}
@@ -62,9 +55,7 @@ getEnv() {
     auto_db_init=${AUTO_DB_INIT:-false}
     auto_db_update=${AUTO_DB_UPDATE:-false}
     aws_ak=${ELAB_AWS_ACCESS_KEY:-}
-    unset ELAB_AWS_ACCESS_KEY
     aws_sk=${ELAB_AWS_SECRET_KEY:-}
-    unset ELAB_AWS_SECRET_KEY
     ldap_tls_reqcert=${LDAP_TLS_REQCERT:-false}
     allow_origin=${ALLOW_ORIGIN:-}
     allow_methods=${ALLOW_METHODS:-}
@@ -79,24 +70,19 @@ getEnv() {
     use_persistent_mysql_conn=${USE_PERSISTENT_MYSQL_CONN:-true}
 }
 
-# Create the user that will run nginx/php/cronjobs
+# Create the user that will run nginx/php/helpers
 createUser() {
     getent group "${elabftw_group}" 2>&1 > /dev/null || /usr/sbin/addgroup -g "${elabftw_groupid}" "${elabftw_group}"
     getent shadow "${elabftw_user}" 2>&1 > /dev/null || /usr/sbin/adduser -u "${elabftw_userid}" -G "${elabftw_group}" "${elabftw_user}"
-    # crontab
-    /bin/echo "${elabftw_user}" > /etc/cron.d/cron.allow
-    if [ -f /etc/elabftw-cronjob ]; then
-        /bin/mv /etc/elabftw-cronjob "/etc/crontabs/${elabftw_user}"
-    fi
     # run invoker with the specific user
     mkdir -p /run/invoker
     chown "${elabftw_user}":"${elabftw_group}" /run/invoker
-    # TODO send logs to stdout
     INVOKER_PSK=$(openssl rand -base64 42)
     export INVOKER_PSK
     # allow php to read it. use | separator as / is in base64
     sed -i -e "s|^env\[INVOKER_PSK\] = .*|env[INVOKER_PSK] = ${INVOKER_PSK}|" /etc/php84/php-fpm.d/elabpool.conf
-    su -p -c "/usr/bin/invoker > /run/invoker/log 2>&1 &" -s /bin/sh "${elabftw_user}"
+    su -p -c "/usr/bin/invoker &" -s /bin/sh "${elabftw_user}"
+    su -p -c "/usr/bin/chronos &" -s /bin/sh "${elabftw_user}"
 }
 
 checkSiteUrl() {
@@ -397,27 +383,6 @@ populatePhpEnv() {
     fi
 }
 
-# create a file to hold the env so bash phpwithenv aka php can read it
-populateBashEnv() {
-    # cron will forget all env, so we use a bash profile to set it for our user
-    filepath="/etc/elabftw_env"
-    content="export DB_HOST='${db_host}'
-    export DB_PORT='${db_port}'
-    export DB_NAME='${db_name}'
-    export DB_USER='${db_user}'
-    export DB_PASSWORD='${db_password}'
-    export DB_CERT_PATH='${db_cert_path}'
-    export MAX_UPLOAD_SIZE='${max_upload_size}'
-    export MAX_UPLOAD_TIME='${max_upload_time}'
-    export SECRET_KEY='${secret_key}'
-    export SITE_URL='${site_url}'
-    export ELAB_AWS_ACCESS_KEY='${aws_ak}'
-    export ELAB_AWS_SECRET_KEY='${aws_sk}'"
-    echo "$content" > "$filepath"
-    chown "${elabftw_user}":"${elabftw_group}" "$filepath"
-    chmod 400 "$filepath"
-}
-
 # display a friendly message with running versions
 startupMessage() {
     nginx_version=$(/usr/sbin/nginx -v 2>&1)
@@ -460,7 +425,6 @@ phpConf
 elabftwConf
 ldapConf
 populatePhpEnv
-populateBashEnv
 dbInit
 dbUpdate
 startupMessage
