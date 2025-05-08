@@ -8,6 +8,7 @@
 * Bump go to 1.24
 * Make invoker handle os signals better
 * Bump nginx to 1.28
+* Bump composer to 2.8.8
 
 # 5.5.0
 
