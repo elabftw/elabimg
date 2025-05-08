@@ -1,6 +1,13 @@
 # Container image version
 # Note: the version here is from `ELABIMG_VERSION` present in Dockerfile, not the tagged one
 
+# 5.6.0
+
+* Replace cronie (cronjob app) with a go binary: now errors appear in container output. Also simplifies build process.
+* Get rid of phpwithenv that was created to work around cron limitations with env vars
+* Bump go to 1.24
+* Make invoker handle os signals better
+
 # 5.5.0
 
 * Use Alpine Linux 3.21
