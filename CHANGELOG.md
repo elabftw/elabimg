@@ -7,6 +7,7 @@
 * Get rid of phpwithenv that was created to work around cron limitations with env vars
 * Bump go to 1.24
 * Make invoker handle os signals better
+* Bump nginx to 1.28
 
 # 5.5.0
 
