@@ -23,6 +23,7 @@ jobs:
               with:
                 prevent: true
                 allowed-hosts: >
+                  auth.docker.io
                   codeload.github.com
                   dl-cdn.alpinelinux.org
                   docker.io
