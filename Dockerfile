@@ -96,7 +96,6 @@ RUN ./configure \
         --with-http_ssl_module \
         --with-http_v2_module \
         --with-http_realip_module \
-        --with-http_gzip_static_module \
         --with-http_stub_status_module \
         --add-module=/build/ngx_brotli \
         --add-module=/build/headers-more-nginx-module \
@@ -106,7 +105,6 @@ RUN ./configure \
         --without-http_geo_module \
         --without-http_limit_conn_module \
         --without-http_limit_req_module \
-        --without-http_map_module \
         --without-http_memcached_module \
         --without-http_referer_module \
         --without-http_scgi_module \
@@ -202,8 +200,7 @@ RUN apk upgrade -U -a && apk add --no-cache \
     php84-zip \
     php84-zlib \
     tzdata \
-    unzip \
-    zopfli
+    unzip
 
 # add a symlink to php8
 RUN ln -f /usr/bin/php84 /usr/bin/php

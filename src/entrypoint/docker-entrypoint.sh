@@ -201,9 +201,9 @@ nginxConf() {
     # no unsafe-eval in prod
     unsafe_eval=""
     # DEV MODE
-    # we don't want to serve brotli/gzip compressed assets in dev (or we would need to recompress them after every change!)
+    # we don't want to serve brotli compressed assets in dev (or we would need to recompress them after every change!)
     if ($dev_mode); then
-        rm -f /etc/nginx/conf.d/brotli.conf /etc/nginx/conf.d/gzip.conf
+        rm -f /etc/nginx/conf.d/brotli.conf
         # to allow webpack in watch/dev mode we need to allow unsafe-eval for script-src
         unsafe_eval="'unsafe-eval'"
     fi
