@@ -1,6 +1,12 @@
 # Container image version
 # Note: the version here is from `ELABIMG_VERSION` present in Dockerfile, not the tagged one
 
+# 5.6.1
+
+* Fix bug where `FINGERPRINTER_USE_PROXY` wasn't taken into account properly
+* Add `FINGERPRINTER_USE_PROXY` env
+* Bump composer to 2.8.8
+
 # 5.6.0
 
 * Replace cronie (cronjob app) with a go binary: now errors appear in container output. Also simplifies build process.
