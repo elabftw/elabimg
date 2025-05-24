@@ -3,6 +3,7 @@
 
 # 5.6.2
 
+* Add imagemagick-heic package to support creating thumbnails from HEIF/HEIC formats
 * Fix CSP preventing download of files from OpenCloning (PR #56, fix #55)
 
 # 5.6.1

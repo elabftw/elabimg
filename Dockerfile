@@ -159,6 +159,7 @@ RUN mkdir -p /var/log/nginx \
 # php8-iconv is required by LdapRecord php library
 # git is required by yarn
 # imagemagick-svg is for mathjax support in pdfs
+# imagemagick-heic is for support for heic/heif
 # don't put line comments inside this instruction
 RUN apk upgrade -U -a && apk add --no-cache \
     bash \
@@ -167,6 +168,7 @@ RUN apk upgrade -U -a && apk add --no-cache \
     freetype \
     ghostscript \
     git \
+    imagemagick-heic \
     imagemagick-svg \
     nodejs-current \
     openssl \
