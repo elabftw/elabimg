@@ -1,6 +1,10 @@
 # Container image version
 # Note: the version here is from `ELABIMG_VERSION` present in Dockerfile, not the tagged one
 
+# 5.6.2
+
+* Fix CSP preventing download of files from OpenCloning (PR #56, fix #55)
+
 # 5.6.1
 
 * Fix bug where `FINGERPRINTER_USE_PROXY` wasn't taken into account properly
