@@ -6,6 +6,7 @@ package main
 import (
 	"context"
 	"log"
+	"math/rand"
 	"os"
 	"os/exec"
 	"os/signal"
@@ -13,9 +14,16 @@ import (
 	"time"
 )
 
+// jitter to avoid all tasks executing at the exact same second
+var jitter time.Duration
+
 func main() {
 	log.SetPrefix("chronos: ")
 	log.Println("starting chronos...")
+	// generate jitter
+	rand.Seed(time.Now().UnixNano())
+	jitter = time.Duration(rand.Intn(60)) * time.Second
+	log.Printf("jitter: %v\n", jitter)
 	// set up a context that is canceled on SIGINT/SIGTERM
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -43,7 +51,7 @@ func main() {
 func scheduleWeekly(ctx context.Context, weekday time.Weekday, hour, min int, cmdArgs []string) {
 	for {
 		next := nextWeekdayTime(time.Now(), weekday, hour, min)
-		waitOrExit(ctx, time.Until(next))
+		waitOrExit(ctx, time.Until(next)+jitter)
 		runPHP(next, cmdArgs)
 		// after first run, interval is always 7 days
 		waitOrExit(ctx, 7*24*time.Hour)
@@ -54,7 +62,7 @@ func scheduleWeekly(ctx context.Context, weekday time.Weekday, hour, min int, cm
 func scheduleDaily(ctx context.Context, hour, min int, cmdArgs []string) {
 	for {
 		next := nextDailyTime(time.Now(), hour, min)
-		waitOrExit(ctx, time.Until(next))
+		waitOrExit(ctx, time.Until(next)+jitter)
 		runPHP(next, cmdArgs)
 		// after first run, interval is always 24h
 		waitOrExit(ctx, 24*time.Hour)
@@ -63,10 +71,7 @@ func scheduleDaily(ctx context.Context, hour, min int, cmdArgs []string) {
 
 // scheduleEveryMinute runs cmdArgs every 1 minute on the minute.
 func scheduleEveryMinute(ctx context.Context, cmdArgs []string) {
-	// align to next full minute
-	now := time.Now()
-	first := now.Truncate(time.Minute).Add(time.Minute)
-	waitOrExit(ctx, time.Until(first))
+	waitOrExit(ctx, jitter)
 
 	ticker := time.NewTicker(time.Minute)
 	defer ticker.Stop()

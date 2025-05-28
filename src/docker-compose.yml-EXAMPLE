@@ -421,7 +421,7 @@ services:
   #    - elabftw-net
 
   #opencloning-plugin:
-  #  image: manulera/opencloning:v0.5.1-baseurl-opencloning
+  #  image: manulera/opencloning:v0.5.5-baseurl-opencloning
   #  container_name: opencloning-plugin
   #  restart: always
   #  networks:

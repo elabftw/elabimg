@@ -64,6 +64,7 @@ getEnv() {
     use_indigo=${USE_INDIGO:-false}
     indigo_url=${INDIGO_URL:-https://chem-plugin.elabftw.net/}
     use_fingerprinter=${USE_FINGERPRINTER:-false}
+    fingerprinter_use_proxy=${FINGERPRINTER_USE_PROXY:-false}
     fingerprinter_url=${FINGERPRINTER_URL:-https://example.com:8000/}
     use_opencloning=${USE_OPENCLONING:-false}
     opencloning_url=${OPENCLONING_URL:-https://opencloning.elabftw.net/}
@@ -257,6 +258,7 @@ phpfpmConf() {
     # external services, we want to easily know from php app if they are available
     sed -i -e "s/%USE_INDIGO%/${use_indigo}/" $f
     sed -i -e "s/%USE_FINGERPRINTER%/${use_fingerprinter}/" $f
+    sed -i -e "s/%FINGERPRINTER_USE_PROXY%/${fingerprinter_use_proxy}/" $f
     # use # because url has / in it
     sed -i -e "s#%FINGERPRINTER_URL%#${fingerprinter_url}#" $f
     sed -i -e "s/%USE_OPENCLONING%/${use_opencloning}/" $f
