@@ -2,9 +2,10 @@
 
 This Docker image is for [eLabFTW](https://www.elabftw.net). It runs three services:
 
-* Nginx webserver
-* PHP-FPM service
-* Cron daemon to execute recurrent tasks (sending notifications)
+* nginx: the webserver
+* php-fpm: to handle requests to PHP files
+* chronos: executes tasks on a schedule (similar to a cronjob)
+* invoker: executes tasks asynchronously (useful for exports for instance)
 
 These services are managed by s6-overlay and are all heavily customized for running eLabFTW.
 
@@ -21,10 +22,10 @@ When defining which image version to use, you can use different tags:
 
 # Building this image
 
-Set the `ELABFTW_VERSION` to a tagged release or a branch. The latest stable version can be found [here](https://github.com/elabftw/elabftw/releases/latest).
+Set the `ELABFTW_VERSION` build arg to a tagged release or a branch. The latest stable version can be found [here](https://github.com/elabftw/elabftw/releases/latest).
 
 ~~~bash
-DOCKER_BUILDKIT=1 docker build --build-arg ELABFTW_VERSION=X.Y.Z -t elabftw/elabimg:X.Y.Z .
+docker build --build-arg ELABFTW_VERSION=X.Y.Z -t elabftw/elabimg:X.Y.Z .
 ~~~
 
 For dev, add `--build-arg BUILD_ALL=0` to skip the installation of dependencies and building of assets, because the folder will be bind-mounted to your host anyway.
