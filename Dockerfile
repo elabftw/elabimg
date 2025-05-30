@@ -127,7 +127,7 @@ RUN make install
 FROM alpine:3.21
 
 # this is versioning for the container image
-ENV ELABIMG_VERSION=5.6.3
+ENV ELABIMG_VERSION=5.6.4
 
 # the target elabftw version is passed with --build-arg
 # it is a mandatory ARG
