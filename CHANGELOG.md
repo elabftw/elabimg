@@ -1,6 +1,10 @@
 # Container image version
 # Note: the version here is from `ELABIMG_VERSION` present in Dockerfile, not the tagged one
 
+# 5.6.4
+
+* Adjust CSP for OpenCloning subdocument (fix elabftw/elabftw#5686)
+
 # 5.6.3
 
 * Add jitter to avoid chronos execution at same exact second. At container startup, a random delay is chosen (between 0 and 59 seconds) and applied to all chronos subroutines.
