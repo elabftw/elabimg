@@ -1,6 +1,6 @@
 # Description
 
-This Docker image is for [eLabFTW](https://www.elabftw.net). It runs three services:
+This Docker image is for [eLabFTW](https://www.elabftw.net). It runs four services:
 
 * nginx: the webserver
 * php-fpm: to handle requests to PHP files
