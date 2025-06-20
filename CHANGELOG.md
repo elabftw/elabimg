@@ -1,8 +1,9 @@
 # Container image version
 # Note: the version here is from `ELABIMG_VERSION` present in Dockerfile, not the tagged one
 
-# next
+# 5.6.5
 
+* Adjust CSP config for OpenCloning page with new assets.opencloning.org domain
 * Change the example file mysql container version to 8.4 from 8.0
 
 # 5.6.4
