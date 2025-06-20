@@ -256,6 +256,7 @@ RUN tar xzf src.tgz && mv elabftw-* src \
     && mv src/node-builder.js /elabftw \
     && mv src/package.json /elabftw \
     && mv src/src /elabftw \
+    && mv src/tsconfig.json /elabftw \
     && mv src/web /elabftw \
     && mv src/yarn.lock /elabftw \
     && mv src/.yarnrc.yml /elabftw \
