@@ -265,6 +265,8 @@ phpfpmConf() {
     sed -i -e "s/%USE_OPENCLONING%/${use_opencloning}/" $f
     # persistent mysql connection setting
     sed -i -e "s/%USE_PERSISTENT_MYSQL_CONN%/${use_persistent_mysql_conn}/" $f
+    sed -i -e "s/%DEV_MODE%/${dev_mode}/" $f
+    sed -i -e "s/%DEMO_MODE%/${demo_mode}/" $f
 }
 
 getRedisUri() {
