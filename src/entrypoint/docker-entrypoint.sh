@@ -52,6 +52,7 @@ getEnv() {
     # allow limiting log pollution on startup
     silent_init=${SILENT_INIT:-false}
     dev_mode=${DEV_MODE:-false}
+    demo_mode=${DEMO_MODE:-false}
     auto_db_init=${AUTO_DB_INIT:-false}
     auto_db_update=${AUTO_DB_UPDATE:-false}
     aws_ak=${ELAB_AWS_ACCESS_KEY:-}

@@ -289,6 +289,10 @@ services:
         # default value: false
         #- AUTO_DB_UPDATE=false
 
+        # set to true to set the instance in demo mode, with autologin for demo users
+        # default value: false
+        #- DEMO_MODE=false
+
         ###########
         # PLUGINS #
         ###########
