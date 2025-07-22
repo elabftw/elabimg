@@ -1,6 +1,11 @@
 # Container image version
 # Note: the version here is from `ELABIMG_VERSION` present in Dockerfile, not the tagged one
 
+# 5.7.0
+
+* Add form-action: 'self' to CSP as it does not fallback to default-src.
+  https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Security-Policy/form-action
+
 # 5.6.5
 
 * Adjust CSP config for OpenCloning page with new assets.opencloning.org domain
