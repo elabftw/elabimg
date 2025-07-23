@@ -70,6 +70,8 @@ getEnv() {
     use_opencloning=${USE_OPENCLONING:-false}
     opencloning_url=${OPENCLONING_URL:-https://opencloning.elabftw.net/}
     use_persistent_mysql_conn=${USE_PERSISTENT_MYSQL_CONN:-true}
+    pubchem_pug_url=${PUBCHEM_PUG_URL:-https://pubchem.ncbi.nlm.nih.gov/rest/pug}
+    pubchem_pug_view_url=${PUBCHEM_PUG_VIEW_URL:-https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data}
 }
 
 # Create the user that will run nginx/php/helpers
@@ -267,6 +269,9 @@ phpfpmConf() {
     sed -i -e "s/%USE_PERSISTENT_MYSQL_CONN%/${use_persistent_mysql_conn}/" $f
     sed -i -e "s/%DEV_MODE%/${dev_mode}/" $f
     sed -i -e "s/%DEMO_MODE%/${demo_mode}/" $f
+    # pubchem urls
+    sed -i -e "s|%PUBCHEM_PUG_URL%|${pubchem_pug_url}|" $f
+    sed -i -e "s|%PUBCHEM_PUG_VIEW_URL%|${pubchem_pug_view_url}|" $f
 }
 
 getRedisUri() {
