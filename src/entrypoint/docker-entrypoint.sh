@@ -425,7 +425,7 @@ say() {
     fi
 }
 
-# script start
+# SCRIPT START
 getEnv
 checkSiteUrl
 createUser
