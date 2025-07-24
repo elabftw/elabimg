@@ -71,12 +71,10 @@ jobs:
         id: push
         with:
           context: .
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          # disable arm64 for now because of https://github.com/tonistiigi/binfmt/issues/215 https://github.com/docker/setup-qemu-action/issues/188
-          # maybe we can use native arm64 runners instead of qemu if that doesn't get fixed
+          # the scope parameter is necessary when doing multi arch builds or we'll always miss cache
+          cache-from: type=gha,scope=${{ matrix.os }}-${{ matrix.arch }}
+          cache-to:   type=gha,mode=max,scope=${{ matrix.os }}-${{ matrix.arch }}
           platforms: linux/arm64,linux/amd64
-          #platforms: linux/amd64
           push: true
           build-args: |
               ELABFTW_VERSION=${{ github.ref_name }}
