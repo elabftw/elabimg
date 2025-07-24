@@ -287,7 +287,7 @@ RUN if [ "$BUILD_ALL" = "1" ]; then yarn install \
     && yarn cache clean && rm -r /root/.cache /root/.yarn; fi
 
 # declare a default value for these ENV values so they are accessible in php-cli
-# they will still be overriden by runtime env, but if they are not declared here, php-cli won't see them ever
+# they will still be overridden by runtime env, but if they are not declared here, php-cli won't see them ever
 ENV PUBCHEM_PUG_URL=https://pubchem.ncbi.nlm.nih.gov/rest/pug
 ENV PUBCHEM_PUG_VIEW_URL=https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data
 # END ELABFTW
