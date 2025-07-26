@@ -210,6 +210,8 @@ nginxConf() {
         rm -f /etc/nginx/conf.d/brotli.conf /etc/nginx/conf.d/gzip.conf
         # to allow webpack in watch/dev mode we need to allow unsafe-eval for script-src
         unsafe_eval="'unsafe-eval'"
+        # fix git complaining: fatal: detected dubious ownership in repository at '/elabftw'
+        git config --global --add safe.directory /elabftw
     fi
     # set unsafe-eval in CSP
     sed -i -e "s/%UNSAFE-EVAL4DEV%/${unsafe_eval}/" /etc/nginx/common.conf
