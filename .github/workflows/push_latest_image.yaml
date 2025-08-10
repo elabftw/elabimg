@@ -66,33 +66,14 @@ jobs:
                 context: .
                 platforms: linux/arm64,linux/amd64
                 push: true
-                cache-from: type=gha
-                cache-to: type=gha,mode=max
+                # the scope parameter is necessary when doing multi arch builds or we'll always miss cache
+                cache-from: type=gha,scope=${{ matrix.os }}-${{ matrix.arch }}
+                cache-to:   type=gha,mode=max,scope=${{ matrix.os }}-${{ matrix.arch }}
                 build-args: |
                     ELABFTW_VERSION=${{ github.ref_name }}
                 tags: |
                     elabftw/elabimg:latest
                     elabftw/elabimg:${{ github.ref_name }}
-
-            # VULN SCAN
-            #- name: Run Trivy vulnerability scanner
-            #  uses: aquasecurity/trivy-action@master
-            #  with:
-            #    image-ref: elabftw/elabimg:${{ github.ref_name }}
-            #    format: 'table'
-            #    exit-code: '1'
-            #    ignore-unfixed: true
-            #    vuln-type: 'os,library'
-            #    severity: 'CRITICAL,HIGH'
-
-            #- name: Run Trivy in GitHub SBOM mode and submit results to Dependency Graph
-            #  uses: aquasecurity/trivy-action@master
-            #  with:
-            #    scan-type: 'fs'
-            #    format: 'github'
-            #    output: 'dependency-results.sbom.json'
-            #    image-ref: '.'
-            #    github-pat: ${{ secrets.GITHUB_TOKEN }}
 
             # build the IRD branch
             - name: Build IRD image
@@ -107,3 +88,7 @@ jobs:
                     ELABFTW_VERSION=ird
                 tags: |
                     elabftw/elabimg:ird-${{ github.ref_name }}
+
+            - name: Send request to webhook to trigger update of demo
+              run: |
+                curl -v -H 'X-Hook-Secret: ${{ secrets.HOOK_SECRET }}' ${{ secrets.HOOK_URL }}
