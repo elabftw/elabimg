@@ -76,6 +76,13 @@ getEnv() {
 
 # Create the user that will run nginx/php/helpers
 createUser() {
+    # in CI (CircleCI), we might have klogd user/group there with GID 101, which is an issue
+    # it is not clear where this klogd is coming from in that image, as it doesn't appear locally
+    # apk info -v alpine-baselayout shows the same for local image or ci
+    # no package installing klogd could be found in the installed packages list
+    # so let's delete them
+    deluser klogd 2>/dev/null || true
+    delgroup klogd 2>/dev/null || true
     getent group "${elabftw_group}" 2>&1 > /dev/null || /usr/sbin/addgroup -g "${elabftw_groupid}" "${elabftw_group}"
     getent shadow "${elabftw_user}" 2>&1 > /dev/null || /usr/sbin/adduser -u "${elabftw_userid}" -G "${elabftw_group}" "${elabftw_user}"
     # run invoker with the specific user
