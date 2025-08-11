@@ -19,7 +19,7 @@ getEnv() {
     # Note: no default value here
     db_password=${DB_PASSWORD:-}
     db_cert_path=${DB_CERT_PATH:-}
-    site_url=${SITE_URL:-}
+    site_url=${SITE_URL:-https://localhost}
     # remove trailing slash for site_url
     site_url=$(echo "${site_url}" | sed 's:/$::')
     server_name=${SERVER_NAME:-localhost}
@@ -97,15 +97,8 @@ createUser() {
 }
 
 checkSiteUrl() {
-    if [ -z "${site_url}" ]; then
-        echo "=======================================================" >&2
-        echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" >&2
-        echo "" >&2
-        echo "ERROR: environment variable SITE_URL not set!" >&2
-        echo "Continuing anyway but you need to set it and restart the container." >&2
-        echo "" >&2
-        echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" >&2
-        echo "=======================================================" >&2
+    if [ "${site_url}" == "https://localhost" ]; then
+        echo "docker-entrypoint.sh: notice: SITE_URL variable is set to default value. Make sure to configure this environment variable correctly." >&2
     fi
 }
 
