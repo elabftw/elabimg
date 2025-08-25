@@ -11,14 +11,15 @@ These services are managed by s6-overlay and are all heavily customized for runn
 
 # Tags
 
-Tags, in the context of Docker images, are what comes after the image name (`elabftw/elabimg`), separated by a colon. If you leave it empty, it defaults to `latest`. But it is recommended to explicitly define the version you wish to run, e.g.: `elabftw/elabimg:5.0.3`.
+Tags, in the context of Docker images, are what comes after the image name (`elabftw/elabimg`), separated by a colon. If you leave it empty, it defaults to `latest`, which will point to the latest stable release. But it is recommended to explicitly define the version you wish to run, e.g.: `elabftw/elabimg:5.3.4`.
 
 When defining which image version to use, you can use different tags:
 
 * `x.y.z`: the actual explicit version: recommended
 * `stable`: the latest stable version
-* `latest`: the latest version, can be a stable version or an alpha or beta, whatever is present on `master` branch of eLabFTW
-* `hypernext`: this is the dev version, built on a "push" event as well as on a daily schedule.
+* `latest`: the latest stable version
+* `edge`: the latest version, can be a stable version or an alpha or beta, whatever is present on `master` branch of eLabFTW
+* `hypernext`: this is the dev version, built on a "push" event as well as on a daily schedule, it must never be deployed outside of a testing environment
 
 # Building this image
 
