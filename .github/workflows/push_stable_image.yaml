@@ -74,3 +74,4 @@ jobs:
                     ELABFTW_VERSION=${{ github.ref_name }}
                 tags: |
                     elabftw/elabimg:stable
+                    elabftw/elabimg:latest

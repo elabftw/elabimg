@@ -3,6 +3,7 @@
 
 # 5.7.0
 
+* Make the `latest` tag point to `stable`. Add `edge` tag for bleeding edge version. This should help avoid accidental deployment of alpha/beta versions and aligns with industry standards.
 * Add form-action: 'self' to CSP as it does not fallback to default-src.
   https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Security-Policy/form-action
 
