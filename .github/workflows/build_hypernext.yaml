@@ -106,7 +106,7 @@ jobs:
 
       # ATTESTATION
       - name: Create build provenance attestation
-        uses: actions/attest-build-provenance@v1
+        uses: actions/attest-build-provenance@v3
         with:
           subject-name: index.docker.io/elabftw/elabimg
           subject-digest: ${{ steps.push.outputs.digest }}
