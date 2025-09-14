@@ -45,6 +45,7 @@ jobs:
             repo.yarnpkg.com
             registry.npmjs.org
             *.sigstore.dev
+            hooks.deltablot.dev
 
       - name: Checkout elabimg repo
         uses: actions/checkout@v4
