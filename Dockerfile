@@ -331,10 +331,16 @@ RUN chmod +x /usr/bin/chronos
 COPY ./src/entrypoint/reload.sh /usr/bin/reload
 RUN chmod 700 /usr/bin/reload
 
+# generate a build-id that we use for cache busting assets
+RUN openssl rand -hex 4 > /etc/elabimg-build-id
+
 # this is unique to the build and is better than the previously used elabftw version for asset cache busting
-RUN sed -i -e "s/%ELABIMG_BUILD_ID%/$(openssl rand -hex 4)/" /etc/php84/php-fpm.d/elabpool.conf
+RUN sed -i -e "s/%ELABIMG_BUILD_ID%/$(cat /etc/elabimg-build-id)/" /etc/php84/php-fpm.d/elabpool.conf
 # this file contains secrets
 RUN chmod 400 /etc/php84/php-fpm.d/elabpool.conf
+
+# add a cache busting query param for spreadsheet iframe assets
+RUN sed -i -e "s/%REPLACED_AT_BUILD_TIME%/$(cat /etc/elabimg-build-id)/" /elabftw/web/spreadsheet.html
 
 # start s6
 ENTRYPOINT ["/init"]
