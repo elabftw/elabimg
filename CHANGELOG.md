@@ -1,6 +1,13 @@
 # Container image version
 # Note: the version here is from `ELABIMG_VERSION` present in Dockerfile, not the tagged one
 
+# 5.7.1
+
+* doc: add note about `mysql_native_storage` password in example file
+* bug/minor: csp: adjust frame-src policy (#62)
+    add missing allowed targets in frame-src to fix issue with spreadsheet editor downloading files.
+    fix elabftw/elabftw#6030
+
 # 5.7.0
 
 * Fix Permissions-Policy header syntax: would trigger an error on Chromium based browsers
