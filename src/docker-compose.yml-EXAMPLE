@@ -444,9 +444,12 @@ services:
   #    - BACKEND_URL=/opencloning/
   #    - SHOW_APP_BAR=false
   #    - DATABASE=elabftw
-  # this is an optional ENV var that we use to prevent connecting to WekWikGene, see: https://github.com/manulera/OpenCloning_backend/blob/master/src/opencloning/app_settings.py
-  # and https://github.com/manulera/OpenCloning/blob/master/docker-compose.yml
-  # if you'd like to allow your users to pull data from this external repository, do not add this env var or add the URL to it. You can restrict further, too, as you see fit.
+  # Optional environment variable used to restrict access to external repositories (e.g., WekWikGene).
+  # References:
+  #    https://github.com/manulera/OpenCloning_backend/blob/master/src/opencloning/app_settings.py
+  #    https://github.com/manulera/OpenCloning/blob/master/docker-compose.yml
+  # By default (i.e., if this environment variable is unset or empty), all external repositories are enabled.
+  # To restrict which external repositories users can access, set this variable to a comma-separated list of allowed base URLs.
   #    - ALLOWED_EXTERNAL_URLS=https://www.addgene.org/,https://media.addgene.org/,https://seva-plasmids.com/,https://api.ncbi.nlm.nih.gov/datasets/v2alpha/,https://eutils.ncbi.nlm.nih.gov/entrez/eutils/,https://www.snapgene.com/local/fetch.php,https://benchling.com/,https://assets.opencloning.org/annotated-igem-distribution,http://www.euroscarf.de/
 
 
