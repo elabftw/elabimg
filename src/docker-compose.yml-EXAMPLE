@@ -361,7 +361,7 @@ services:
         # of the container. Useful if you have several containers or expect
         # many users to export data and don't want your containers to grow too
         # much or be stateful.
-        #- /path/to/big_partition:/exports
+        #- /path/to/big_partition:/elabftw/exports
 
     # This part is just an example for having a custom DNS entry in /etc/hosts of the container
     # Use it if DNS resolution cannot work for some reason
