@@ -1,6 +1,10 @@
 # Container image version
 # Note: the version here is from `ELABIMG_VERSION` present in Dockerfile, not the tagged one
 
+# 5.8.0
+
+* opencloning: remove raw.githubusercontent.com from CSP allow list (#58)
+
 # 5.7.1
 
 * doc: add note about `mysql_native_storage` password in example file
