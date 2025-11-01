@@ -231,7 +231,7 @@ services:
         # this will add a response header Access-Control-Allow-Methods with content of the env var as value
         # mdn doc: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Methods
         # default: header not set (empty value)
-        # example value: GET, POST, PATCH
+        # example value: OPTIONS, GET, POST, PATCH, DELETE
         #- ALLOW_METHODS=
 
         # optional: define headers allowed to javascript code calling the API from an external service
