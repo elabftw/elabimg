@@ -260,6 +260,7 @@ RUN tar xzf src.tgz && mv elabftw-* src \
     && mv src/web /elabftw \
     && mv src/yarn.lock /elabftw \
     && mv src/.yarnrc.yml /elabftw \
+    && mv src/var /elabftw \
     && rm -r src src.tgz
 
 WORKDIR /elabftw
