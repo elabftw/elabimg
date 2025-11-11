@@ -3,6 +3,7 @@
 
 # 5.8.0
 
+* bump: alpine linux to 3.22, golang to 1.25
 * opencloning: remove raw.githubusercontent.com from CSP allow list (#58)
 * nginx: add /metrics endpoint with openmetrics 1.0 response
 
