@@ -15,7 +15,7 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then ARCH=amd64; elif [ "$TARGETPL
 
 # build nginx with only the bare minimum of features or modules
 # Note: no need to chain the RUN commands here as it's a builder image and nothing will be kept
-FROM alpine:3.21 AS nginx-builder
+FROM alpine:3.22 AS nginx-builder
 
 ENV NGINX_VERSION=1.28.0
 # pin nginx modules versions
@@ -124,7 +124,7 @@ RUN make install
 #############################
 # ELABFTW + NGINX + PHP-FPM #
 #############################
-FROM alpine:3.21
+FROM alpine:3.22
 
 # this is versioning for the container image
 ENV ELABIMG_VERSION=5.8.0
