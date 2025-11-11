@@ -2,7 +2,7 @@
 # nginx custom + php-fpm + elabftw complete production files
 # https://github.com/elabftw/elabimg
 
-FROM golang:1.24-alpine3.21 AS go-builder
+FROM golang:1.25-alpine3.22 AS go-builder
 # using an explicit default argument for TARGETPLATFORM will override the buildx implicit value
 ARG TARGETPLATFORM
 ENV TARGETPLATFORM=${TARGETPLATFORM:-linux/amd64}
