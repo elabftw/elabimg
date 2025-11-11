@@ -4,6 +4,7 @@
 # 5.8.0
 
 * opencloning: remove raw.githubusercontent.com from CSP allow list (#58)
+* nginx: add /metrics endpoint with openmetrics 1.0 response
 
 # 5.7.1
 
