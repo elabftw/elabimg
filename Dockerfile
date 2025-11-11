@@ -23,7 +23,7 @@ ENV NGINX_VERSION=1.28.0
 # BROKEN HASH: ENV NGX_BROTLI_COMMIT_HASH=63ca02abdcf79c9e788d2eedcc388d2335902e52
 ENV NGX_BROTLI_COMMIT_HASH=6e975bcb015f62e1f303054897783355e2a877dc
 # https://github.com/openresty/headers-more-nginx-module/tags
-ENV HEADERS_MORE_VERSION=v0.37
+ENV HEADERS_MORE_VERSION=v0.39
 # releases can be signed by any key on this page https://nginx.org/en/pgp_keys.html
 # so this might need to be updated for a new release
 # available keys: mdounin, maxim, sb, thresh
