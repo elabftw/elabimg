@@ -312,6 +312,9 @@ services:
         # This is for the integration of the DNA Cloning tool
         #- USE_OPENCLONING=false
         #- OPENCLONING_URL=http://opencloning-plugin:8000/
+        # This is for the integration with DSpace Repository
+        #- USE_DSPACE=true
+        #- DSPACE_URL=http://dspace:8080/server/
 
         #######
         # DEV #

@@ -69,6 +69,8 @@ getEnv() {
     fingerprinter_url=${FINGERPRINTER_URL:-https://example.com:8000/}
     use_opencloning=${USE_OPENCLONING:-false}
     opencloning_url=${OPENCLONING_URL:-https://opencloning.elabftw.net/}
+    use_dspace=${USE_DSPACE:-false}
+    dspace_url=${DSPACE_URL:-https://dspace.org/}
     use_persistent_mysql_conn=${USE_PERSISTENT_MYSQL_CONN:-true}
     pubchem_pug_url=${PUBCHEM_PUG_URL:-https://pubchem.ncbi.nlm.nih.gov/rest/pug}
     pubchem_pug_view_url=${PUBCHEM_PUG_VIEW_URL:-https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data}
@@ -172,6 +174,10 @@ nginxConf() {
         oc_url=${opencloning_url%/}
         sed -i -e "s|^#\s*include /etc/nginx/opencloning.conf|include /etc/nginx/opencloning.conf|" /etc/nginx/common.conf
         sed -i -e "s|%OPENCLONING_URL%|${oc_url}|" /etc/nginx/opencloning.conf
+    fi
+    if [ "$dspace_url" != "false" ] && [ -n "$dspace_url" ] && [ "$use_dspace" != "false" ] && [ -n "$use_dspace" ]; then
+        sed -i -e "s|^#\s*include /etc/nginx/dspace.conf|include /etc/nginx/dspace.conf|" /etc/nginx/common.conf
+        sed -i -e "s|%DSPACE_URL%|${dspace_url}|" /etc/nginx/dspace.conf
     fi
 
     # SET REAL IP CONFIG
