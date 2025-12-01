@@ -1,6 +1,11 @@
 # Container image version
 # Note: the version here is from `ELABIMG_VERSION` present in Dockerfile, not the tagged one
 
+# 5.8.1
+
+* Add support for Dspace service
+* Add `USE_DSPACE`, `DSPACE_URL`, `DSPACE_USE_PROXY` env
+
 # 5.8.0
 
 * opencloning: remove raw.githubusercontent.com from CSP allow list (#58)

@@ -71,6 +71,7 @@ getEnv() {
     opencloning_url=${OPENCLONING_URL:-https://opencloning.elabftw.net/}
     use_dspace=${USE_DSPACE:-false}
     dspace_url=${DSPACE_URL:-https://dspace.org/}
+    dspace_use_proxy=${DSPACE_USE_PROXY:-false}
     use_persistent_mysql_conn=${USE_PERSISTENT_MYSQL_CONN:-true}
     pubchem_pug_url=${PUBCHEM_PUG_URL:-https://pubchem.ncbi.nlm.nih.gov/rest/pug}
     pubchem_pug_view_url=${PUBCHEM_PUG_VIEW_URL:-https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data}
@@ -270,6 +271,8 @@ phpfpmConf() {
     sed -i -e "s/%USE_INDIGO%/${use_indigo}/" $f
     sed -i -e "s/%USE_FINGERPRINTER%/${use_fingerprinter}/" $f
     sed -i -e "s/%FINGERPRINTER_USE_PROXY%/${fingerprinter_use_proxy}/" $f
+    sed -i -e "s/%USE_DSPACE%/${use_dspace}/" $f
+    sed -i -e "s/%DSPACE_USE_PROXY%/${dspace_use_proxy}/" $f
     # use # because url has / in it
     sed -i -e "s#%FINGERPRINTER_URL%#${fingerprinter_url}#" $f
     sed -i -e "s/%USE_OPENCLONING%/${use_opencloning}/" $f

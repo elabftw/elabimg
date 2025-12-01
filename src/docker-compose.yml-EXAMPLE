@@ -315,6 +315,8 @@ services:
         # This is for the integration with DSpace Repository
         #- USE_DSPACE=true
         #- DSPACE_URL=http://dspace:8080/server/
+        # If your DSpace service needs to use the generic app proxy, set this to true
+        #- DSPACE_USE_PROXY=false
 
         #######
         # DEV #
