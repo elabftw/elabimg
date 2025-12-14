@@ -29,6 +29,7 @@ jobs:
           allowed-hosts: >
             auth.docker.io
             codeload.github.com
+            get.trivy.dev
             check.trivy.dev
             dl-cdn.alpinelinux.org
             docker.io
