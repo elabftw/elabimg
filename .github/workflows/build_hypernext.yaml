@@ -78,6 +78,7 @@ jobs:
           cache-from: type=gha,scope=${{ matrix.os }}-${{ matrix.arch }}
           cache-to:   type=gha,mode=max,scope=${{ matrix.os }}-${{ matrix.arch }}
           platforms: linux/arm64,linux/amd64
+          sbom: true
           push: true
           build-args: |
               ELABFTW_VERSION=${{ github.ref_name }}
