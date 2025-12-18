@@ -71,6 +71,7 @@ jobs:
                 # the scope parameter is necessary when doing multi arch builds or we'll always miss cache
                 cache-from: type=gha,scope=${{ matrix.os }}-${{ matrix.arch }}
                 cache-to:   type=gha,mode=max,scope=${{ matrix.os }}-${{ matrix.arch }}
+                sbom: true
                 build-args: |
                     ELABFTW_VERSION=${{ github.ref_name }}
                 tags: |
