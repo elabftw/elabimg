@@ -161,9 +161,7 @@ RUN mkdir -p /var/log/nginx \
 # imagemagick-svg is for mathjax support in pdfs
 # imagemagick-heic is for support for heic/heif
 # don't put line comments inside this instruction
-# Separate upgrade and install for better layer caching
-RUN apk upgrade -U -a
-RUN apk add --no-cache \
+RUN apk upgrade -U -a && apk add --no-cache \
     bash \
     brotli \
     curl \
@@ -344,7 +342,7 @@ RUN chmod 755 /usr/bin/chronos
 
 # add a helper script to reload services easily
 COPY ./src/entrypoint/reload.sh /usr/bin/reload
-RUN chmod 750 /usr/bin/reload
+RUN chmod 700 /usr/bin/reload
 
 # generate a build-id that we use for cache busting assets
 RUN openssl rand -hex 4 > /etc/elabimg-build-id
