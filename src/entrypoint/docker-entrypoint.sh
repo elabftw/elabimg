@@ -18,6 +18,7 @@ getEnv() {
     db_user=${DB_USER:-elabftw}
     # Note: no default value here
     db_password=${DB_PASSWORD:-}
+    db_password_file=${DB_PASSWORD_FILE:-}
     db_cert_path=${DB_CERT_PATH:-}
     site_url=${SITE_URL:-https://localhost}
     # remove trailing slash for site_url
@@ -26,6 +27,7 @@ getEnv() {
     disable_https=${DISABLE_HTTPS:-false}
     enable_letsencrypt=${ENABLE_LETSENCRYPT:-false}
     secret_key=${SECRET_KEY:-}
+    secret_key_file=${SECRET_KEY_FILE:-}
     max_php_memory=${MAX_PHP_MEMORY:-2G}
     max_upload_size=${MAX_UPLOAD_SIZE:-100M}
     max_upload_time=${MAX_UPLOAD_TIME:-900000}
@@ -42,6 +44,7 @@ getEnv() {
     redis_port=${REDIS_PORT:-6379}
     redis_username=${REDIS_USERNAME:-}
     redis_password=${REDIS_PASSWORD:-}
+    redis_password_file=${REDIS_PASSWORD_FILE:-}
     enable_ipv6=${ENABLE_IPV6:-false}
     elabftw_user=${ELABFTW_USER:-nginx}
     elabftw_group=${ELABFTW_GROUP:-nginx}
@@ -56,7 +59,9 @@ getEnv() {
     auto_db_init=${AUTO_DB_INIT:-false}
     auto_db_update=${AUTO_DB_UPDATE:-false}
     aws_ak=${ELAB_AWS_ACCESS_KEY:-}
+    aws_ak_file=${ELAB_AWS_ACCESS_KEY_FILE:-}
     aws_sk=${ELAB_AWS_SECRET_KEY:-}
+    aws_sk_file=${ELAB_AWS_SECRET_KEY_FILE:-}
     ldap_tls_reqcert=${LDAP_TLS_REQCERT:-false}
     allow_origin=${ALLOW_ORIGIN:-}
     allow_methods=${ALLOW_METHODS:-}
@@ -285,6 +290,9 @@ getRedisUri() {
     if [ -n "$redis_username" ]; then
         username="\?auth[user]=${redis_username}"
     fi
+    if [[ -n $redis_password_file && -r $redis_password_file ]]; then
+        redis_password=$(cat "${redis_password_file}")
+    fi
     if [ -n "$redis_password" ]; then
         if [ -z "$redis_username" ]; then
             query_link="\?"
@@ -329,7 +337,7 @@ phpConf() {
     # production open_basedir conf value
     # /etc/ssl/cert.pem is for openssl and timestamp related functions
     # for /run/s6-rc... see elabftw/elabftw#5249
-    open_basedir="/.dockerenv:/elabftw/:/tmp/:/usr/bin/unzip:/etc/ssl/cert.pem:/run/s6-rc/servicedirs/s6rc-oneshot-runner"
+    open_basedir="/.dockerenv:/elabftw/:/tmp/:/usr/bin/unzip:/etc/ssl/cert.pem:/run/s6-rc/servicedirs/s6rc-oneshot-runner:/run/secrets"
     # DEV MODE
     if ($dev_mode); then
         # we don't want to use opcache as we want our changes to be immediately visible
@@ -371,6 +379,9 @@ populatePhpEnv() {
     sed -i -e "s/%DB_PORT%/${db_port}/" /etc/php84/php-fpm.d/elabpool.conf
     sed -i -e "s/%DB_NAME%/${db_name}/" /etc/php84/php-fpm.d/elabpool.conf
     sed -i -e "s/%DB_USER%/${db_user}/" /etc/php84/php-fpm.d/elabpool.conf
+    if [[ -n $db_password_file && -r $db_password_file ]]; then 
+        db_password=$(cat "${db_password_file}")
+    fi
     sed -i -e "s/%DB_PASSWORD%/${db_password}/" /etc/php84/php-fpm.d/elabpool.conf
     # don't add empty stuff
     if [ -n "$db_cert_path" ]; then
@@ -380,17 +391,28 @@ populatePhpEnv() {
         # remove this if not in use
         sed -i -e "/%DB_CERT_PATH%/d" /etc/php84/php-fpm.d/elabpool.conf
     fi
+    if [[ -n $secret_key_file && -r $secret_key_file ]]; then
+        secret_key=$(cat "${secret_key_file}")
+    fi
     sed -i -e "s/%SECRET_KEY%/${secret_key}/" /etc/php84/php-fpm.d/elabpool.conf
     sed -i -e "s/%MAX_UPLOAD_SIZE%/${max_upload_size}/" /etc/php84/php-fpm.d/elabpool.conf
     sed -i -e "s/%MAX_UPLOAD_TIME%/${max_upload_time}/" /etc/php84/php-fpm.d/elabpool.conf
     # use # as separator instead of slash
     sed -i -e "s#%SITE_URL%#${site_url}#" /etc/php84/php-fpm.d/elabpool.conf
-    # assume that if ak is set, then sk is too
-    if [ -n "$aws_ak" ]; then
+    if [[ -n $aws_ak || -n $aws_ak_file ]]; then
+        if [[ -n aws_ak_file && -r $aws_ak_file ]]; then 
+            aws_ak=$(cat "${aws_ak_file}")
+        fi
         sed -i -e "s|%ELAB_AWS_ACCESS_KEY%|${aws_ak}|" /etc/php84/php-fpm.d/elabpool.conf
-        sed -i -e "s|%ELAB_AWS_SECRET_KEY%|${aws_sk}|" /etc/php84/php-fpm.d/elabpool.conf
     else
         sed -i -e "/%ELAB_AWS_ACCESS_KEY%/d" /etc/php84/php-fpm.d/elabpool.conf
+    fi 
+    if [[ -n $aws_sk || -n $aws_sk_file ]]; then
+        if [[ -n $aws_sk_file && -r $aws_sk_file ]]; then
+            aws_sk=$(cat "${aws_sk_file}")
+        fi
+        sed -i -e "s|%ELAB_AWS_SECRET_KEY%|${aws_sk}|" /etc/php84/php-fpm.d/elabpool.conf
+    else
         sed -i -e "/%ELAB_AWS_SECRET_KEY%/d" /etc/php84/php-fpm.d/elabpool.conf
     fi
 }
