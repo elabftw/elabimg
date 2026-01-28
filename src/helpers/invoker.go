@@ -6,6 +6,7 @@ package main
 import (
 	"bufio"
 	"context"
+	"crypto/subtle"
 	"fmt"
 	"log"
 	"net"
@@ -92,14 +93,23 @@ wait:
 func handleConnection(conn net.Conn, mu *sync.Mutex, psk string) {
 	defer conn.Close()
 	scanner := bufio.NewScanner(conn)
+	// Set a reasonable max line size to prevent DoS attacks (default is 64KB)
+	const maxLineSize = 1024 * 64 // 64KB
+	buf := make([]byte, maxLineSize)
+	scanner.Buffer(buf, maxLineSize)
 
 	for scanner.Scan() {
 		cmdStr := scanner.Text()
 
 		// Extract the PSK from the message
 		parts := strings.SplitN(cmdStr, "|", 2)
-		if len(parts) != 2 || parts[0] != psk {
-			log.Println("invalid or missing PSK")
+		if len(parts) != 2 {
+			log.Println("invalid message format")
+			continue
+		}
+		// Use constant-time comparison to prevent timing attacks
+		if subtle.ConstantTimeCompare([]byte(parts[0]), []byte(psk)) != 1 {
+			log.Println("invalid PSK")
 			continue
 		}
 

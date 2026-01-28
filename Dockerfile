@@ -336,15 +336,15 @@ RUN sed -i -e "s/%ELABIMG_VERSION%/$ELABIMG_VERSION/" \
 
 # INVOKER
 COPY --from=go-builder /app/invoker /usr/bin/invoker
-RUN chmod +x /usr/bin/invoker
+RUN chmod 755 /usr/bin/invoker
 
 # CHRONOS
 COPY --from=go-builder /app/chronos /usr/bin/chronos
-RUN chmod +x /usr/bin/chronos
+RUN chmod 755 /usr/bin/chronos
 
 # add a helper script to reload services easily
 COPY ./src/entrypoint/reload.sh /usr/bin/reload
-RUN chmod 700 /usr/bin/reload
+RUN chmod 750 /usr/bin/reload
 
 # generate a build-id that we use for cache busting assets
 RUN openssl rand -hex 4 > /etc/elabimg-build-id
