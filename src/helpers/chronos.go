@@ -5,8 +5,9 @@ package main
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/binary"
 	"log"
-	"math/rand"
 	"os"
 	"os/exec"
 	"os/signal"
@@ -20,9 +21,13 @@ var jitter time.Duration
 func main() {
 	log.SetPrefix("chronos: ")
 	log.Println("starting chronos...")
-	// generate jitter
-	rand.Seed(time.Now().UnixNano())
-	jitter = time.Duration(rand.Intn(60)) * time.Second
+	// generate jitter using crypto/rand for better randomness
+	var randBytes [8]byte
+	if _, err := rand.Read(randBytes[:]); err != nil {
+		log.Fatalf("failed to generate random jitter: %v", err)
+	}
+	randValue := binary.BigEndian.Uint64(randBytes[:]) % 60
+	jitter = time.Duration(randValue) * time.Second
 	log.Printf("jitter: %v\n", jitter)
 	// set up a context that is canceled on SIGINT/SIGTERM
 	ctx, cancel := context.WithCancel(context.Background())

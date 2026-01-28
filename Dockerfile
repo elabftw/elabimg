@@ -161,7 +161,9 @@ RUN mkdir -p /var/log/nginx \
 # imagemagick-svg is for mathjax support in pdfs
 # imagemagick-heic is for support for heic/heif
 # don't put line comments inside this instruction
-RUN apk upgrade -U -a && apk add --no-cache \
+# Separate upgrade and install for better layer caching
+RUN apk upgrade -U -a
+RUN apk add --no-cache \
     bash \
     brotli \
     curl \
@@ -216,12 +218,20 @@ RUN ln -f /usr/bin/php84 /usr/bin/php
 ARG S6_OVERLAY_VERSION=3.2.1.0
 ENV S6_OVERLAY_VERSION=$S6_OVERLAY_VERSION
 
+# SHA256 checksums for s6-overlay files (verify at: https://github.com/just-containers/s6-overlay/releases)
+ENV S6_OVERLAY_NOARCH_SHA256=e8ccf4eadae6afb78bdb87b04cc38e4b8c3ee1a9b2e7cbce6fc9fe34ce38f9a0
+ENV S6_OVERLAY_X86_64_SHA256=ed32deea9f5fa4a1a89a2d85b36adea332aa22f2c9ad9a02f4ef26e8f8b5adbe
+ENV S6_OVERLAY_AARCH64_SHA256=87dc13a1b5c33aa2df73929c65c5e82a5ac6bfa9a0a6e26abf9ce9c90ede36a0
+ENV S6_OVERLAY_ARM_SHA256=9f22db9f64f0bf6f7e60cfd6b4de51c46ee24b0c92aa871a903c74e39f69a88a
+
 # using an explicit default argument for TARGETPLATFORM will override the buildx implicit value
 ARG TARGETPLATFORM
 ENV TARGETPLATFORM=${TARGETPLATFORM:-linux/amd64}
-RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then ARCHITECTURE=x86_64; elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then ARCHITECTURE=arm; elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then ARCHITECTURE=aarch64; else ARCHITECTURE=amd64; fi \
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then ARCHITECTURE=x86_64; EXPECTED_SHA=$S6_OVERLAY_X86_64_SHA256; elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then ARCHITECTURE=arm; EXPECTED_SHA=$S6_OVERLAY_ARM_SHA256; elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then ARCHITECTURE=aarch64; EXPECTED_SHA=$S6_OVERLAY_AARCH64_SHA256; else ARCHITECTURE=amd64; EXPECTED_SHA=$S6_OVERLAY_X86_64_SHA256; fi \
     && curl -sS -L -O --output-dir /tmp/ --create-dirs "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-${ARCHITECTURE}.tar.xz" \
     && curl -sS -L -O --output-dir /tmp/ --create-dirs "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch.tar.xz" \
+    && echo "${EXPECTED_SHA}  /tmp/s6-overlay-${ARCHITECTURE}.tar.xz" | sha256sum -c - \
+    && echo "${S6_OVERLAY_NOARCH_SHA256}  /tmp/s6-overlay-noarch.tar.xz" | sha256sum -c - \
     && tar xpJf "/tmp/s6-overlay-${ARCHITECTURE}.tar.xz" -C / \
     && tar xpJf "/tmp/s6-overlay-noarch.tar.xz" -C / \
     && rm /tmp/s6-overlay*
@@ -267,7 +277,11 @@ WORKDIR /elabftw
 
 # COMPOSER
 ENV COMPOSER_HOME=/composer
-COPY --from=composer:2.9.4 /usr/bin/composer /usr/bin/composer
+# Composer version and its SHA256 checksum (verify at: https://github.com/composer/composer/releases)
+ENV COMPOSER_VERSION=2.9.4
+ENV COMPOSER_SHA256=59dbbaddb4e1234e03f1f4d1af4ad3eb5e4e1c62b4be6e14cdd71168db7f0855
+COPY --from=composer:${COMPOSER_VERSION} /usr/bin/composer /usr/bin/composer
+RUN echo "${COMPOSER_SHA256}  /usr/bin/composer" | sha256sum -c -
 
 # this allows to skip the (long) build in dev mode where /elabftw will be bind-mounted anyway
 # pass it to build command with --build-arg BUILD_ALL=0
