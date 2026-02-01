@@ -92,8 +92,8 @@ createUser() {
     export INVOKER_PSK
     # allow php to read it. use | separator as / is in base64
     sed -i -e "s|^env\[INVOKER_PSK\] = .*|env[INVOKER_PSK] = ${INVOKER_PSK}|" /etc/php84/php-fpm.d/elabpool.conf
-    su -p -c "/usr/bin/invoker &" -s /bin/sh "${elabftw_user}"
-    su -p -c "/usr/bin/chronos &" -s /bin/sh "${elabftw_user}"
+    su -p -c "/usr/local/bin/invoker &" -s /bin/sh "${elabftw_user}"
+    su -p -c "/usr/local/bin/chronos &" -s /bin/sh "${elabftw_user}"
 }
 
 checkSiteUrl() {
@@ -110,7 +110,7 @@ generateCert() {
         # https://bugzilla.redhat.com/show_bug.cgi?id=1204670
         # https://bugzilla.mozilla.org/show_bug.cgi?id=1056341
         # this way there is no more hangs
-        randcn=$(tr -dc A-Za-z0-9 < /dev/urandom | head -c 12 | xargs)
+        randcn=$(openssl rand -hex 6)
         openssl req \
             -new \
             -newkey rsa:4096 \
@@ -216,7 +216,7 @@ nginxConf() {
     # set unsafe-eval in CSP
     sed -i -e "s/%UNSAFE-EVAL4DEV%/${unsafe_eval}/" /etc/nginx/common.conf
     # put a random short string as the server header to prevent fingerprinting
-    server_header=$(echo $RANDOM | md5sum | head -c 3)
+    server_header=$(openssl rand -hex 2 | cut -c1-3)
     sed -i -e "s/%SERVER_HEADER%/${server_header}/" /etc/nginx/common.conf
     # add Access-Control-Allow-Origin header if enabled
     acao_header=""
@@ -240,7 +240,7 @@ nginxConf() {
     # create a password file for /php-status endpoint
     if [ -z "$status_password" ]; then
         # if no password is provided, instead of hardcoding a default password, we generate one
-        status_password=$(echo $RANDOM | sha1sum)
+        status_password=$(openssl rand -hex 16)
     fi
     # instead of installing htpasswd, use openssl that is already here
     printf "elabftw:%s\n" "$(openssl passwd -apr1 "$status_password")" > /etc/nginx/passwords
@@ -334,11 +334,6 @@ phpConf() {
     if ($dev_mode); then
         # we don't want to use opcache as we want our changes to be immediately visible
         sed -i -e "s/opcache\.enable=1/opcache\.enable=0/" $f
-        # extend open_basedir
-        # //autoload.php, /root/.cache/ are for psalm
-        # /proc/cpuinfo is for phpstan, https://github.com/phpstan/phpstan/issues/4427 https://github.com/phpstan/phpstan/issues/2965
-        # /proc/version is for symfony, and the rest for composer
-        #open_basedir="${open_basedir}:/proc/version:/usr/bin/composer:/composer://autoload\.php:/root/\.cache/:/proc/cpuinfo:/usr/share"
         # completely remove open_basedir in dev because it's a pita with phpstan for instance
         open_basedir=""
         # rector needs tmpfile, so allow it in dev mode

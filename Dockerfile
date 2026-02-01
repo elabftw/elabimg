@@ -267,7 +267,11 @@ WORKDIR /elabftw
 
 # COMPOSER
 ENV COMPOSER_HOME=/composer
-COPY --from=composer:2.9.4 /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2.9.5 /usr/bin/composer /usr/local/bin/composer
+# Run this to get the shasum:
+# docker run --rm composer:latest sha256sum /usr/bin/composer
+ENV COMPOSER_SHA256=c86ce603fe836bf0861a38c93ac566c8f1e69ac44b2445d9b7a6a17ea2e9972a
+RUN echo "${COMPOSER_SHA256} /usr/local/bin/composer" | sha256sum -c -
 
 # this allows to skip the (long) build in dev mode where /elabftw will be bind-mounted anyway
 # pass it to build command with --build-arg BUILD_ALL=0
@@ -284,7 +288,7 @@ RUN corepack enable
 # so in order for composer to take it into account, it must exist before we call the install command of composer.
 RUN if [ "$BUILD_ALL" = "1" ]; then yarn install \
     && yarn run buildall:prod \
-    && /usr/bin/php84 -d memory_limit=256M -d open_basedir='' /usr/bin/composer install --prefer-dist --no-cache --no-progress --no-dev -a \
+    && /usr/bin/php84 -d memory_limit=256M -d open_basedir='' /usr/local/bin/composer install --prefer-dist --no-cache --no-progress --no-dev -a \
     && yarn cache clean && rm -r /root/.cache /root/.yarn; fi
 
 # declare a default value for these ENV values so they are accessible in php-cli
@@ -321,16 +325,16 @@ RUN sed -i -e "s/%ELABIMG_VERSION%/$ELABIMG_VERSION/" \
 # END DOCKER-ENTRYPOINT.SH
 
 # INVOKER
-COPY --from=go-builder /app/invoker /usr/bin/invoker
-RUN chmod +x /usr/bin/invoker
+COPY --from=go-builder /app/invoker /usr/local/bin/invoker
+RUN chmod 755 /usr/local/bin/invoker
 
 # CHRONOS
-COPY --from=go-builder /app/chronos /usr/bin/chronos
-RUN chmod +x /usr/bin/chronos
+COPY --from=go-builder /app/chronos /usr/local/bin/chronos
+RUN chmod 755 /usr/local/bin/chronos
 
 # add a helper script to reload services easily
-COPY ./src/entrypoint/reload.sh /usr/bin/reload
-RUN chmod 700 /usr/bin/reload
+COPY ./src/entrypoint/reload.sh /usr/local/bin/reload
+RUN chmod 700 /usr/local/bin/reload
 
 # generate a build-id that we use for cache busting assets
 RUN openssl rand -hex 4 > /etc/elabimg-build-id
