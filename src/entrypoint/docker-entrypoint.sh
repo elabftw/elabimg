@@ -92,8 +92,8 @@ createUser() {
     export INVOKER_PSK
     # allow php to read it. use | separator as / is in base64
     sed -i -e "s|^env\[INVOKER_PSK\] = .*|env[INVOKER_PSK] = ${INVOKER_PSK}|" /etc/php84/php-fpm.d/elabpool.conf
-    su -p -c "/usr/bin/invoker &" -s /bin/sh "${elabftw_user}"
-    su -p -c "/usr/bin/chronos &" -s /bin/sh "${elabftw_user}"
+    su -p -c "/usr/local/bin/invoker &" -s /bin/sh "${elabftw_user}"
+    su -p -c "/usr/local/bin/chronos &" -s /bin/sh "${elabftw_user}"
 }
 
 checkSiteUrl() {
@@ -334,11 +334,6 @@ phpConf() {
     if ($dev_mode); then
         # we don't want to use opcache as we want our changes to be immediately visible
         sed -i -e "s/opcache\.enable=1/opcache\.enable=0/" $f
-        # extend open_basedir
-        # //autoload.php, /root/.cache/ are for psalm
-        # /proc/cpuinfo is for phpstan, https://github.com/phpstan/phpstan/issues/4427 https://github.com/phpstan/phpstan/issues/2965
-        # /proc/version is for symfony, and the rest for composer
-        #open_basedir="${open_basedir}:/proc/version:/usr/bin/composer:/composer://autoload\.php:/root/\.cache/:/proc/cpuinfo:/usr/share"
         # completely remove open_basedir in dev because it's a pita with phpstan for instance
         open_basedir=""
         # rector needs tmpfile, so allow it in dev mode
