@@ -267,7 +267,10 @@ WORKDIR /elabftw
 
 # COMPOSER
 ENV COMPOSER_HOME=/composer
-COPY --from=composer:2.9.4 /usr/bin/composer /usr/bin/composer
+# Composer version and its SHA256 checksum (verify at: https://github.com/composer/composer/releases)
+COPY --from=composer:2.9.5 /usr/bin/composer /usr/bin/composer
+ENV COMPOSER_SHA256=c86ce603fe836bf0861a38c93ac566c8f1e69ac44b2445d9b7a6a17ea2e9972a
+RUN echo "${COMPOSER_SHA256}  /usr/bin/composer" | sha256sum -c -
 
 # this allows to skip the (long) build in dev mode where /elabftw will be bind-mounted anyway
 # pass it to build command with --build-arg BUILD_ALL=0
@@ -322,11 +325,11 @@ RUN sed -i -e "s/%ELABIMG_VERSION%/$ELABIMG_VERSION/" \
 
 # INVOKER
 COPY --from=go-builder /app/invoker /usr/bin/invoker
-RUN chmod +x /usr/bin/invoker
+RUN chmod 755 /usr/bin/invoker
 
 # CHRONOS
 COPY --from=go-builder /app/chronos /usr/bin/chronos
-RUN chmod +x /usr/bin/chronos
+RUN chmod 755 /usr/bin/chronos
 
 # add a helper script to reload services easily
 COPY ./src/entrypoint/reload.sh /usr/bin/reload
