@@ -318,6 +318,10 @@ COPY ./src/entrypoint/docker-entrypoint.sh /usr/sbin/docker-entrypoint.sh
 RUN sed -i -e "s/%ELABIMG_VERSION%/$ELABIMG_VERSION/" \
     -e "s/%ELABFTW_VERSION%/$ELABFTW_VERSION/" \
     -e "s/%S6_OVERLAY_VERSION%/$S6_OVERLAY_VERSION/" /usr/sbin/docker-entrypoint.sh
+
+# add defaults - may be overridden with compose
+ENV DB_PASSWORD_FILE=/run/secrets/elab_db_password
+ENV SECRET_KEY_FILE=/run/sercets/elab_secret_key
 # END DOCKER-ENTRYPOINT.SH
 
 # INVOKER
