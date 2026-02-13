@@ -269,6 +269,9 @@ WORKDIR /elabftw
 ENV COMPOSER_HOME=/composer
 COPY --from=composer:2.9.4 /usr/bin/composer /usr/bin/composer
 
+#### ADD PATCH
+COPY ./Env-patch.php /elabftw/src/Elabftw/Env.php
+
 # this allows to skip the (long) build in dev mode where /elabftw will be bind-mounted anyway
 # pass it to build command with --build-arg BUILD_ALL=0
 ARG BUILD_ALL=1
@@ -314,6 +317,7 @@ RUN echo "entrypoint" > /etc/s6-overlay/s6-rc.d/nginx/dependencies
 RUN echo "entrypoint" > /etc/s6-overlay/s6-rc.d/php/dependencies
 
 COPY ./src/entrypoint/docker-entrypoint.sh /usr/sbin/docker-entrypoint.sh
+
 # these values are not in env and cannot be accessed by script so modify them here
 RUN sed -i -e "s/%ELABIMG_VERSION%/$ELABIMG_VERSION/" \
     -e "s/%ELABFTW_VERSION%/$ELABFTW_VERSION/" \
@@ -321,7 +325,9 @@ RUN sed -i -e "s/%ELABIMG_VERSION%/$ELABIMG_VERSION/" \
 
 # add defaults - may be overridden with compose
 ENV DB_PASSWORD_FILE=/run/secrets/elab_db_password
-ENV SECRET_KEY_FILE=/run/sercets/elab_secret_key
+ENV SECRET_KEY_FILE=/run/secrets/elab_secret_key
+ENV AWS_ACCESS_KEY_FILE=/run/secrets/aws_access_key
+ENV AWS_SECRET_KEY_FILE=/run/secrets/aws_secret_key
 # END DOCKER-ENTRYPOINT.SH
 
 # INVOKER

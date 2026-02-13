@@ -374,15 +374,11 @@ ldapConf() {
 }
 
 populatePhpEnv() {
-
     sed -i -e "s/%DB_HOST%/${db_host}/" /etc/php84/php-fpm.d/elabpool.conf
     sed -i -e "s/%DB_PORT%/${db_port}/" /etc/php84/php-fpm.d/elabpool.conf
     sed -i -e "s/%DB_NAME%/${db_name}/" /etc/php84/php-fpm.d/elabpool.conf
     sed -i -e "s/%DB_USER%/${db_user}/" /etc/php84/php-fpm.d/elabpool.conf
-    if [[ -n $db_password_file && -r $db_password_file ]]; then 
-        db_password=$(cat "${db_password_file}")
-    fi
-    sed -i -e "s/%DB_PASSWORD%/${db_password}/" /etc/php84/php-fpm.d/elabpool.conf
+   
     # don't add empty stuff
     if [ -n "$db_cert_path" ]; then
         # use # as separator instead of slash
@@ -391,30 +387,49 @@ populatePhpEnv() {
         # remove this if not in use
         sed -i -e "/%DB_CERT_PATH%/d" /etc/php84/php-fpm.d/elabpool.conf
     fi
-    if [[ -n $secret_key_file && -r $secret_key_file ]]; then
-        secret_key=$(cat "${secret_key_file}")
-    fi
-    sed -i -e "s/%SECRET_KEY%/${secret_key}/" /etc/php84/php-fpm.d/elabpool.conf
+    
     sed -i -e "s/%MAX_UPLOAD_SIZE%/${max_upload_size}/" /etc/php84/php-fpm.d/elabpool.conf
     sed -i -e "s/%MAX_UPLOAD_TIME%/${max_upload_time}/" /etc/php84/php-fpm.d/elabpool.conf
     # use # as separator instead of slash
     sed -i -e "s#%SITE_URL%#${site_url}#" /etc/php84/php-fpm.d/elabpool.conf
+}
+
+populateSecrets() {
+    if [[ ! -d /run/secrets ]]; then
+        mkdir /run/secrets
+    fi
+
     if [[ -n $aws_ak || -n $aws_ak_file ]]; then
-        if [[ -n aws_ak_file && -r $aws_ak_file ]]; then 
-            aws_ak=$(cat "${aws_ak_file}")
+        if [[ ! -r $aws_ak_file ]]; then 
+            aws_ak_file=/run/secrets/elab_aws_access_key
+            printf "%s" "$aws_ak" > "$aws_ak_file"
         fi
-        sed -i -e "s|%ELAB_AWS_ACCESS_KEY%|${aws_ak}|" /etc/php84/php-fpm.d/elabpool.conf
+        sed -i -e "s|%ELAB_AWS_ACCESS_KEY%|${aws_ak_file}|" /etc/php84/php-fpm.d/elabpool.conf
     else
         sed -i -e "/%ELAB_AWS_ACCESS_KEY%/d" /etc/php84/php-fpm.d/elabpool.conf
-    fi 
+    fi
+    
     if [[ -n $aws_sk || -n $aws_sk_file ]]; then
-        if [[ -n $aws_sk_file && -r $aws_sk_file ]]; then
-            aws_sk=$(cat "${aws_sk_file}")
+        if [[ ! -r $aws_sk_file ]]; then 
+            $aws_sk_file=/run/secrets/elab_aws_secret_key
+            printf "%s" "$aws_sk" > "$aws_sk_file"
         fi
-        sed -i -e "s|%ELAB_AWS_SECRET_KEY%|${aws_sk}|" /etc/php84/php-fpm.d/elabpool.conf
+        sed -i -e "s|%ELAB_AWS_SECRET_KEY%|${aws_sk_file}|" /etc/php84/php-fpm.d/elabpool.conf
     else
         sed -i -e "/%ELAB_AWS_SECRET_KEY%/d" /etc/php84/php-fpm.d/elabpool.conf
     fi
+    
+    if [[ ! -r $secret_key_file ]]; then
+        secret_key_file=/run/secrets/elab_secret_key
+        printf "%s" "$secret_key" > "$secret_key_file"
+    fi
+    sed -i -e "s|%SECRET_KEY%|${secret_key_file}|" /etc/php84/php-fpm.d/elabpool.conf
+
+    if [[ ! -r $db_password_file ]]; then
+        db_password_file="/run/secrets/elab_db_password"
+        printf "%s" "$db_password" > "$db_password_file"
+    fi
+    sed -i -e "s|%DB_PASSWORD%|${db_password_file}|" /etc/php84/php-fpm.d/elabpool.conf
 }
 
 # display a friendly message with running versions
@@ -459,6 +474,7 @@ phpConf
 elabftwConf
 ldapConf
 populatePhpEnv
+populateSecrets
 dbInit
 dbUpdate
 startupMessage
