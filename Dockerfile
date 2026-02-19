@@ -288,6 +288,7 @@ RUN corepack enable
 # so in order for composer to take it into account, it must exist before we call the install command of composer.
 RUN if [ "$BUILD_ALL" = "1" ]; then yarn install \
     && yarn run buildall:prod \
+    && yarn workspaces focus -A --production \
     && /usr/bin/php84 -d memory_limit=256M -d open_basedir='' /usr/local/bin/composer install --prefer-dist --no-cache --no-progress --no-dev -a \
     && yarn cache clean && rm -r /root/.cache /root/.yarn; fi
 

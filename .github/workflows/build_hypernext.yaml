@@ -97,7 +97,6 @@ jobs:
           # use only the vuln scanner to avoid OOM kill with secrets scanning
           #not working: scanners: 'vuln'
           severity: 'CRITICAL,HIGH'
-          args: '--prod'
 
       # SBOM
       - name: Run Trivy in GitHub SBOM mode and submit results to Dependency Graph
