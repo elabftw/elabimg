@@ -14,8 +14,8 @@ jobs:
         #runs-on: ubuntu-latest
         # temporary revert for arm build
         runs-on: ubuntu-22.04
-        # we only want to run this on stable releases
-        if: github.event.release.prerelease == false
+        # only run on stable releases AND only if the release targets a release/* branch
+        if: github.event.release.prerelease == false && startsWith(github.event.release.target_commitish, 'release/')
         steps:
             # https://github.com/CycodeLabs/cimon-action
             - name: Cimon supply chain attack protection
