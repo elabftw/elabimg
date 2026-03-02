@@ -326,8 +326,8 @@ RUN sed -i -e "s/%ELABIMG_VERSION%/$ELABIMG_VERSION/" \
 # add defaults - may be overridden with compose
 ENV DB_PASSWORD_FILE=/run/secrets/elab_db_password
 ENV SECRET_KEY_FILE=/run/secrets/elab_secret_key
-ENV AWS_ACCESS_KEY_FILE=/run/secrets/aws_access_key
-ENV AWS_SECRET_KEY_FILE=/run/secrets/aws_secret_key
+ENV ELAB_AWS_ACCESS_KEY_FILE=/run/secrets/aws_access_key
+ENV ELAB_AWS_SECRET_KEY_FILE=/run/secrets/aws_secret_key
 # END DOCKER-ENTRYPOINT.SH
 
 # INVOKER

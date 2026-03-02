@@ -396,13 +396,15 @@ populatePhpEnv() {
 
 populateSecrets() {
     if [[ ! -d /run/secrets ]]; then
-        mkdir /run/secrets
+        install -d -m 0750 /run/secrets
     fi
 
     if [[ -n $aws_ak || -n $aws_ak_file ]]; then
         if [[ ! -r $aws_ak_file ]]; then 
             aws_ak_file=/run/secrets/elab_aws_access_key
             printf "%s" "$aws_ak" > "$aws_ak_file"
+            chown "${elabftw_user}":"${elabftw_group}" "$aws_ak_file"
+            chmod 400 "$aws_ak_file"
         fi
         sed -i -e "s|%ELAB_AWS_ACCESS_KEY%|${aws_ak_file}|" /etc/php84/php-fpm.d/elabpool.conf
     else
@@ -411,8 +413,10 @@ populateSecrets() {
     
     if [[ -n $aws_sk || -n $aws_sk_file ]]; then
         if [[ ! -r $aws_sk_file ]]; then 
-            $aws_sk_file=/run/secrets/elab_aws_secret_key
+            aws_sk_file=/run/secrets/elab_aws_secret_key
             printf "%s" "$aws_sk" > "$aws_sk_file"
+            chown "${elabftw_user}":"${elabftw_group}" "$aws_sk_file"
+            chmod 400 "$aws_sk_file"
         fi
         sed -i -e "s|%ELAB_AWS_SECRET_KEY%|${aws_sk_file}|" /etc/php84/php-fpm.d/elabpool.conf
     else
@@ -422,12 +426,16 @@ populateSecrets() {
     if [[ ! -r $secret_key_file ]]; then
         secret_key_file=/run/secrets/elab_secret_key
         printf "%s" "$secret_key" > "$secret_key_file"
+        chown "${elabftw_user}":"${elabftw_group}" "$secret_key_file"
+        chmod 400 "$secret_key_file"
     fi
     sed -i -e "s|%SECRET_KEY%|${secret_key_file}|" /etc/php84/php-fpm.d/elabpool.conf
 
     if [[ ! -r $db_password_file ]]; then
         db_password_file="/run/secrets/elab_db_password"
         printf "%s" "$db_password" > "$db_password_file"
+        chown "${elabftw_user}":"${elabftw_group}" "$db_password_file"
+        chmod 400 "$db_password_file"
     fi
     sed -i -e "s|%DB_PASSWORD%|${db_password_file}|" /etc/php84/php-fpm.d/elabpool.conf
 }
