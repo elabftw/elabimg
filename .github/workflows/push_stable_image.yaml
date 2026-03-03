@@ -15,7 +15,7 @@ jobs:
         # temporary revert for arm build
         runs-on: ubuntu-22.04
         # only run on stable releases AND only if the release targets a release/* branch
-        if: github.event.release.prerelease == false && startsWith(github.event.release.target_commitish, 'release/')
+        if: github.event.release.prerelease == false
         steps:
             # https://github.com/CycodeLabs/cimon-action
             - name: Cimon supply chain attack protection
@@ -43,7 +43,7 @@ jobs:
                   hooks.deltablot.dev
 
             - name: Checkout elabimg repo
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
               with:
                 ref: ${{ github.ref_name }}
 
