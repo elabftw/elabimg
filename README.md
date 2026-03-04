@@ -1,3 +1,10 @@
+# ARCHIVED REPOSITORY
+
+This repository is archived because all container related code has been integrated into the main [elabftw/elabftw](https://github.com/elabftw/elabftw/) repository.
+
+
+---------------------
+
 # Description
 
 This Docker image is for [eLabFTW](https://www.elabftw.net). It runs four services:
